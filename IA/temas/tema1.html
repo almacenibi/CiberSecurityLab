@@ -1,96 +1,1095 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[TÍTULO UNIDAD] - Metodologías de IA</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unidad 1 - Los Cimientos de la IA | Metodologías de IA</title>
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* === ESTILOS ESPECÍFICOS UNIDAD 1 === */
+.timeline { position: relative; margin: 2rem 0; padding-left: 2rem; }
+.timeline::before {
+    content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--primary), var(--secondary));
+}
+.timeline-item { position: relative; margin-bottom: 1.8rem; padding-left: 1.5rem; }
+.timeline-item::before {
+    content: ''; position: absolute; left: -1.65rem; top: 0.45rem;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: white; border: 3px solid var(--primary);
+}
+.timeline-item.winter::before { border-color: var(--error); }
+.timeline-item.boom::before { border-color: var(--success); }
+.timeline-year {
+    display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+    font-weight: 700; font-size: 0.8rem; padding: 0.15rem 0.6rem;
+    border-radius: 20px; margin-bottom: 0.3rem;
+}
+.timeline-item.winter .timeline-year { background: #fee2e2; color: #991b1b; }
+.timeline-item.boom .timeline-year { background: #d1fae5; color: #065f46; }
+.timeline-item h4 { font-size: 1rem; margin: 0.2rem 0 0.3rem; }
+.timeline-item p { font-size: 0.92rem; color: var(--text-secondary); margin: 0; }
+
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.5rem 0; }
+.compare-col { border-radius: var(--radius); padding: 1.3rem; border: 1px solid var(--border-color); }
+.compare-col.symbolic { background: #fff7ed; border-left: 4px solid #f59e0b; }
+.compare-col.subsymbolic { background: #eff6ff; border-left: 4px solid var(--primary); }
+.compare-col h4 { margin-bottom: 0.8rem; font-size: 1.05rem; }
+.compare-col ul { margin-left: 1.1rem; font-size: 0.92rem; }
+.compare-col li { margin-bottom: 0.5rem; }
+
+.lifecycle { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; margin: 1.5rem 0; }
+.lifecycle-step {
+    background: white; border: 1px solid var(--border-color); border-radius: var(--radius);
+    padding: 1rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative;
+}
+.lifecycle-step:hover, .lifecycle-step.active {
+    border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-2px);
+}
+.lifecycle-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; background: var(--primary);
+    color: white; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem;
+}
+.lifecycle-step h5 { font-size: 0.85rem; margin-bottom: 0.3rem; }
+.lifecycle-step p { font-size: 0.78rem; color: var(--text-secondary); margin: 0; }
+.lifecycle-detail {
+    background: var(--primary-light); border-radius: var(--radius);
+    padding: 1.2rem; margin-top: 1rem; font-size: 0.93rem; display: none;
+}
+.lifecycle-detail.active { display: block; animation: fadeIn 0.3s ease; }
+
+.sim-box {
+    background: white; border: 1px solid var(--border-color);
+    border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0;
+    box-shadow: var(--shadow-sm);
+}
+.sim-scenario {
+    background: var(--bg-light); border-radius: 8px; padding: 1rem;
+    margin-bottom: 1rem; font-size: 0.95rem; min-height: 72px;
+}
+.sim-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.sim-btn {
+    padding: 0.6rem 1.2rem; border-radius: 6px; border: 1.5px solid var(--primary);
+    background: white; color: var(--primary); font-weight: 500; cursor: pointer;
+    font-size: 0.9rem; transition: all 0.2s;
+}
+.sim-btn:hover { background: var(--primary); color: white; }
+.sim-feedback {
+    margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.92rem; display: none;
+}
+.sim-feedback.show { display: block; animation: fadeIn 0.3s ease; }
+.sim-feedback.ok { background: #d1fae5; border-left: 4px solid var(--success); }
+.sim-feedback.no { background: #fee2e2; border-left: 4px solid var(--error); }
+
+.norm-demo { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin: 1rem 0; }
+.norm-demo input {
+    flex: 1; min-width: 160px; padding: 0.6rem 0.9rem; border: 1px solid var(--border-color);
+    border-radius: 6px; font-size: 0.92rem;
+}
+.norm-output {
+    background: var(--bg-light); padding: 0.6rem 1rem; border-radius: 6px;
+    font-family: 'Courier New', monospace; font-size: 0.9rem; color: var(--primary-dark);
+    font-weight: 600;
+}
+
+.score-bar {
+    position: sticky; top: 62px; z-index: 900;
+    background: white; border: 1px solid var(--border-color); border-radius: var(--radius);
+    padding: 0.8rem 1.2rem; margin-bottom: 1.5rem; display: flex;
+    justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm);
+}
+.score-bar span { font-size: 0.9rem; color: var(--text-secondary); }
+.score-bar strong { color: var(--primary); font-size: 1.1rem; }
+
+@media (max-width: 860px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .lifecycle { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+    .lifecycle { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body class="tema-page">
-    <!-- HEADER -->
-    <header class="header">
-        <div class="header-container">
-            <div class="logo-area">
-                <span class="logo-icon">🧠</span>
-                <h1>Metodologías de IA</h1>
-            </div>
-            <a href="../index.html" class="back-link">← Inicio</a>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-container">
+        <div class="logo-area">
+            <span class="logo-icon">🧠</span>
+            <h1>Metodologías de IA</h1>
         </div>
-    </header>
-    
-    <div class="main-wrapper">
-        <!-- MENÚ IZQUIERDO -->
-        <aside class="sidebar-left">
-            <nav class="unit-nav">
-                <div class="nav-header">
-                    <h3>[UNIDAD X - TÍTULO]</h3>
-                </div>
-                <ul class="nav-list">
-                    <li><a href="#resumen" class="nav-link active">📌 Resumen</a></li>
-                    <li><a href="#fundamentos" class="nav-link">📖 Fundamentos</a></li>
-                    <li><a href="#ejemplos" class="nav-link">💡 Ejemplos</a></li>
-                    <li><a href="#casos" class="nav-link">💼 Casos</a></li>
-                    <li><a href="#test" class="nav-link">🎯 Test</a></li>
-                    <li><a href="#glosario" class="nav-link">📑 Glosario</a></li>
-                </ul>
-            </nav>
-        </aside>
-        
-        <!-- CONTENIDO PRINCIPAL -->
-        <main class="content-main">
-            <!-- RESUMEN EJECUTIVO -->
-            <section id="resumen" class="content-section">
-                <h1>[TÍTULO UNIDAD]</h1>
-                <div class="executive-summary">
-                    <h2>📌 Resumen Ejecutivo</h2>
-                    <p>Contenido del resumen...</p>
-                </div>
-            </section>
-            
-            <!-- FUNDAMENTOS -->
-            <section id="fundamentos" class="content-section">
-                <h2>📖 Fundamentos Teóricos</h2>
-                <p>Contenido teórico...</p>
-            </section>
-            
-            <!-- EJEMPLOS -->
-            <section id="ejemplos" class="content-section">
-                <h2>💡 Ejemplos Prácticos</h2>
-                <p>Contenido práctico...</p>
-            </section>
-            
-            <!-- CASOS -->
-            <section id="casos" class="content-section">
-                <h2>💼 Casos Prácticos</h2>
-                <!-- card de casos aquí -->
-            </section>
-            
-            <!-- TEST -->
-            <section id="test" class="content-section">
-                <h2>🎯 Test de Autoevaluación</h2>
-                <!-- preguntas test -->
-            </section>
-            
-            <!-- GLOSARIO -->
-            <section id="glosario" class="content-section">
-                <h2>📑 Glosario</h2>
-                <input type="text" id="localSearch" class="search-input" placeholder="🔍 Buscar término...">
-                <div id="glossaryResults"></div>
-            </section>
-        </main>
+        <a href="../index.html" class="back-link">← Inicio</a>
     </div>
-    
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2026 - Metodologías de IA | Universitas Europaea</p>
-            <a href="#" class="back-to-top">↑ Volver arriba</a>
+</header>
+
+<div class="main-wrapper">
+
+    <!-- MENÚ IZQUIERDO -->
+    <aside class="sidebar-left">
+        <nav class="unit-nav">
+            <div class="nav-header">
+                <h3>Unidad 1 · Los Cimientos de la IA</h3>
+            </div>
+            <ul class="nav-list">
+                <li><a href="#resumen" class="nav-link active">📌 Resumen</a></li>
+                <li><a href="#fundamentos" class="nav-link">📖 Fundamentos</a></li>
+                <li><a href="#ejemplos" class="nav-link">💡 Ejemplos y simuladores</a></li>
+                <li><a href="#casos" class="nav-link">💼 Casos prácticos</a></li>
+                <li><a href="#test" class="nav-link">🎯 Test (20 preguntas)</a></li>
+                <li><a href="#glosario" class="nav-link">📑 Glosario</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="content-main">
+
+    <!-- ================= RESUMEN ================= -->
+    <section id="resumen" class="content-section">
+        <h1>Unidad 1 · Los Cimientos de la IA</h1>
+
+        <div class="executive-summary">
+            <h2>📌 Resumen Ejecutivo</h2>
+            <p>La IA no nació con ChatGPT. Lo que percibimos como un «momento iPhone» es en realidad la culminación de <strong>siete décadas</strong> de avances incrementales, frustraciones y descubrimientos fortuitos. Esta unidad desmonta el «hype» y construye la base conceptual sobre la que se apoyan las once unidades siguientes.</p>
+
+            <p><strong>Las cinco ideas que hay que dominar:</strong></p>
+            <ol style="margin-left:1.3rem;">
+                <li><strong>Hay dos escuelas enfrentadas:</strong> la <em>IA Simbólica</em> (reglas escritas por humanos, transparente pero frágil) y la <em>IA Subsimbólica</em> (aprende de datos, potente pero opaca).</li>
+                <li><strong>La historia es cíclica:</strong> euforia → promesas incumplidas → <em>Invierno de la IA</em> → nuevo resurgimiento. Ya han ocurrido al menos dos.</li>
+                <li><strong>2012 fue la tormenta perfecta:</strong> GPUs + Big Data + Deep Learning (AlexNet) confluyeron y cambiaron todo.</li>
+                <li><strong>El dato es el petróleo:</strong> sin un ciclo de vida riguroso (estrategia → limpieza → almacenamiento → modelado) no hay IA posible. El 80% del esfuerzo está en la limpieza.</li>
+                <li><strong>La gobernanza ya no es opcional:</strong> calidad, linaje, seguridad y auditorías de sesgo son responsabilidad de la dirección, no del departamento técnico.</li>
+            </ol>
+
+            <div class="info-box" style="margin-top:1.2rem;">
+                <strong>Idea fuerza para el directivo:</strong> entender los cimientos no es aprender a programar, es desarrollar <em>pensamiento crítico</em>. Sin él se sobreestima la IA (creer que «piensa») o se subestima (verla como un juguete para redactar correos).
+            </div>
         </div>
-    </footer>
-    
-    <script src="../js/main.js"></script>
-    <script src="../js/search.js"></script>
+    </section>
+
+    <!-- ================= FUNDAMENTOS ================= -->
+    <section id="fundamentos" class="content-section">
+        <h2>📖 Fundamentos Teóricos</h2>
+
+        <!-- 1. INTRODUCCIÓN -->
+        <h3>1. Más allá del «hype» de la IA generativa</h3>
+        <p>El lanzamiento de ChatGPT a finales de 2022 creó la percepción pública de que la IA es una tecnología nueva, casi mágica, surgida espontáneamente de la nada. Nada más lejos de la realidad: la IA actual es el resultado de investigación académica persistente, de avances matemáticos profundos en estadística y probabilidad, de fracasos estrepitosos que casi aniquilaron la disciplina y, sobre todo, de un <strong>cambio paradigmático en la arquitectura de la computación</strong>: hemos pasado de intentar <em>programar</em> el conocimiento a permitir que las máquinas lo <em>extraigan</em> por sí solas.</p>
+
+        <!-- 2. HISTORIA -->
+        <h3>2. Historia y evolución: del Test de Turing al renacimiento moderno</h3>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-year">1950</span>
+                <h4>El nacimiento de un sueño</h4>
+                <p>Alan Turing publica <em>«Computing Machinery and Intelligence»</em> y plantea la pregunta revolucionaria: <strong>«¿Pueden las máquinas pensar?»</strong>. Como definir «pensar» era un terreno pantanoso, propone un enfoque conductual: el <strong>Test de Turing</strong>. Si una máquina engaña a un evaluador humano haciéndole creer que habla con otra persona, debemos tratarla como inteligente.</p>
+            </div>
+
+            <div class="timeline-item boom">
+                <span class="timeline-year">1956</span>
+                <h4>Conferencia de Dartmouth</h4>
+                <p>Se acuña el término «Inteligencia Artificial». McCarthy, Minsky, Shannon y Rochester parten de una premisa asombrosa: <em>cualquier aspecto del aprendizaje o de la inteligencia humana puede describirse con tal precisión que se puede construir una máquina para simularlo</em>. Creían que resolver la visión artificial o el lenguaje natural era un proyecto de un solo verano.</p>
+            </div>
+
+            <div class="timeline-item boom">
+                <span class="timeline-year">1960-70</span>
+                <h4>Primera época dorada</h4>
+                <p>Aparecen <strong>ELIZA</strong> (el primer chatbot, que simulaba ser psicoterapeuta) y robots como <strong>Shakey</strong>, capaz de navegar por habitaciones. El gobierno de EE. UU. invierte millones convencido de que la traducción automática del ruso se resolvería en meses.</p>
+            </div>
+
+            <div class="timeline-item winter">
+                <span class="timeline-year">mediados 70</span>
+                <h4>Primer Invierno de la IA</h4>
+                <p>La realidad tecnológica fue cruel: los ordenadores de entonces tenían menos potencia que una calculadora de bolsillo actual. Las promesas no se cumplieron, <strong>la financiación desapareció y la investigación se volvió tabú</strong>.</p>
+            </div>
+
+            <div class="timeline-item boom">
+                <span class="timeline-year">años 80</span>
+                <h4>Sistemas Expertos</h4>
+                <p>Breve resurgimiento comercial: software que codificaba el conocimiento de expertos humanos en miles de reglas <strong>«Si-Entonces»</strong>. Éxito inicial, pero eran sistemas <em>frágiles</em>: no aprendían de la experiencia, eran carísimos de mantener y fallaban ante cualquier cambio mínimo del entorno.</p>
+            </div>
+
+            <div class="timeline-item winter">
+                <span class="timeline-year">finales 80</span>
+                <h4>Segundo Invierno de la IA</h4>
+                <p>La disciplina vuelve a ser vista como un fracaso comercial y académico. Durante estos años, investigadores como <strong>Geoffrey Hinton</strong> persistieron en el estudio de las redes neuronales cuando nadie financiaba la línea.</p>
+            </div>
+
+            <div class="timeline-item boom">
+                <span class="timeline-year">2012</span>
+                <h4>La Tormenta Perfecta</h4>
+                <p>Convergen tres vectores que nadie había coordinado. Es el punto de inflexión del renacimiento actual.</p>
+            </div>
+
+            <div class="timeline-item boom">
+                <span class="timeline-year">2022</span>
+                <h4>ChatGPT y la percepción masiva</h4>
+                <p>La IA deja de ser una curiosidad de laboratorio y pasa a ser una <strong>infraestructura invisible</strong> que decide qué anuncios vemos, cómo conducen nuestros coches y qué películas nos recomienda Netflix.</p>
+            </div>
+        </div>
+
+        <h4 style="margin-top:2rem;">La Tormenta Perfecta de 2012 (tres vectores)</h4>
+        <table>
+            <thead>
+                <tr><th>Vector</th><th>Qué aportó</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Algoritmos de Deep Learning</strong></td>
+                    <td>Investigadores como Geoffrey Hinton persistieron durante los inviernos. En 2012, el modelo <strong>AlexNet</strong> demostró una superioridad aplastante en reconocimiento de imágenes, probando que las redes neuronales eran el camino correcto.</td>
+                </tr>
+                <tr>
+                    <td><strong>Poder de cómputo (era de las GPUs)</strong></td>
+                    <td>Las tarjetas gráficas diseñadas para videojuegos resultaron <em>órdenes de magnitud</em> más eficientes que las CPUs para las billones de multiplicaciones de matrices que requiere la IA.</td>
+                </tr>
+                <tr>
+                    <td><strong>Big Data y digitalización</strong></td>
+                    <td>Redes sociales y smartphones crearon un almacén de datos infinito: por primera vez había millones de fotos etiquetadas y textos digitalizados para entrenar máquinas.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 3. SIMBÓLICA VS SUBSIMBÓLICA -->
+        <h3>3. IA Simbólica vs. IA Subsimbólica: el cambio de paradigma</h3>
+        <p>Existen dos escuelas de pensamiento radicalmente distintas. Comprender sus fortalezas y debilidades es la clave para diagnosticar cualquier proyecto de IA que se te presente.</p>
+
+        <div class="compare-grid">
+            <div class="compare-col symbolic">
+                <h4>⚙️ IA Simbólica («de arriba hacia abajo»)</h4>
+                <p style="font-size:0.9rem;">La IA tradicional. Parte de la creencia de que la inteligencia consiste en <strong>manipular símbolos lógicos siguiendo reglas estrictas</strong>. Es como un libro de cocina gigante: si sigues los pasos exactamente, obtienes el resultado.</p>
+                <ul>
+                    <li><strong>Funcionamiento:</strong> lógica formal. Un humano escribe cada regla. <em>«Si la nómina es &gt; 2000 € Y no hay deudas previas, ENTONCES aprobar crédito».</em></li>
+                    <li><strong>Fortaleza:</strong> totalmente transparente (explicable). Sabemos exactamente por qué se tomó la decisión porque podemos leer la regla.</li>
+                    <li><strong>Debilidad:</strong> el mundo real es ambiguo. ¿Cómo escribes una regla para «reconocer una cara»? Si la persona está de perfil o lleva gafas, la regla se rompe.</li>
+                </ul>
+            </div>
+
+            <div class="compare-col subsymbolic">
+                <h4>🧠 IA Subsimbólica («de abajo hacia arriba»)</h4>
+                <p style="font-size:0.9rem;">La base del Machine Learning actual. No le damos reglas a la máquina: <strong>le damos datos</strong>. En lugar de programar la inteligencia, permitimos que emerja de los datos.</p>
+                <ul>
+                    <li><strong>Funcionamiento:</strong> se inspira vagamente en el cerebro (redes neuronales). En vez de definir un gato por reglas, le mostramos 10 millones de fotos de gatos y la red ajusta sus conexiones hasta «aprender» los rasgos estadísticos.</li>
+                    <li><strong>Fortaleza:</strong> maneja la complejidad y la incertidumbre de forma brillante. Reconoce voces, caras y traduce idiomas con precisión casi humana.</li>
+                    <li><strong>Debilidad (Caja Negra):</strong> a menudo no sabemos cómo tomó la decisión. Puede acertar estadísticamente y ser incapaz de explicar qué variable fue determinante.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 4. CICLO DE VIDA DEL DATO -->
+        <h3>4. El ciclo de vida del dato: del caos al valor</h3>
+        <p>En la economía de la IA los datos no son información guardada: son el <strong>material de entrenamiento</strong>. Pero los datos en bruto suelen ser desastrosos. Haz clic en cada fase para ver el detalle.</p>
+
+        <div class="lifecycle">
+            <div class="lifecycle-step active" data-step="1">
+                <div class="lifecycle-num">1</div>
+                <h5>Estrategia e ingesta</h5>
+                <p>Definir el problema</p>
+            </div>
+            <div class="lifecycle-step" data-step="2">
+                <div class="lifecycle-num">2</div>
+                <h5>Limpieza y curación</h5>
+                <p>El «wrangling»</p>
+            </div>
+            <div class="lifecycle-step" data-step="3">
+                <div class="lifecycle-num">3</div>
+                <h5>Almacenamiento</h5>
+                <p>Catalogación</p>
+            </div>
+            <div class="lifecycle-step" data-step="4">
+                <div class="lifecycle-num">4</div>
+                <h5>Modelado y despliegue</h5>
+                <p>Producción</p>
+            </div>
+        </div>
+
+        <div class="lifecycle-detail active" data-detail="1">
+            <strong>Estrategia y recolección (ingesta).</strong> Todo empieza con una pregunta de negocio: ¿qué problema queremos resolver? Después buscamos los datos: transacciones en tiempo real, logs de servidores, sensores IoT o datos comprados a terceros. <em>El reto aquí es la integridad</em>: si la fuente está sesgada (por ejemplo, solo recoges datos de clientes jóvenes), la IA resultante será defectuosa.
+        </div>
+        <div class="lifecycle-detail" data-detail="2">
+            <strong>Limpieza y curación (wrangling).</strong> El paso menos glamuroso y el más crítico. Los datos reales están llenos de errores: usuarios que mienten en su edad, fechas en formatos incompatibles, duplicados, campos vacíos. <strong>Un científico de datos dedica el 80 % de su tiempo a limpiar</strong> antes de poder entrenar cualquier modelo.<br><br>
+            <em>Normalización:</em> que «€», «EUR» y «Euros» se conviertan en un solo estándar.<br>
+            <em>Detección de outliers:</em> identificar errores técnicos, como un sensor de temperatura marcando 500 grados.
+        </div>
+        <div class="lifecycle-detail" data-detail="3">
+            <strong>Almacenamiento y catalogación.</strong> ¿Cómo guardamos petabytes de información?<br><br>
+            <em>Data Warehouse:</em> ideal para datos estructurados (tablas) que alimentan informes financieros.<br>
+            <em>Data Lake:</em> cubos de almacenamiento masivo donde guardamos todo (audios, imágenes, PDFs) en su estado natural hasta que sepamos cómo usarlo.<br>
+            <em>Catálogo de datos:</em> sin un índice, el Data Lake se convierte en un <strong>«Data Swamp»</strong> (pantano de datos) donde nadie encuentra nada.
+        </div>
+        <div class="lifecycle-detail" data-detail="4">
+            <strong>Modelado, evaluación y despliegue.</strong> Aquí la IA entra en acción: se entrena el modelo, se prueba con datos que nunca ha visto para ver si acierta y, finalmente, se pone en producción para que tome decisiones en tiempo real (por ejemplo, detectar fraudes con tarjetas en milisegundos).
+        </div>
+
+        <!-- 5. TIPOS DE DATOS -->
+        <h3>5. Tipos de datos en la empresa: el valor oculto</h3>
+        <p>La mayoría de las empresas solo aprovechan una pequeña fracción de su información. Para un directivo, entender qué tipos de datos posee es el primer paso para innovar.</p>
+
+        <table>
+            <thead>
+                <tr><th></th><th>Datos Estructurados</th><th>Datos No Estructurados</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Definición</strong></td>
+                    <td>Organizados en filas y columnas (SQL, Excel)</td>
+                    <td>Texto de chats, audios de llamadas, grabaciones de seguridad, contratos PDF, comentarios en redes</td>
+                </tr>
+                <tr>
+                    <td><strong>Volumen</strong></td>
+                    <td>La punta del iceberg (~20 %)</td>
+                    <td>El océano de oportunidades (~80 %)</td>
+                </tr>
+                <tr>
+                    <td><strong>Valor</strong></td>
+                    <td>Fáciles de procesar; base del Business Intelligence durante décadas. Cuentan una historia incompleta: <em>qué</em> compró el cliente, no <em>por qué</em>.</td>
+                    <td>La IA moderna (NLP y Computer Vision) permite por primera vez extraer valor. Una IA puede leer 10.000 contratos en 5 minutos y encontrar una cláusula de riesgo específica, algo que a un equipo de abogados le llevaría meses.</td>
+                </tr>
+                <tr>
+                    <td><strong>Impacto económico</strong></td>
+                    <td>Reportes históricos fiables</td>
+                    <td>Las empresas que estructuran sus datos no estructurados descubren patrones de comportamiento que su competencia ni siquiera sabe que existen.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="chart-container">
+            <div id="chartDatos"></div>
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin:0.5rem 0 0;">Proporción indicada en el material oficial de la Unidad 1.</p>
+        </div>
+
+        <!-- 6. INFRAESTRUCTURA -->
+        <h3>6. Infraestructura y Cloud: la fábrica de inteligencia</h3>
+        <p>La IA no «vive» en el aire: necesita infraestructura física masiva. Entrenar un modelo de lenguaje moderno consume tanta energía como una pequeña ciudad.</p>
+
+        <h4>6.1 La Nube (Cloud Computing): AWS, Azure y Google</h4>
+        <p>Hoy casi ninguna empresa compra servidores propios para IA. Se alquila capacidad de cómputo a los gigantes.</p>
+        <table>
+            <thead><tr><th>Ventaja</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Elasticidad</strong></td>
+                    <td>Si necesito entrenar un modelo complejo, alquilo 500 GPUs potentes durante tres días y luego las devuelvo. <strong>Solo pago por el uso</strong>.</td>
+                </tr>
+                <tr>
+                    <td><strong>SaaS (Software as a Service)</strong></td>
+                    <td>Muchos servicios de IA ya están listos para usar en la nube (reconocimiento facial de Azure, traducción de Google), lo que permite integrar IA sin tener expertos matemáticos en plantilla.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>6.2 El Borde (Edge Computing): velocidad y privacidad</h4>
+        <p>A veces llevar el dato a la nube es demasiado lento o arriesgado.</p>
+        <table>
+            <thead><tr><th>Motivo</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Latencia</strong></td>
+                    <td>Un robot quirúrgico o un coche autónomo no pueden esperar 200 ms a que la nube responda. La IA debe estar en el dispositivo.</td>
+                </tr>
+                <tr>
+                    <td><strong>Privacidad</strong></td>
+                    <td>Un altavoz inteligente que procesa tu voz localmente es mucho más seguro que uno que envía cada palabra a un servidor externo.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 7. GOBERNANZA -->
+        <h3>7. Gobernanza de datos: calidad, ética y riesgo</h3>
+        <p>A medida que delegamos decisiones en algoritmos, la gobernanza de datos pasa de ser una tarea técnica a ser una <strong>prioridad de la junta directiva</strong>.</p>
+
+        <h4>7.1 El Chief Data Officer (CDO) y su misión</h4>
+        <p>El CDO no es un informático: es un <strong>estratega</strong>. Su labor es asegurar que el dato sea un activo y no una responsabilidad legal.</p>
+        <table>
+            <thead><tr><th>Pilar</th><th>Misión</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Calidad del dato</strong></td><td>Si los datos son erróneos, las decisiones de la IA serán desastrosas.</td></tr>
+                <tr><td><strong>Linaje del dato</strong></td><td>Saber de dónde viene cada dato para poder explicar una decisión si un regulador nos audita.</td></tr>
+                <tr><td><strong>Seguridad y privacidad</strong></td><td>Asegurar que los datos personales de los clientes se manejen bajo el RGPD y otras leyes internacionales.</td></tr>
+            </tbody>
+        </table>
+
+        <h4>7.2 La ética del dato</h4>
+        <div class="warning-box info-box">
+            La IA es un espejo de la sociedad. Si la alimentamos con datos históricos que contienen sesgos (por ejemplo, discriminación histórica en la concesión de créditos), <strong>la IA aprenderá y automatizará ese sesgo</strong>. La gobernanza moderna exige <em>Auditorías de Sesgo</em> para asegurar que nuestros algoritmos no solo sean precisos, sino también <strong>justos y equitativos</strong>.
+        </div>
+    </section>
+
+    <!-- ================= EJEMPLOS ================= -->
+    <section id="ejemplos" class="content-section">
+        <h2>💡 Ejemplos Prácticos y Simuladores</h2>
+
+        <h3>Ejemplo 1 · El ascensor: por qué no es IA</h3>
+        <p>Un ascensor toma decisiones (cerrar la puerta, subir al piso 4, abrir), pero lo hace con <strong>reglas fijas escritas por un humano</strong>. No aprende nada. Por tanto <em>no es IA</em>, es software tradicional.</p>
+        <p><strong>La pregunta de prueba ante cualquier proveedor:</strong></p>
+        <div class="info-box">
+            «Explícame cómo ha aprendido este algoritmo a tomar decisiones.»<br><br>
+            → Si responde «analizó miles o millones de documentos, imágenes o vídeos por sí mismo»: <strong>es IA</strong>.<br>
+            → Si no incluye aprendizaje autónomo sobre datos voluminosos: probablemente es <strong>software de reglas disfrazado</strong>.
+        </div>
+
+        <h3>Ejemplo 2 · Simulador: ¿es IA o software de reglas?</h3>
+        <p>Lee cada escenario y decide. Recibirás retroalimentación inmediata.</p>
+
+        <div class="sim-box">
+            <div class="sim-scenario" id="simScenario">Pulsa «Empezar» para cargar el primer escenario.</div>
+            <div class="sim-buttons">
+                <button class="sim-btn" onclick="simStart()">▶ Empezar</button>
+                <button class="sim-btn" onclick="simAnswer('ia')">🤖 Es IA</button>
+                <button class="sim-btn" onclick="simAnswer('reglas')">📋 Son reglas fijas</button>
+            </div>
+            <div class="sim-feedback" id="simFeedback"></div>
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:1rem;">Escenario <strong id="simCounter">0</strong> de <strong id="simTotal">0</strong></p>
+        </div>
+
+        <h3>Ejemplo 3 · Simulador de normalización de datos</h3>
+        <p>La normalización convierte distintas formas de escribir lo mismo en un único estándar. Escribe un valor y observa el resultado.</p>
+        <div class="sim-box">
+            <div class="norm-demo">
+                <input type="text" id="normInput" placeholder="Ej: 12/03/2026, EUR, 1500 Euros,  Madrid " oninput="normUpdate()">
+                <span style="color:var(--text-secondary);">→</span>
+                <div class="norm-output" id="normOutput">—</div>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-secondary);">Prueba con: <code>12/03/2026</code>, <code>03-12-2026</code>, <code>EUR</code>, <code>Euros</code>, <code>€</code>, <code>1500,00 €</code>, <code>Madrid </code></p>
+        </div>
+
+        <h3>Ejemplo 4 · El dilema del científico de datos</h3>
+        <p>Si un proyecto de IA se retrasa, la causa más probable no es el algoritmo. Es esto:</p>
+        <table>
+            <thead><tr><th>Fase</th><th>Tiempo típico</th><th>Qué ocurre</th></tr></thead>
+            <tbody>
+                <tr><td>Recolección de datos</td><td>~5 %</td><td>Conectar fuentes, exportar</td></tr>
+                <tr><td><strong>Limpieza y curación</strong></td><td><strong>~80 %</strong></td><td>Duplicados, formatos incompatibles, valores ausentes, outliers</td></tr>
+                <tr><td>Entrenamiento del modelo</td><td>~10 %</td><td>Probar algoritmos, ajustar parámetros</td></tr>
+                <tr><td>Evaluación y despliegue</td><td>~5 %</td><td>Validar y poner en producción</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- ================= CASOS ================= -->
+    <section id="casos" class="content-section">
+        <h2>💼 Casos Prácticos de la Asignatura</h2>
+
+        <!-- CASO 1 -->
+        <div class="case-card">
+            <div class="case-header">
+                <h3>Caso Práctico 1 · El dilema de la modernización (IA Simbólica vs. Subsimbólica)</h3>
+                <button class="solution-toggle">Ver Solución</button>
+            </div>
+
+            <p><strong>Escenario.</strong> Una entidad bancaria tradicional utiliza un sistema de «Sistemas Expertos» basado en reglas lógicas rígidas para la concesión de préstamos personales: <em>«Si la nómina es &gt; 2000 € Y no hay deudas previas, ENTONCES aprobar»</em>. El modelo es totalmente transparente y explicable para los reguladores, pero el banco está perdiendo cuota de mercado frente a las fintech. El sistema es «frágil» y no soporta la ambigüedad del mundo real: muchos clientes con ingresos variables (autónomos, nómadas digitales) son rechazados automáticamente a pesar de tener solvencia, porque el sistema no puede «aprender» patrones que no estén predefinidos. El Director de Operaciones debe proponer una transición hacia Machine Learning (IA Subsimbólica) <strong>sin comprometer la seguridad ni la capacidad de explicar las decisiones ante una auditoría</strong>.</p>
+
+            <div class="solution-content">
+                <h4>Diagnóstico</h4>
+                <table>
+                    <thead><tr><th>Dimensión</th><th>Situación actual</th><th>Requerimiento futuro</th></tr></thead>
+                    <tbody>
+                        <tr><td>Tipo de IA</td><td>Simbólica (reglas fijas)</td><td>Subsimbólica (ML)</td></tr>
+                        <tr><td>Flexibilidad</td><td>Rígida, no soporta ambigüedad</td><td>Adaptativa, aprende patrones</td></tr>
+                        <tr><td>Explicabilidad</td><td>Total (reglas legibles)</td><td>Caja negra → requiere XAI</td></tr>
+                        <tr><td>Precisión comercial</td><td>Baja (rechaza clientes solventes)</td><td>Alta (detecta patrones ocultos)</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Arquitectura de la solución</h4>
+                <ol style="margin-left:1.3rem;">
+                    <li><strong>Abandonar la IA simbólica rígida</strong> como motor único de decisión, manteniéndola como capa de validación de casos extremos.</li>
+                    <li><strong>Entrenar un modelo de ML</strong> con el histórico masivo de solicitudes aprobadas y denegadas, incorporando variables alternativas (flujo de caja de autónomos, estacionalidad de ingresos, comportamiento transaccional).</li>
+                    <li><strong>Integrar una capa de explicabilidad (XAI)</strong> sobre el modelo: valores de Shapley, LIME y simulaciones contrafactuales («¿qué habría pasado si…?») que produzcan un mapa de calor de las variables determinantes en cada denegación.</li>
+                    <li><strong>Gobernanza del CDO:</strong> informe trazable para el regulador con la justificación de cada decisión, linaje del dato documentado y auditoría externa periódica.</li>
+                    <li><strong>Human-in-the-loop</strong> para perfiles límite y para la validación de las denegaciones antes de comunicarlas.</li>
+                </ol>
+
+                <h4>Beneficios esperados</h4>
+                <ul style="margin-left:1.3rem;">
+                    <li>Recuperación de cuota de mercado: se admiten perfiles solventes antes rechazados.</li>
+                    <li>Cumplimiento normativo demostrable mediante XAI y linaje del dato.</li>
+                    <li>Mayor precisión crediticia sin renunciar a la transparencia exigida por el regulador.</li>
+                </ul>
+
+                <div class="info-box success-box">
+                    <strong>Clave del caso:</strong> no se trata de elegir entre «potente» o «explicable». La respuesta correcta combina <em>modelo subsimbólico</em> + <em>capa de explicabilidad</em> + <em>gobernanza</em>.
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 2 -->
+        <div class="case-card">
+            <div class="case-header">
+                <h3>Caso Práctico 2 · El desafío del «Data Swamp» en el sector retail</h3>
+                <button class="solution-toggle">Ver Solución</button>
+            </div>
+
+            <p><strong>Escenario.</strong> Una multinacional de moda rápida ha acumulado petabytes de información durante la última década. Posee datos estructurados (precios, fechas de facturación) en sus Data Warehouses, pero también una cantidad masiva de datos no estructurados: audios de atención al cliente, fotos de redes sociales donde se etiqueta a la marca y contratos de proveedores en PDF. Estos últimos se almacenan en un Data Lake <strong>sin un índice claro</strong>, lo que ha convertido su infraestructura en un «Data Swamp» donde es imposible encontrar información útil. La dirección sospecha que está perdiendo una ventaja competitiva enorme al no entender el <em>«por qué»</em> de las compras. Se requiere un plan para transformar este caos en valor real de negocio utilizando el ciclo de vida del dato.</p>
+
+            <div class="solution-content">
+                <h4>Diagnóstico</h4>
+                <table>
+                    <thead><tr><th>Dimensión</th><th>Situación actual</th><th>Requerimiento futuro</th></tr></thead>
+                    <tbody>
+                        <tr><td>Infraestructura</td><td>Data Lake sin índice → Data Swamp</td><td>Catálogo estructurado con metadatos</td></tr>
+                        <tr><td>Información</td><td>Fragmentada e inaccesible</td><td>Unificada y procesable</td></tr>
+                        <tr><td>Capacidad analítica</td><td>Numérica (qué / cuánto)</td><td>Explicativa (por qué)</td></tr>
+                        <tr><td>Valor competitivo</td><td>Perdido</td><td>Extraído y explotado</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Plan de acción (ciclo de vida del dato)</h4>
+                <ol style="margin-left:1.3rem;">
+                    <li><strong>Catalogación exhaustiva.</strong> Mapear el caos inicial y crear <em>metadatos</em> para cada archivo: en audios (canal, fecha, región), en fotos de Instagram (plataforma, zona geográfica, fecha), en contratos PDF (proveedor, fecha, categoría). Sin catálogo no hay rescate posible.</li>
+                    <li><strong>Extracción de valor con IA especializada.</strong>
+                        <ul style="margin-left:1.2rem;">
+                            <li><em>NLP sobre textos y audios:</em> analizar miles de quejas, extraer sentimiento y detectar que la frustración no viene del diseño del producto sino del <strong>proceso de devolución</strong>.</li>
+                            <li><em>Computer Vision sobre imágenes:</em> escanear millones de fotos de clientes y detectar un patrón emergente (por ejemplo, adolescentes de Berlín con un modelo concreto de zapatillas) → <strong>nueva tendencia identificada antes que la competencia</strong>.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Integración estratégica.</strong> Cruzar los datos estructurados (ventas, precios) con los insights no estructurados extraídos, alimentando un Data Warehouse unificado que responda al «por qué» del comportamiento del cliente.</li>
+                    <li><strong>Gobernanza continua.</strong> Política de metadatos obligatoria para todo dato nuevo, control de calidad y linaje, para que el lago no vuelva a convertirse en pantano.</li>
+                </ol>
+
+                <h4>Resultados esperados</h4>
+                <ul style="margin-left:1.3rem;">
+                    <li>Identificación de la causa raíz de la insatisfacción (proceso, no producto).</li>
+                    <li>Detección temprana de tendencias emergentes.</li>
+                    <li>Conversión de un pasivo (pantano de datos) en un activo estratégico con ventaja competitiva sostenible.</li>
+                </ul>
+
+                <div class="info-box success-box">
+                    <strong>Clave del caso:</strong> el Data Lake no es el problema; la <em>falta de catálogo</em> lo es. La diferencia entre lago y pantano es exactamente una cosa: <strong>metadatos</strong>.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TEST ================= -->
+    <section id="test" class="content-section">
+        <h2>🎯 Test de Autoevaluación · Unidad 1</h2>
+        <p>20 preguntas de opción múltiple. Se considera superado con un <strong>80 % de aciertos o más</strong> (16/20).</p>
+
+        <div class="score-bar">
+            <span>Progreso del test</span>
+            <span><strong id="scoreCorrect">0</strong> aciertos · <strong id="scoreDone">0</strong>/20 respondidas</span>
+        </div>
+
+        <div id="quizContainer">
+
+        <!-- Q1 -->
+        <div class="quiz-question" data-answer="c">
+            <p>1. ¿Por qué la mayoría de las empresas optan por el Cloud Computing (AWS, Azure, Google) para la IA?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Porque es la única forma de evitar el problema de la latencia.</div>
+                <div class="quiz-option" data-value="b">B. Porque garantiza que los datos se procesen localmente en el dispositivo.</div>
+                <div class="quiz-option" data-value="c">C. Por la elasticidad de alquilar potencia y pagar solo por el uso realizado.</div>
+                <div class="quiz-option" data-value="d">D. Porque elimina la necesidad de tener cualquier estrategia de datos.</div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question" data-answer="c">
+            <p>2. ¿Qué percepción pública errónea se creó tras el lanzamiento de ChatGPT a finales de 2022?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Que la IA es una disciplina científica en constante metamorfosis.</div>
+                <div class="quiz-option" data-value="b">B. Que la IA es el resultado de siete décadas de avances incrementales.</div>
+                <div class="quiz-option" data-value="c">C. Que la IA es una tecnología nueva que surgió espontáneamente de la nada.</div>
+                <div class="quiz-option" data-value="d">D. Que la IA requiere un cambio paradigmático en la arquitectura de computación.</div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question" data-answer="c">
+            <p>3. ¿Cuál de estos factores NO forma parte de la «Tormenta Perfecta» que provocó el resurgimiento de la IA en 2012?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. La eficiencia de las GPUs para realizar multiplicaciones de matrices.</div>
+                <div class="quiz-option" data-value="b">B. La disponibilidad masiva de datos gracias a los smartphones.</div>
+                <div class="quiz-option" data-value="c">C. La invención del primer chatbot de psicoterapia llamado ELIZA.</div>
+                <div class="quiz-option" data-value="d">D. El éxito del modelo AlexNet en el reconocimiento de imágenes.</div>
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-question" data-answer="a">
+            <p>4. En el ciclo de vida del dato, ¿en qué consiste la «Normalización» durante la fase de limpieza?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. En asegurar que diferentes formas de escribir un dato se conviertan en un solo estándar.</div>
+                <div class="quiz-option" data-value="b">B. En eliminar todos los datos que provengan de clientes jóvenes o específicos.</div>
+                <div class="quiz-option" data-value="c">C. En identificar errores técnicos como sensores con temperaturas imposibles.</div>
+                <div class="quiz-option" data-value="d">D. En guardar audios e imágenes en su estado natural en un Data Lake.</div>
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-question" data-answer="c">
+            <p>5. ¿Cuál es el principal motivo para utilizar Edge Computing (IA en el dispositivo)?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. El ahorro en costes de almacenamiento de grandes Data Lakes.</div>
+                <div class="quiz-option" data-value="b">B. La facilidad para realizar auditorías de sesgo en modelos masivos.</div>
+                <div class="quiz-option" data-value="c">C. Evitar latencias críticas en sistemas como robots quirúrgicos o coches autónomos.</div>
+                <div class="quiz-option" data-value="d">D. La posibilidad de usar software como servicio (SaaS) en la nube.</div>
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-question" data-answer="a">
+            <p>6. ¿Qué permite la IA moderna (NLP y Computer Vision) con respecto a los datos no estructurados?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Extraer valor de documentos, audios y vídeos que antes eran imposibles de analizar.</div>
+                <div class="quiz-option" data-value="b">B. Reducir la necesidad de cumplir con el RGPD y leyes de privacidad.</div>
+                <div class="quiz-option" data-value="c">C. Eliminar el uso de GPUs en sus procesos de entrenamiento.</div>
+                <div class="quiz-option" data-value="d">D. Sustituir por completo la necesidad de tener una junta directiva.</div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="quiz-question" data-answer="c">
+            <p>7. ¿Qué cambio fundamental ha ocurrido en la forma en que las máquinas adquieren conocimiento hoy en día?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Se ha perfeccionado la programación manual de reglas lógicas.</div>
+                <div class="quiz-option" data-value="b">B. Se ha abandonado la estadística en favor de la programación rígida.</div>
+                <div class="quiz-option" data-value="c">C. Se ha pasado de programar el conocimiento a permitir que las máquinas lo extraigan.</div>
+                <div class="quiz-option" data-value="d">D. Se ha eliminado la necesidad de utilizar microchips modernos.</div>
+            </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="quiz-question" data-answer="c">
+            <p>8. ¿Qué premisa defendían los fundadores de la IA en la Conferencia de Dartmouth en 1956?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Que la IA tardaría más de un siglo en simular la inteligencia humana.</div>
+                <div class="quiz-option" data-value="b">B. Que el test de Turing era la única forma de medir la inteligencia.</div>
+                <div class="quiz-option" data-value="c">C. Que cualquier aspecto del aprendizaje humano podía describirse para ser simulado por una máquina.</div>
+                <div class="quiz-option" data-value="d">D. Que la traducción del ruso era un problema imposible de resolver.</div>
+            </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="quiz-question" data-answer="c">
+            <p>9. ¿Qué medida exige la gobernanza moderna para asegurar que los algoritmos sean justos?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Aumentar la cantidad de datos no estructurados en el Data Lake.</div>
+                <div class="quiz-option" data-value="b">B. Eliminar el linaje del dato para proteger la privacidad.</div>
+                <div class="quiz-option" data-value="c">C. Realizar Auditorías de Sesgo para evitar que la IA automatice discriminaciones.</div>
+                <div class="quiz-option" data-value="d">D. Pasar de un enfoque subsimbólico a uno exclusivamente simbólico.</div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="quiz-question" data-answer="a">
+            <p>10. ¿En qué se basa el funcionamiento de la IA Simbólica o «de arriba hacia abajo»?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. En la manipulación de símbolos lógicos siguiendo reglas estrictas escritas por humanos.</div>
+                <div class="quiz-option" data-value="b">B. En el entrenamiento con millones de fotos para detectar píxeles y texturas.</div>
+                <div class="quiz-option" data-value="c">C. En la emergencia de inteligencia a partir de grandes volúmenes de datos.</div>
+                <div class="quiz-option" data-value="d">D. En la imitación de las conexiones neuronales del cerebro humano.</div>
+            </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="quiz-question" data-answer="b">
+            <p>11. ¿Cuál es la diferencia principal entre un Data Warehouse y un Data Lake?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. El Lake solo admite tablas y el Warehouse admite audios y PDFs.</div>
+                <div class="quiz-option" data-value="b">B. El Warehouse es para datos estructurados y el Lake guarda todo en su estado natural.</div>
+                <div class="quiz-option" data-value="c">C. El Lake es un índice organizado y el Warehouse es un «pantano de datos».</div>
+                <div class="quiz-option" data-value="d">D. El Warehouse es para redes sociales y el Lake para informes financieros.</div>
+            </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="quiz-question" data-answer="b">
+            <p>12. ¿Cuál fue la pregunta revolucionaria planteada por Alan Turing en su ensayo de 1950?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. ¿Cómo se puede descifrar el código Enigma?</div>
+                <div class="quiz-option" data-value="b">B. ¿Pueden las máquinas pensar?</div>
+                <div class="quiz-option" data-value="c">C. ¿Es posible construir una red neuronal artificial?</div>
+                <div class="quiz-option" data-value="d">D. ¿Cuándo se alcanzará la visión artificial?</div>
+            </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="quiz-question" data-answer="c">
+            <p>13. ¿Cuál es la principal debilidad de la IA Simbólica frente al mundo real?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. La falta de transparencia en la toma de sus decisiones.</div>
+                <div class="quiz-option" data-value="b">B. Su incapacidad para explicar lógicamente por qué toma una ruta.</div>
+                <div class="quiz-option" data-value="c">C. Su dificultad para manejar la ambigüedad y situaciones donde las reglas se rompen.</div>
+                <div class="quiz-option" data-value="d">D. El altísimo consumo de energía de sus procesadores.</div>
+            </div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="quiz-question" data-answer="c">
+            <p>14. ¿Qué riesgo de integridad existe durante la fase de recolección o ingesta de datos?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. La falta de almacenamiento físico en los Data Warehouses.</div>
+                <div class="quiz-option" data-value="b">B. El exceso de normalización de las divisas y formatos.</div>
+                <div class="quiz-option" data-value="c">C. Que la fuente de datos esté sesgada, provocando una IA resultante defectuosa.</div>
+                <div class="quiz-option" data-value="d">D. Que el científico de datos pierda el 80 % de su tiempo limpiando.</div>
+            </div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="quiz-question" data-answer="b">
+            <p>15. ¿Cómo aprende un sistema de IA Subsimbólica a identificar a un gato?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Mediante una regla que define que un gato debe tener dos ojos circulares.</div>
+                <div class="quiz-option" data-value="b">B. Ajustando sus conexiones internas tras procesar millones de fotos de gatos.</div>
+                <div class="quiz-option" data-value="c">C. A través de un libro de cocina gigante con pasos lógicos exactos.</div>
+                <div class="quiz-option" data-value="d">D. Siguiendo las instrucciones de un experto humano en zoología.</div>
+            </div>
+        </div>
+
+        <!-- Q16 -->
+        <div class="quiz-question" data-answer="a">
+            <p>16. ¿Cuál es la labor principal de un Chief Data Officer (CDO) según el texto?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Asegurar que el dato sea un activo estratégico y no una responsabilidad legal.</div>
+                <div class="quiz-option" data-value="b">B. Programar manualmente los algoritmos de redes neuronales.</div>
+                <div class="quiz-option" data-value="c">C. Reparar los servidores físicos y las GPUs de la empresa.</div>
+                <div class="quiz-option" data-value="d">D. Escribir las reglas lógicas de los sistemas expertos antiguos.</div>
+            </div>
+        </div>
+
+        <!-- Q17 -->
+        <div class="quiz-question" data-answer="b">
+            <p>17. ¿Qué caracterizaba a los «Sistemas Expertos» desarrollados durante los años 80?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Su capacidad para aprender de la experiencia de forma autónoma.</div>
+                <div class="quiz-option" data-value="b">B. La codificación del conocimiento humano en miles de reglas del tipo «Si-Entonces».</div>
+                <div class="quiz-option" data-value="c">C. Su bajo coste de mantenimiento y gran flexibilidad ante cambios.</div>
+                <div class="quiz-option" data-value="d">D. El uso de redes neuronales para el reconocimiento de imágenes.</div>
+            </div>
+        </div>
+
+        <!-- Q18 -->
+        <div class="quiz-question" data-answer="b">
+            <p>18. ¿Qué se conoce como el «Problema de la Caja Negra» en la IA Subsimbólica?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. La imposibilidad de almacenar datos en la nube de forma segura.</div>
+                <div class="quiz-option" data-value="b">B. La incapacidad de explicar de forma lógica qué variable fue determinante en una decisión.</div>
+                <div class="quiz-option" data-value="c">C. El sesgo histórico que se introduce en la recolección de datos.</div>
+                <div class="quiz-option" data-value="d">D. La lentitud de procesamiento de los modelos de Deep Learning.</div>
+            </div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="quiz-question" data-answer="c">
+            <p>19. ¿Qué caracteriza a los Datos Estructurados en una empresa?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Representan el 80 % de la información total de la organización.</div>
+                <div class="quiz-option" data-value="b">B. Son archivos de audio y vídeo imposibles de analizar de forma automatizada.</div>
+                <div class="quiz-option" data-value="c">C. Son datos organizados que encajan perfectamente en filas y columnas.</div>
+                <div class="quiz-option" data-value="d">D. Explican detalladamente el «por qué» de las decisiones del cliente.</div>
+            </div>
+        </div>
+
+        <!-- Q20 -->
+        <div class="quiz-question" data-answer="c">
+            <p>20. ¿Qué nombre reciben los periodos donde la financiación desapareció y la investigación se volvió tabú?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Eras de la IA Simbólica.</div>
+                <div class="quiz-option" data-value="b">B. Ciclos de baja latencia.</div>
+                <div class="quiz-option" data-value="c">C. Inviernos de la IA.</div>
+                <div class="quiz-option" data-value="d">D. Etapas de introspección algorítmica.</div>
+            </div>
+        </div>
+
+        </div><!-- /#quizContainer -->
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.5rem;">
+            <button class="sim-btn" onclick="resetQuiz()">🔄 Reiniciar test</button>
+            <button class="sim-btn" onclick="revealAll()">👁️ Revelar todas las respuestas</button>
+        </div>
+
+        <div id="quizResult" class="info-box" style="display:none; margin-top:1.5rem;"></div>
+    </section>
+
+    <!-- ================= GLOSARIO ================= -->
+    <section id="glosario" class="content-section">
+        <h2>📑 Glosario · Unidad 1</h2>
+        <input type="text" id="localSearch" class="search-input" style="width:100%; max-width:420px; margin-bottom:1.3rem;" placeholder="🔍 Buscar término...">
+
+        <div id="glossaryList">
+            <div class="glossary-term">
+                <span class="term-name">Test de Turing</span>
+                <span class="term-def">Enfoque conductual propuesto por Alan Turing (1950) para medir la inteligencia: si una máquina engaña a un evaluador humano haciéndole creer que habla con otra persona, debe tratarse como inteligente.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Conferencia de Dartmouth (1956)</span>
+                <span class="term-def">Reunión donde se acuñó el término «Inteligencia Artificial». Sus participantes sostenían que cualquier aspecto del aprendizaje o la inteligencia humana podía describirse con precisión suficiente para ser simulado por una máquina.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">ELIZA</span>
+                <span class="term-def">Primer chatbot, creado en los años 60, que simulaba ser un psicoterapeuta. Pertenece a la primera época dorada de la IA simbólica.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Shakey</span>
+                <span class="term-def">Robot de los años 60-70 capaz de navegar por habitaciones de forma autónoma. Uno de los primeros hitos de la robótica.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Invierno de la IA</span>
+                <span class="term-def">Periodo en el que las expectativas no cumplidas provocan la desaparición de la financiación y la investigación se vuelve tabú. Han ocurrido al menos dos: mediados de los 70 y finales de los 80.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Sistemas Expertos</span>
+                <span class="term-def">Software de los años 80 que codificaba el conocimiento de expertos humanos en miles de reglas «Si-Entonces». Éxito comercial inicial, pero frágiles, caros de mantener e incapaces de aprender.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">AlexNet</span>
+                <span class="term-def">Modelo de Deep Learning que en 2012 demostró una superioridad aplastante en el reconocimiento de imágenes, confirmando que las redes neuronales eran el camino correcto.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">GPU (Graphics Processing Unit)</span>
+                <span class="term-def">Tarjeta gráfica diseñada para videojuegos que resultó ser órdenes de magnitud más eficiente que las CPUs para las billones de multiplicaciones de matrices que exige la IA.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">IA Simbólica</span>
+                <span class="term-def">IA «de arriba hacia abajo». Manipula símbolos lógicos siguiendo reglas estrictas escritas por humanos. Totalmente transparente, pero incapaz de manejar la ambigüedad del mundo real.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">IA Subsimbólica</span>
+                <span class="term-def">IA «de abajo hacia arriba». No recibe reglas, recibe datos; la inteligencia emerge del aprendizaje estadístico. Potente ante la complejidad, pero opaca (caja negra).</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Problema de la Caja Negra</span>
+                <span class="term-def">Incapacidad de la IA subsimbólica para explicar de forma lógica qué variable fue determinante en una decisión, aunque estadísticamente acierte.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Ciclo de vida del dato</span>
+                <span class="term-def">Secuencia rigurosa para convertir datos brutos en valor: estrategia e ingesta → limpieza y curación → almacenamiento y catalogación → modelado, evaluación y despliegue.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Wrangling (limpieza de datos)</span>
+                <span class="term-def">Fase de curación de los datos brutos. Es el paso menos glamuroso y el más crítico: absorbe aproximadamente el 80 % del tiempo del científico de datos.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Normalización</span>
+                <span class="term-def">Asegurar que diferentes formas de escribir un mismo dato («€», «EUR», «Euros») se conviertan en un único estándar.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Outlier</span>
+                <span class="term-def">Dato atípico que suele corresponder a un error técnico, como un sensor de temperatura marcando 500 grados.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Data Warehouse</span>
+                <span class="term-def">Almacén ideal para datos estructurados (tablas) que alimentan informes financieros y Business Intelligence.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Data Lake</span>
+                <span class="term-def">Cubo de almacenamiento masivo donde se guarda todo (audios, imágenes, PDFs) en su estado natural hasta saber cómo usarlo.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Data Swamp (pantano de datos)</span>
+                <span class="term-def">Estado degenerado de un Data Lake sin índice ni catálogo, donde nadie encuentra nada útil. La diferencia entre lago y pantano son los metadatos.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Datos estructurados</span>
+                <span class="term-def">Datos organizados en filas y columnas (SQL, Excel). Fáciles de procesar, pero cuentan una historia incompleta: el «qué», no el «por qué».</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Datos no estructurados</span>
+                <span class="term-def">Texto de chats, audios, grabaciones, contratos PDF, comentarios en redes. Representan en torno al 80 % de la información de una empresa y la IA moderna (NLP y Computer Vision) permite por primera vez extraer valor de ellos.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Cloud Computing</span>
+                <span class="term-def">Alquiler de capacidad de cómputo a grandes proveedores (AWS, Azure, Google). Su gran ventaja es la elasticidad: se paga solo por el uso realizado.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Edge Computing</span>
+                <span class="term-def">Procesamiento de IA en el propio dispositivo. Se usa para evitar latencias críticas (robots quirúrgicos, coches autónomos) y para proteger la privacidad.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">SaaS (Software as a Service)</span>
+                <span class="term-def">Servicios de IA listos para usar en la nube (reconocimiento facial, traducción), que permiten integrar IA sin tener expertos matemáticos en plantilla.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">CDO (Chief Data Officer)</span>
+                <span class="term-def">Estratega, no informático. Su misión es asegurar que el dato sea un activo y no una responsabilidad legal, velando por calidad, linaje y seguridad.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Linaje del dato</span>
+                <span class="term-def">Trazabilidad del origen y recorrido de cada dato, imprescindible para poder explicar una decisión ante una auditoría regulatoria.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Auditoría de sesgo</span>
+                <span class="term-def">Revisión exigida por la gobernanza moderna para asegurar que los algoritmos no solo sean precisos, sino también justos y equitativos, evitando automatizar discriminaciones históricas.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">RGPD</span>
+                <span class="term-def">Reglamento General de Protección de Datos. Marco legal que obliga a manejar los datos personales de los clientes con garantías de seguridad y privacidad.</span>
+            </div>
+        </div>
+    </section>
+
+    </main>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <p>&copy; 2026 - Metodologías de aprendizaje humano e inteligencia artificial | Universitas Europaea</p>
+        <a href="#" class="back-to-top">↑ Volver arriba</a>
+    </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script src="../js/search.js"></script>
+
+<!-- ================= SCRIPTS ESPECÍFICOS UNIDAD 1 ================= -->
+<script>
+/* ---------- CICLO DE VIDA INTERACTIVO ---------- */
+document.querySelectorAll('.lifecycle-step').forEach(step => {
+    step.addEventListener('click', () => {
+        const n = step.dataset.step;
+        document.querySelectorAll('.lifecycle-step').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.lifecycle-detail').forEach(d => d.classList.remove('active'));
+        step.classList.add('active');
+        document.querySelector(`.lifecycle-detail[data-detail="${n}"]`).classList.add('active');
+    });
+});
+
+/* ---------- SIMULADOR: ¿ES IA O REGLAS? ---------- */
+const simScenarios = [
+    { text: "Un ascensor que decide cerrar la puerta y subir al piso solicitado.", answer: "reglas", why: "Sigue reglas fijas escritas por un humano. No aprende nada de la experiencia." },
+    { text: "Un sistema que analizó 10 millones de radiografías por sí mismo y ahora marca zonas sospechosas.", answer: "ia", why: "Ha aprendido patrones de forma autónoma a partir de un volumen masivo de datos." },
+    { text: "Un cajero que aplica «si el saldo es menor que 0, denegar la operación».", answer: "reglas", why: "Es una condición explícita escrita por el programador. Software tradicional puro." },
+    { text: "Un filtro de spam que se reajusta cada vez que los usuarios marcan un correo como «no es spam».", answer: "ia", why: "Aprende de las etiquetas de los usuarios y actualiza su criterio con la experiencia." },
+    { text: "Un termostato que enciende la calefacción cuando baja de 18 °C.", answer: "reglas", why: "Umbral fijo predefinido. No hay aprendizaje ni adaptación." },
+    { text: "Un sistema de recomendación que observa tu comportamiento y cambia lo que te sugiere.", answer: "ia", why: "Aprende de patrones de comportamiento reales, no de reglas escritas a mano." },
+    { text: "Un sistema que descubrió por sí solo que las harinas y los huevos se compran juntos.", answer: "ia", why: "Patrón descubierto de forma autónoma a partir de miles de transacciones históricas." },
+    { text: "Una hoja de cálculo con la fórmula «=SI(A2>2000;\"Apto\";\"No apto\")».", answer: "reglas", why: "Regla explícita definida por una persona. Es determinista y no aprende." }
+];
+let simIdx = -1, simScore = 0;
+
+function simStart() {
+    simIdx = 0; simScore = 0;
+    document.getElementById('simTotal').textContent = simScenarios.length;
+    simRender();
+}
+
+function simRender() {
+    const fb = document.getElementById('simFeedback');
+    fb.className = 'sim-feedback';
+    fb.textContent = '';
+    if (simIdx >= simScenarios.length) {
+        document.getElementById('simScenario').innerHTML =
+            `<strong>🏁 Fin del simulador.</strong><br>Has acertado <strong>${simScore}</strong> de <strong>${simScenarios.length}</strong> escenarios.`;
+        document.getElementById('simCounter').textContent = simScenarios.length;
+        return;
+    }
+    document.getElementById('simScenario').textContent = simScenarios[simIdx].text;
+    document.getElementById('simCounter').textContent = simIdx + 1;
+}
+
+function simAnswer(choice) {
+    if (simIdx < 0 || simIdx >= simScenarios.length) return;
+    const s = simScenarios[simIdx];
+    const fb = document.getElementById('simFeedback');
+    const ok = choice === s.answer;
+    if (ok) simScore++;
+    fb.className = 'sim-feedback show ' + (ok ? 'ok' : 'no');
+    fb.innerHTML = (ok ? '✅ <strong>Correcto.</strong> ' : '❌ <strong>No exactamente.</strong> ') +
+        `La respuesta es <strong>${s.answer === 'ia' ? 'IA' : 'reglas fijas'}</strong>. ${s.why}`;
+    simIdx++;
+    setTimeout(() => { if (simIdx <= simScenarios.length) simRender(); }, 1900);
+}
+
+/* ---------- SIMULADOR DE NORMALIZACIÓN ---------- */
+function normUpdate() {
+    const raw = document.getElementById('normInput').value;
+    const out = document.getElementById('normOutput');
+    if (!raw.trim()) { out.textContent = '—'; return; }
+
+    let v = raw.trim();
+
+    // Divisas
+    const money = v.match(/^([\d.,]+)\s*(€|eur|euros?)?$/i);
+    if (money && (/€|eur|euros?/i.test(v))) {
+        let num = money[1].replace(/\.(?=\d{3}\b)/g, '').replace(',', '.');
+        const n = parseFloat(num);
+        if (!isNaN(n)) { out.textContent = n.toFixed(2) + ' EUR'; return; }
+    }
+    if (/^(€|eur|euros?)$/i.test(v)) { out.textContent = 'EUR (moneda)'; return; }
+
+    // Fechas dd/mm/aaaa, dd-mm-aaaa, aaaa-mm-dd
+    let m = v.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+    if (m) {
+        let d = m[1].padStart(2,'0'), mo = m[2].padStart(2,'0'), y = m[3];
+        if (y.length === 2) y = '20' + y;
+        out.textContent = `${y}-${mo}-${d} (ISO 8601)`;
+        return;
+    }
+    m = v.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+    if (m) {
+        out.textContent = `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')} (ISO 8601)`;
+        return;
+    }
+
+    // Texto: trim + capitalización
+    v = v.replace(/\s+/g, ' ');
+    out.textContent = v.charAt(0).toUpperCase() + v.slice(1).toLowerCase();
+}
+
+/* ---------- TEST ---------- */
+const TOTAL_Q = 20;
+let answered = 0, correct = 0;
+const done = new Set();
+
+document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.addEventListener('click', function () {
+        const q = this.closest('.quiz-question');
+        if (done.has(q)) return;
+        done.add(q);
+
+        const chosen = this.dataset.value;
+        const right = q.dataset.answer;
+        answered++;
+
+        q.querySelectorAll('.quiz-option').forEach(o => {
+            if (o.dataset.value === right) o.classList.add('correct');
+            else if (o.dataset.value === chosen) o.classList.add('incorrect');
+        });
+
+        if (chosen === right) correct++;
+        updateScore();
+    });
+});
+
+function updateScore() {
+    document.getElementById('scoreCorrect').textContent = correct;
+    document.getElementById('scoreDone').textContent = answered;
+
+    if (answered === TOTAL_Q) {
+        const pct = Math.round((correct / TOTAL_Q) * 100);
+        const box = document.getElementById('quizResult');
+        const passed = pct >= 80;
+        box.style.display = 'block';
+        box.className = 'info-box ' + (passed ? 'success-box' : 'warning-box');
+        box.innerHTML = `<strong>${passed ? '🎉 Test superado' : '📚 A repasar'} — ${correct}/${TOTAL_Q} (${pct} %).</strong><br>` +
+            (passed
+                ? 'Cumples el criterio del 80 % exigido por la asignatura.'
+                : 'El criterio de superación es del 80 % (16/20). Revisa las preguntas falladas.');
+    }
+}
+
+function resetQuiz() {
+    answered = 0; correct = 0; done.clear();
+    document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('correct','incorrect'));
+    document.getElementById('quizResult').style.display = 'none';
+    updateScore();
+}
+
+function revealAll() {
+    document.querySelectorAll('.quiz-question').forEach(q => {
+        const right = q.dataset.answer;
+        q.querySelectorAll('.quiz-option').forEach(o => {
+            if (o.dataset.value === right) o.classList.add('correct');
+        });
+    });
+}
+</script>
 </body>
 </html>
