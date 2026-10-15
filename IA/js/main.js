@@ -1,5 +1,5 @@
-// === SCROLL TO ACTIVE NAV LINK ===
 document.addEventListener('DOMContentLoaded', () => {
+    // === SCROLL NAVAL ACTIVE ===
     const sections = document.querySelectorAll('.content-section');
     const navLinks = document.querySelectorAll('.nav-link');
     
@@ -15,12 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             });
-        }, { threshold: 0.3, rootMargin: '-100px 0px -50% 0px' });
+        }, { threshold: 0.2, rootMargin: '-100px 0px -50% 0px' });
         
         sections.forEach(section => observer.observe(section));
     }
     
-    // === SHOW/HIDE SOLUTION ===
+    // === SHOW/HIDE SOLUCIÓN ===
     document.querySelectorAll('.solution-toggle').forEach(btn => {
         btn.addEventListener('click', function() {
             const content = this.nextElementSibling;
@@ -29,14 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // === CHECK ANSWER ===
+    // === CHECK ANSWER TEST ===
     document.querySelectorAll('.quiz-option').forEach(option => {
         option.addEventListener('click', function() {
             const parent = this.closest('.quiz-question');
             const correct = parent.dataset.answer;
             const selected = this.dataset.value;
             
-            this.parentElement.querySelectorAll('.quiz-option').forEach(opt => {
+            parent.querySelectorAll('.quiz-option').forEach(opt => {
                 opt.onclick = null;
             });
             
@@ -53,10 +53,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // === FILTER GLOSSARY ===
-    const searchInput = document.querySelector('.glossary-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
+    // === BACK TO TOP ===
+    document.querySelectorAll('.back-to-top').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+    
+    // === LOCAL SEARCH GLOSARIO ===
+    const localSearch = document.getElementById('localSearch');
+    if (localSearch) {
+        localSearch.addEventListener('input', function() {
             const query = this.value.toLowerCase();
             document.querySelectorAll('.glossary-term').forEach(term => {
                 const text = term.textContent.toLowerCase();

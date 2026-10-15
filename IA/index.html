@@ -5,14 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metodologías de IA - Portada</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- HEADER -->
+    <!-- HEADER COMPACTO -->
     <header class="header">
         <div class="header-container">
             <div class="logo-area">
-                <h1>🧠 Metodologías de IA</h1>
-                <p class="subtitle">Aprendizaje humano e Inteligencia Artificial</p>
+                <span class="logo-icon">🧠</span>
+                <h1>Metodologías de IA</h1>
+            </div>
+            <div class="header-actions">
+                <input type="text" id="globalSearch" class="search-input" placeholder="Buscar contenido...">
+                <div id="searchResults" class="search-results"></div>
             </div>
         </div>
     </header>
@@ -21,135 +27,121 @@
     <section class="hero-section">
         <div class="hero-content">
             <h2>Bienvenido al Curso Completo</h2>
-            <p>12 unidades progresivas para dominar las metodologías de aprendizaje humano e inteligencia artificial</p>
-            <div class="stats-container">
-                <div class="stat-card">
-                    <span class="stat-number">12</span>
-                    <span class="stat-label">Unidades</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">24</span>
-                    <span class="stat-label">Casos Prácticos</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number">180+</span>
-                    <span class="stat-label">Preguntas Test</span>
-                </div>
-            </div>
+            <p class="lead">12 unidades progresivas para dominar las metodologías de aprendizaje humano e inteligencia artificial</p>
         </div>
     </section>
     
     <!-- LISTADO DE UNIDADES -->
     <main class="units-grid">
-        <h2 class="section-title">Selecciona una Unidad de Estudio</h2>
+        <h2 class="section-title">Unidades de Estudio</h2>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="cimientos ia definicion historia">
             <div class="unit-badge">U1</div>
             <div class="unit-content">
                 <h3>Los Cimientos de la IA</h3>
                 <p>Fundamentos históricos, definición operativa y paradigmas fundamentales</p>
             </div>
-            <a href="temas/tema1.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema1.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card featured">
-            <div class="unit-badge">U2</div>
+        <div class="unit-card featured" data-search="machine learning ml predicción clasificacion regresión">
+            <div class="unit-badge featured-badge">U2</div>
             <div class="unit-content">
                 <h3>Machine Learning: el motor de la predicción</h3>
                 <p>Supervisado, no supervisado, refuerzo, métricas, validación y MLOps</p>
-                <div class="progress-bar"><div class="progress-fill"></div></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
             </div>
-            <a href="temas/tema2.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema2.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="deep learning redes neuronales cnn rnn">
             <div class="unit-badge">U3</div>
             <div class="unit-content">
                 <h3>Deep Learning y la intuición de la máquina</h3>
                 <p>Redes neuronales, CNN, RNN, arquitecturas profundas</p>
             </div>
-            <a href="temas/tema3.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema3.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="generativa transformers llms gpt chatgpt">
             <div class="unit-badge">U4</div>
             <div class="unit-content">
                 <h3>La Revolución Generativa y los transformers</h3>
                 <p>LLMs, GPT, arquitecturas transformer y generación de contenido</p>
             </div>
-            <a href="temas/tema4.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema4.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="estrategia activo transformación digital roi">
             <div class="unit-badge">U5</div>
             <div class="unit-content">
                 <h3>IA como activo estratégico</h3>
-                <p>Transformación digital, ventaja competitiva y ROI</p>
+                <p>Transformación digital, ventaja competitiva y retorno de inversión</p>
             </div>
-            <a href="temas/tema5.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema5.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="cadena suministro logística operaciones">
             <div class="unit-badge">U6</div>
             <div class="unit-content">
                 <h3>IA en la Cadena de Suministro y Operaciones</h3>
                 <p>Logística, predicción de demanda, optimización operacional</p>
             </div>
-            <a href="temas/tema6.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema6.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="marketing precisión cliente experiencia">
             <div class="unit-badge">U7</div>
             <div class="unit-content">
                 <h3>Marketing de Precisión y Experiencia del Cliente</h3>
                 <p>Segmentación avanzada, personalización y CLV</p>
             </div>
-            <a href="temas/tema7.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema7.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="finanzas riesgo inversión fraude">
             <div class="unit-badge">U8</div>
             <div class="unit-content">
                 <h3>Finanzas, Riesgos e Inversión en IA</h3>
                 <p>Detección de fraude, scoring crediticio, trading algorítmico</p>
             </div>
-            <a href="temas/tema8.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema8.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="product management productos no deterministas">
             <div class="unit-badge">U9</div>
             <div class="unit-content">
                 <h3>Product Management para IA</h3>
                 <p>Gestión de productos no deterministas y métricas de éxito</p>
             </div>
-            <a href="temas/tema9.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema9.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="estrategia transformación organizacional">
             <div class="unit-badge">U10</div>
             <div class="unit-content">
                 <h3>Estrategia de IA y Transformación Organizacional</h3>
                 <p>Liderazgo digital, cambio cultural y adopción tecnológica</p>
             </div>
-            <a href="temas/tema10.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema10.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="ética gobernanza riesgos regulacion">
             <div class="unit-badge">U11</div>
             <div class="unit-content">
                 <h3>Ética, Gobernanza y Riesgos Corporativos</h3>
                 <p>Regulación UE, sesgos algorítmicos y cumplimiento normativo</p>
             </div>
-            <a href="temas/tema11.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema11.html" class="btn-unit">Acceder →</a>
         </div>
         
-        <div class="unit-card">
+        <div class="unit-card" data-search="liderazgo aumento futuro management">
             <div class="unit-badge">U12</div>
             <div class="unit-content">
                 <h3>Liderazgo Aumentado y el Futuro del Management</h3>
                 <p>Hibridación humano-máquina y nuevas formas de trabajo</p>
             </div>
-            <a href="temas/tema12.html" class="btn-units">Acceder →</a>
+            <a href="temas/tema12.html" class="btn-unit">Acceder →</a>
         </div>
     </main>
     
@@ -160,5 +152,7 @@
             <p>Universitas Europaea | Uso académico personal</p>
         </div>
     </footer>
+    
+    <script src="js/search.js"></script>
 </body>
 </html>
