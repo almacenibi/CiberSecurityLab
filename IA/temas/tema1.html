@@ -136,6 +136,18 @@
                 <h3>Unidad 1 · Los Cimientos de la IA</h3>
             </div>
             <ul class="nav-list">
+                <li>
+                    <a href="#mapa" class="nav-link">🗺️ Mapa de la unidad</a>
+                    <ul class="nav-sub">
+                        <li><a href="#rama-1" class="nav-link">1 · Más allá del «hype»</a></li>
+                        <li><a href="#rama-2" class="nav-link">2 · Historia y evolución</a></li>
+                        <li><a href="#rama-3" class="nav-link">3 · Simbólica vs. Subsimbólica</a></li>
+                        <li><a href="#rama-4" class="nav-link">4 · Ciclo de vida del dato</a></li>
+                        <li><a href="#rama-5" class="nav-link">5 · Tipos de datos</a></li>
+                        <li><a href="#rama-6" class="nav-link">6 · Infraestructura y Cloud</a></li>
+                        <li><a href="#rama-7" class="nav-link">7 · Gobernanza de datos</a></li>
+                    </ul>
+                </li>
                 <li><a href="#resumen" class="nav-link active">📌 Resumen</a></li>
                 <li><a href="#fundamentos" class="nav-link">📖 Fundamentos</a></li>
                 <li><a href="#ejemplos" class="nav-link">💡 Ejemplos y simuladores</a></li>
@@ -148,7 +160,166 @@
 
     <!-- CONTENIDO -->
     <main class="content-main">
+        <!-- ================= MAPA MENTAL / ÍNDICE ================= -->
+    <section id="mapa" class="content-section">
+        <div class="mindmap">
+            <div class="mindmap-top">
+                <span class="mindmap-root">🗺️ Unidad 1 · Los Cimientos de la IA</span>
+                <div class="mindmap-actions">
+                    <button type="button" data-mindmap="open">Expandir todo</button>
+                    <button type="button" data-mindmap="close">Contraer todo</button>
+                </div>
+            </div>
 
+            <div class="mindmap-spine">
+
+                <div class="branch" id="rama-1">
+                    <button class="branch-head" type="button" aria-expanded="false">
+                        <span class="branch-num">1</span>
+                        <span class="branch-title">Más allá del «hype» de la IA generativa</span>
+                        <span class="branch-chevron">▶</span>
+                    </button>
+                    <div class="branch-body">
+                        <ul>
+                            <li>Percepción pública (2022) frente a realidad académica</li>
+                            <li>Siete décadas de avance incremental, no una aparición espontánea</li>
+                            <li>Cambio de paradigma: de <strong>programar</strong> el conocimiento a <strong>extraerlo</strong> de los datos</li>
+                        </ul>
+                        <div class="branch-note">
+                            <span class="note-icon">💡</span>
+                            <span><strong>Ejemplo:</strong> pedir a ChatGPT que resuma un contrato de 40 páginas parece magia, pero solo está replicando patrones estadísticos aprendidos de millones de textos.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" id="rama-2">
+                    <button class="branch-head" type="button" aria-expanded="false">
+                        <span class="branch-num">2</span>
+                        <span class="branch-title">Historia y evolución: del Test de Turing al renacimiento moderno</span>
+                        <span class="branch-chevron">▶</span>
+                    </button>
+                    <div class="branch-body">
+                        <ul>
+                            <li><strong>1950</strong> · Turing y el Test de la imitación</li>
+                            <li><strong>1956</strong> · Conferencia de Dartmouth: nace el término «IA»</li>
+                            <li><strong>1960-70</strong> · Primera época dorada (ELIZA, Shakey)</li>
+                            <li><strong>Mediados 70</strong> · Primer Invierno de la IA</li>
+                            <li><strong>Años 80</strong> · Sistemas Expertos y reglas «Si-Entonces»</li>
+                            <li><strong>Finales 80</strong> · Segundo Invierno de la IA</li>
+                            <li><strong>2012</strong> · La Tormenta Perfecta (algoritmos + GPUs + Big Data)</li>
+                            <li><strong>2022</strong> · ChatGPT y la percepción masiva</li>
+                        </ul>
+                        <div class="branch-note">
+                            <span class="note-icon">📝</span>
+                            <span><strong>Nota:</strong> ELIZA (1966) simulaba a un psicoterapeuta con unas pocas reglas de sustitución de palabras y muchos usuarios acababan confesándose a ella. Es el llamado «Efecto ELIZA».</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" id="rama-3">
+                    <button class="branch-head" type="button" aria-expanded="false">
+                        <span class="branch-num">3</span>
+                        <span class="branch-title">IA Simbólica vs. IA Subsimbólica: el cambio de paradigma</span>
+                        <span class="branch-chevron">▶</span>
+                    </button>
+                    <div class="branch-body">
+                        <ul>
+                            <li><strong>Simbólica</strong> · reglas escritas por humanos · explicable · frágil ante la ambigüedad</li>
+                            <li><strong>Subsimbólica</strong> · aprende de datos · potente ante la complejidad · caja negra</li>
+                            <li>Criterio de elección según el problema de negocio</li>
+                        </ul>
+                        <div class="branch-note">
+                            <span class="note-icon">💡</span>
+                            <span><strong>Ejemplo:</strong> un ascensor es IA simbólica (reglas fijas). Un filtro de spam que se reajusta cuando marcas un correo como «no es spam» es subsimbólico.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" id="rama-4">
+                    <button class="branch-head" type="button" aria-expanded="false">
+                        <span class="branch-num">4</span>
+                        <span class="branch-title">El ciclo de vida del dato: del caos al valor</span>
+                        <span class="branch-chevron">▶</span>
+                    </button>
+                    <div class="branch-body">
+                        <ul>
+                            <li><strong>Estrategia e ingesta</strong> · definir el problema antes de recoger</li>
+                            <li><strong>Limpieza y curación</strong> · normalización, outliers · ≈80 % del esfuerzo</li>
+                            <li><strong>Almacenamiento y catalogación</strong> · Warehouse, Lake, catálogo</li>
+                            <li><strong>Modelado, evaluación y despliegue</strong> · producción en tiempo real</li>
+                        </ul>
+                        <div class="branch-note">
+                            <span class="note-icon">💡</span>
+                            <span><strong>Ejemplo:</strong> un sensor de temperatura que marca 500 °C no es un récord, es un outlier que hay que descartar antes de entrenar nada.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" id="rama-5">
+                    <button class="branch-head" type="button" aria-expanded="false">
+                        <span class="branch-num">5</span>
+                        <span class="branch-title">Tipos de datos en la empresa: el valor oculto</span>
+                        <span class="branch-chevron">▶</span>
+                    </button>
+                    <div class="branch-body">
+                        <ul>
+                            <li><strong>Estructurados</strong> · filas y columnas · ≈20 % · cuentan el «qué»</li>
+                            <li><strong>No estructurados</strong> · audio, vídeo, PDF, texto · ≈80 % · explican el «por qué»</li>
+                            <li>NLP y Computer Vision como llave de ese valor</li>
+                        </ul>
+                        <div class="branch-note">
+                            <span class="note-icon">💡</span>
+                            <span><strong>Ejemplo:</strong> un equipo jurídico tarda meses en revisar 10.000 contratos; un modelo de NLP los lee en minutos y señala las cláusulas de riesgo.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" id="rama-6">
+                    <button class="branch-head" type="button" aria-expanded="false">
+                        <span class="branch-num">6</span>
+                        <span class="branch-title">Infraestructura y Cloud: la fábrica de inteligencia</span>
+                        <span class="branch-chevron">▶</span>
+                    </button>
+                    <div class="branch-body">
+                        <ul>
+                            <li><strong>Cloud</strong> · elasticidad, pago por uso, SaaS (AWS, Azure, Google)</li>
+                            <li><strong>Edge</strong> · latencia crítica y privacidad en el propio dispositivo</li>
+                        </ul>
+                        <div class="branch-note">
+                            <span class="note-icon">💡</span>
+                            <span><strong>Ejemplo:</strong> un coche autónomo no puede esperar 200 ms a que responda la nube; el sistema de frenado tiene que decidir dentro del propio vehículo.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" id="rama-7">
+                    <button class="branch-head" type="button" aria-expanded="false">
+                        <span class="branch-num">7</span>
+                        <span class="branch-title">Gobernanza de datos: calidad, ética y riesgo</span>
+                        <span class="branch-chevron">▶</span>
+                    </button>
+                    <div class="branch-body">
+                        <ul>
+                            <li><strong>CDO</strong> · calidad, linaje y seguridad del dato</li>
+                            <li><strong>Ética</strong> · la IA como espejo de la sociedad</li>
+                            <li><strong>Auditorías de sesgo</strong> y cumplimiento del RGPD</li>
+                        </ul>
+                        <div class="branch-note">
+                            <span class="note-icon">⚠️</span>
+                            <span><strong>Ejemplo:</strong> si entrenas un modelo de selección con 20 años de contrataciones mayoritariamente masculinas en puestos directivos, aprenderá que «hombre = directivo».</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mindmap-footer">
+                <span class="mindmap-chip">💼 2 casos prácticos</span>
+                <span class="mindmap-chip">🎯 20 preguntas de test</span>
+                <span class="mindmap-chip">📑 Glosario temático</span>
+            </div>
+        </div>
+    </section>    
     <!-- ================= RESUMEN ================= -->
     <section id="resumen" class="content-section">
         <h1>Unidad 1 · Los Cimientos de la IA</h1>

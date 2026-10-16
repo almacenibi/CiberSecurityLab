@@ -2,13 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // === SCROLL NAVAL ACTIVE ===
     const sections = document.querySelectorAll('.content-section');
     const navLinks = document.querySelectorAll('.nav-link');
-    
+
     if (sections.length > 0) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     navLinks.forEach(link => {
-                        link.classList.remove('active');
+                    if (link.closest('.nav-sub')) return;   // ← AÑADIR
+                    link.classList.remove('active');
                         if (link.getAttribute('href') === '#' + entry.target.id) {
                             link.classList.add('active');
                         }
@@ -86,3 +87,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// === MAPA MENTAL: EXPANDIR / CONTRAER TODO ===
+    // === MAPA MENTAL: ABRIR LA RAMA AL NAVEGAR DESDE EL SUBMENÚ ===
+    document.querySelectorAll('.nav-sub .nav-link').forEach(link => {
+        link.addEventListener('click', function () {
+            const id = this.getAttribute('href').slice(1);
+            const branch = document.getElementById(id);
+            if (!branch) return;
+            branch.classList.add('open');
+            const head = branch.querySelector('.branch-head');
+            if (head) head.setAttribute('aria-expanded', 'true');
+        });
+    });
+
+    // === MAPA MENTAL: RESALTAR LA RAMA ACTIVA AL HACER SCROLL ===
+    const branches = document.querySelectorAll('.branch[id]');
+    if (branches.length) {
+        const branchObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const id = entry.target.id;
+                document.querySelectorAll('.nav-sub .nav-link').forEach(l => {
+                    l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+                });
+            });
+        }, { threshold: 0.35, rootMargin: '-130px 0px -55% 0px' });
+
+        branches.forEach(b => branchObserver.observe(b));
+    }

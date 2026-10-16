@@ -605,3 +605,71 @@ tr:hover {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ============================================================
+   MAPA MENTAL · AMPLIACIÓN (notas de ejemplo + submenú)
+   ============================================================ */
+
+/* Ancla con margen, para que la cabecera fija no tape la rama */
+.branch[id] {
+    scroll-margin-top: 96px;
+}
+
+/* --- Nota o ejemplo al pie de cada rama --- */
+.branch-note {
+    display: flex;
+    gap: 0.55rem;
+    align-items: flex-start;
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--brand-blue-soft);
+    border-left: 3px solid var(--brand-blue);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.83rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.branch-note .note-icon {
+    flex: 0 0 auto;
+    font-size: 0.95rem;
+    line-height: 1.35;
+}
+
+.branch-note strong {
+    color: var(--brand-blue-dark);
+}
+
+/* --- Submenú del índice en la barra lateral --- */
+.nav-sub {
+    list-style: none;
+    margin: 0.15rem 0 0.5rem 0.85rem;
+    padding-left: 0.7rem;
+    border-left: 1px dashed var(--brand-blue-line);
+}
+
+.nav-sub .nav-link {
+    font-size: 0.79rem;
+    padding: 0.36rem 0.6rem;
+    color: var(--text-muted);
+}
+
+.nav-sub .nav-link::before {
+    content: '·';
+    margin-right: 0.4rem;
+    color: var(--brand-blue);
+    font-weight: 700;
+}
+
+.nav-sub .nav-link:hover,
+.nav-sub .nav-link.active {
+    background: var(--brand-blue-soft);
+    color: var(--brand-blue);
+    border-left-color: var(--brand-blue);
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .branch-note { font-size: 0.8rem; padding: 0.55rem 0.7rem; }
+    .nav-sub { margin-left: 0.5rem; }
+}
