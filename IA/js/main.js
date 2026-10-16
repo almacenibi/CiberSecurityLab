@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sections = document.querySelectorAll('.content-section');
     const navLinks = document.querySelectorAll('.nav-link');
     
-    if (sections.length > 0 && navLinks.length > 0) {
+    if (sections.length > 0) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -20,15 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
         sections.forEach(section => observer.observe(section));
     }
     
-    // === SHOW/HIDE SOLUCIÓN CASOS PRÁCTICOS ===
+    // === SHOW/HIDE SOLUCIÓN ===
     document.querySelectorAll('.solution-toggle').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
+        btn.addEventListener('click', function() {
             const content = this.nextElementSibling;
-            const isHidden = content.style.display !== 'block';
-            content.style.display = isHidden ? 'block' : 'none';
-            this.textContent = isHidden ? 'Ocultar Solución' : 'Ver Solución';
-            this.blur();
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+            this.textContent = content.style.display === 'block' ? 'Ocultar Solución' : 'Ver Solución';
         });
     });
     
@@ -41,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             parent.querySelectorAll('.quiz-option').forEach(opt => {
                 opt.onclick = null;
-                opt.classList.remove('correct', 'incorrect');
             });
             
             if (selected === correct) {
@@ -54,10 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
-            
-            // Trigger quiz update
-            const quizEvent = new CustomEvent('quizAnswered', { detail: { correct: selected === correct } });
-            parent.dispatchEvent(quizEvent);
         });
     });
     
@@ -80,15 +72,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    
-    // === MINDMAP EXPAND ===
-    document.querySelectorAll('.mindmap-expand-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const content = this.nextElementSibling;
-            const isVisible = content.classList.contains('show');
-            content.classList.toggle('show', !isVisible);
-            this.textContent = isVisible ? 'Mostrar más' : 'Ocultar';
-        });
-    });
 });
