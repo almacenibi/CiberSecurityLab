@@ -1,96 +1,1060 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[TÍTULO UNIDAD] - Metodologías de IA</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unidad 2 - Machine Learning | Metodologías de IA</title>
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* === ESTILOS ESPECÍFICOS UNIDAD 2 === */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.5rem 0; }
+.compare-col { border-radius: var(--radius); padding: 1.3rem; border: 1px solid var(--border-color); }
+.compare-col.supervised { background: #eff6ff; border-left: 4px solid var(--primary); }
+.compare-col.unsupervised { background: #f0fdf4; border-left: 4px solid var(--success); }
+.compare-col.reinforcement { background: #fff7ed; border-left: 4px solid var(--accent); }
+.compare-col h4 { margin-bottom: 0.8rem; font-size: 1.05rem; }
+.compare-col ul { margin-left: 1.1rem; font-size: 0.92rem; }
+.compare-col li { margin-bottom: 0.5rem; }
+
+.sim-box {
+    background: white; border: 1px solid var(--border-color);
+    border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0;
+    box-shadow: var(--shadow-sm);
+}
+.sim-scenario {
+    background: var(--bg-light); border-radius: 8px; padding: 1rem;
+    margin-bottom: 1rem; font-size: 0.95rem; min-height: 72px;
+}
+.sim-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.sim-btn {
+    padding: 0.6rem 1.2rem; border-radius: 6px; border: 1.5px solid var(--primary);
+    background: white; color: var(--primary); font-weight: 500; cursor: pointer;
+    font-size: 0.9rem; transition: all 0.2s;
+}
+.sim-btn:hover { background: var(--primary); color: white; }
+.sim-feedback {
+    margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.92rem; display: none;
+}
+.sim-feedback.show { display: block; animation: fadeIn 0.3s ease; }
+.sim-feedback.ok { background: #d1fae5; border-left: 4px solid var(--success); }
+.sim-feedback.no { background: #fee2e2; border-left: 4px solid var(--error); }
+
+.score-bar {
+    position: sticky; top: 62px; z-index: 900;
+    background: white; border: 1px solid var(--border-color); border-radius: var(--radius);
+    padding: 0.8rem 1.2rem; margin-bottom: 1.5rem; display: flex;
+    justify-content: space-between; align-items: center; box-shadow: var(--shadow-sm);
+}
+.score-bar span { font-size: 0.9rem; color: var(--text-secondary); }
+.score-bar strong { color: var(--primary); font-size: 1.1rem; }
+
+/* --- Matriz de confusión interactiva --- */
+.matrix-wrap {
+    display: grid; grid-template-columns: 118px 1fr 1fr; gap: 0.5rem; margin: 1.5rem 0 0.8rem;
+}
+.matrix-axis {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);
+    text-align: center; line-height: 1.3; padding: 0.3rem;
+}
+.matrix-cell {
+    background: white; border: 1px solid var(--border-color); border-radius: 8px;
+    padding: 1rem 0.6rem; text-align: center; cursor: pointer; transition: all 0.2s;
+}
+.matrix-cell:hover { border-color: var(--primary); transform: translateY(-2px); }
+.matrix-cell.active { border-color: var(--primary); background: var(--primary-light); box-shadow: var(--shadow-md); }
+.matrix-cell .mc-label { display: block; font-weight: 700; font-size: 0.9rem; color: var(--primary-dark); }
+.matrix-cell .mc-sub { display: block; font-size: 0.76rem; color: var(--text-secondary); margin-top: 0.2rem; }
+.matrix-detail {
+    background: var(--bg-light); border-left: 4px solid var(--primary);
+    border-radius: 0 8px 8px 0; padding: 1rem; font-size: 0.92rem; min-height: 86px;
+}
+
+/* --- Simulador de umbral --- */
+.threshold-slider { width: 100%; margin: 0.8rem 0 0.3rem; accent-color: var(--primary); cursor: pointer; }
+.kpi-mini { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 1rem 0; }
+.kpi-mini div {
+    background: white; border: 1px solid var(--border-color); border-radius: 8px;
+    padding: 0.5rem 0.8rem; font-size: 0.82rem; color: var(--text-secondary);
+}
+.kpi-mini strong { color: var(--primary-dark); }
+.metric-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
+.metric-row > span:first-child { min-width: 82px; font-size: 0.85rem; color: var(--text-secondary); }
+.metric-bar { flex: 1; height: 12px; background: var(--bg-light); border-radius: 6px; overflow: hidden; }
+.metric-bar span { display: block; height: 100%; background: var(--primary); transition: width 0.25s; }
+.metric-val { min-width: 58px; text-align: right; font-weight: 700; color: var(--primary-dark); font-size: 0.88rem; }
+
+/* --- Timeline --- */
+.timeline { position: relative; margin: 2rem 0; padding-left: 2rem; }
+.timeline::before {
+    content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--primary), var(--secondary));
+}
+.timeline-item { position: relative; margin-bottom: 1.8rem; padding-left: 1.5rem; }
+.timeline-item::before {
+    content: ''; position: absolute; left: -1.65rem; top: 0.45rem;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: white; border: 3px solid var(--primary);
+}
+.timeline-year {
+    display: inline-block; background: var(--primary-light); color: var(--primary-dark);
+    font-weight: 700; font-size: 0.8rem; padding: 0.15rem 0.6rem;
+    border-radius: 20px; margin-bottom: 0.3rem;
+}
+
+@media (max-width: 860px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .matrix-wrap { grid-template-columns: 84px 1fr 1fr; }
+}
+</style>
 </head>
 <body class="tema-page">
-    <!-- HEADER -->
-    <header class="header">
-        <div class="header-container">
-            <div class="logo-area">
-                <span class="logo-icon">🧠</span>
-                <h1>Metodologías de IA</h1>
-            </div>
-            <a href="../index.html" class="back-link">← Inicio</a>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-container">
+        <div class="logo-area">
+            <span class="logo-icon">🧠</span>
+            <h1>Metodologías de IA</h1>
         </div>
-    </header>
-    
-    <div class="main-wrapper">
-        <!-- MENÚ IZQUIERDO -->
-        <aside class="sidebar-left">
-            <nav class="unit-nav">
-                <div class="nav-header">
-                    <h3>[UNIDAD X - TÍTULO]</h3>
-                </div>
-                <ul class="nav-list">
-                    <li><a href="#resumen" class="nav-link active">📌 Resumen</a></li>
-                    <li><a href="#fundamentos" class="nav-link">📖 Fundamentos</a></li>
-                    <li><a href="#ejemplos" class="nav-link">💡 Ejemplos</a></li>
-                    <li><a href="#casos" class="nav-link">💼 Casos</a></li>
-                    <li><a href="#test" class="nav-link">🎯 Test</a></li>
-                    <li><a href="#glosario" class="nav-link">📑 Glosario</a></li>
-                </ul>
-            </nav>
-        </aside>
-        
-        <!-- CONTENIDO PRINCIPAL -->
-        <main class="content-main">
-            <!-- RESUMEN EJECUTIVO -->
-            <section id="resumen" class="content-section">
-                <h1>[TÍTULO UNIDAD]</h1>
-                <div class="executive-summary">
-                    <h2>📌 Resumen Ejecutivo</h2>
-                    <p>Contenido del resumen...</p>
-                </div>
-            </section>
-            
-            <!-- FUNDAMENTOS -->
-            <section id="fundamentos" class="content-section">
-                <h2>📖 Fundamentos Teóricos</h2>
-                <p>Contenido teórico...</p>
-            </section>
-            
-            <!-- EJEMPLOS -->
-            <section id="ejemplos" class="content-section">
-                <h2>💡 Ejemplos Prácticos</h2>
-                <p>Contenido práctico...</p>
-            </section>
-            
-            <!-- CASOS -->
-            <section id="casos" class="content-section">
-                <h2>💼 Casos Prácticos</h2>
-                <!-- card de casos aquí -->
-            </section>
-            
-            <!-- TEST -->
-            <section id="test" class="content-section">
-                <h2>🎯 Test de Autoevaluación</h2>
-                <!-- preguntas test -->
-            </section>
-            
-            <!-- GLOSARIO -->
-            <section id="glosario" class="content-section">
-                <h2>📑 Glosario</h2>
-                <input type="text" id="localSearch" class="search-input" placeholder="🔍 Buscar término...">
-                <div id="glossaryResults"></div>
-            </section>
-        </main>
+        <a href="../index.html" class="back-link">← Inicio</a>
     </div>
-    
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2026 - Metodologías de IA | Universitas Europaea</p>
-            <a href="#" class="back-to-top">↑ Volver arriba</a>
+</header>
+
+<div class="main-wrapper">
+
+    <!-- MENÚ IZQUIERDO -->
+    <aside class="sidebar-left">
+        <nav class="unit-nav">
+            <div class="nav-header">
+                <h3>Unidad 2 · Machine Learning</h3>
+            </div>
+            <ul class="nav-list">
+                <li><a href="#resumen" class="nav-link active">📌 Resumen</a></li>
+                <li><a href="#fundamentos" class="nav-link">📖 Fundamentos</a></li>
+                <li><a href="#ejemplos" class="nav-link">💡 Ejemplos y simuladores</a></li>
+                <li><a href="#casos" class="nav-link">💼 Casos prácticos</a></li>
+                <li><a href="#test" class="nav-link">🎯 Test (20 preguntas)</a></li>
+                <li><a href="#glosario" class="nav-link">📑 Glosario</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="content-main">
+
+    <!-- ================= RESUMEN ================= -->
+    <section id="resumen" class="content-section">
+        <h1>Unidad 2 · Machine Learning</h1>
+
+        <div class="executive-summary">
+            <h2>📌 Resumen Ejecutivo</h2>
+            <p>En la Unidad 1 aprendimos que la IA subsimbólica no recibe reglas: recibe datos. Esta unidad explica <strong>cómo se produce ese aprendizaje</strong>, qué paradigmas existen, cómo se mide si un modelo sirve y por qué la mayoría de los proyectos de IA fracasan no por el algoritmo, sino por todo lo que ocurre <em>alrededor</em> de él.</p>
+
+            <p><strong>Las cinco ideas que hay que dominar:</strong></p>
+            <ol style="margin-left:1.3rem;">
+                <li><strong>Del «programar» al «entrenar»:</strong> el líder de negocio ya no encarga reglas, encarga ejemplos. El sistema deja de reportar el pasado y empieza a anticipar el futuro.</li>
+                <li><strong>Tres paradigmas, tres preguntas distintas:</strong> <em>supervisado</em> (¿qué etiqueta le corresponde?), <em>no supervisado</em> (¿qué estructura oculta hay aquí?) y <em>por refuerzo</em> (¿qué acción me da más recompensa?).</li>
+                <li><strong>Un modelo no se juzga por su precisión global:</strong> se juzga por el coste de equivocarse. Falso positivo y falso negativo no cuestan lo mismo, y ahí entra la matriz de confusión.</li>
+                <li><strong>El enemigo silencioso es el Data Drift:</strong> el mundo cambia, los datos cambian y el modelo se degrada sin avisar. Por eso existe MLOps.</li>
+                <li><strong>El 80 % de los proyectos de IA fracasa</strong> porque mueren en el ordenador del científico de datos y nunca llegan a producción. El liderazgo no es opcional: la IA es un copiloto, no el piloto.</li>
+            </ol>
+
+            <div class="info-box" style="margin-top:1.2rem;">
+                <strong>Idea fuerza para el directivo:</strong> el Machine Learning no es magia ni una caja de herramientas técnicas. Es una forma de <em>tomar decisiones con incertidumbre</em>. Tu trabajo no es elegir el algoritmo, es decidir <strong>qué error puedes permitirte</strong>.
+            </div>
         </div>
-    </footer>
+    </section>
+
+    <!-- ================= FUNDAMENTOS ================= -->
+    <section id="fundamentos" class="content-section">
+        <h2>📖 Fundamentos Teóricos</h2>
+
+        <!-- 1. PROGRAMAR VS ENTRENAR -->
+        <h3>1. Del «programar» al «entrenar»: el cambio de mentalidad</h3>
+        <p>En el software tradicional, un humano escribe la lógica y la máquina la ejecuta. El conocimiento está <strong>fuera</strong> del sistema: vive en la cabeza del programador y en el código. En Machine Learning ocurre lo contrario: le entregamos ejemplos (datos junto con el resultado correcto) y es el sistema el que <strong>deduce las reglas</strong> por sí mismo. Ese conjunto de reglas inferidas es lo que llamamos <em>modelo</em>.</p>
+
+        <div class="compare-grid">
+            <div class="compare-col supervised">
+                <h4>⚙️ Programación tradicional</h4>
+                <ul>
+                    <li><strong>Entrada:</strong> reglas + datos</li>
+                    <li><strong>Salida:</strong> respuestas</li>
+                    <li><strong>Autor de la lógica:</strong> el programador</li>
+                    <li><strong>Comportamiento:</strong> determinista y reproducible</li>
+                    <li><strong>Límite:</strong> la capacidad humana de enumerar casos</li>
+                </ul>
+            </div>
+            <div class="compare-col supervised">
+                <h4>🧠 Machine Learning</h4>
+                <ul>
+                    <li><strong>Entrada:</strong> datos + respuestas conocidas</li>
+                    <li><strong>Salida:</strong> reglas (el modelo)</li>
+                    <li><strong>Autor de la lógica:</strong> el propio algoritmo</li>
+                    <li><strong>Comportamiento:</strong> probabilístico y aproximado</li>
+                    <li><strong>Límite:</strong> la calidad y representatividad de los datos</li>
+                </ul>
+            </div>
+        </div>
+
+        <h4>Por qué el enfoque de «reglas fijas» se quedó corto</h4>
+        <table>
+            <thead><tr><th>Motivo</th><th>Explicación</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Escala humana</strong></td>
+                    <td>Ningún equipo de personas puede procesar simultáneamente <em>billones</em> de puntos de datos para extraer el patrón que los gobierna. La máquina sí.</td>
+                </tr>
+                <tr>
+                    <td><strong>Ambigüedad del mundo real</strong></td>
+                    <td>¿Cómo escribes la regla «reconocer una cara»? Cada excepción genera una regla nueva, y las excepciones no tienen fin.</td>
+                </tr>
+                <tr>
+                    <td><strong>Obsolescencia</strong></td>
+                    <td>Una regla escrita en 2015 sigue actuando igual en 2026. El mercado, el cliente y el contexto, no.</td>
+                </tr>
+                <tr>
+                    <td><strong>Coste de mantenimiento</strong></td>
+                    <td>Miles de reglas «Si-Entonces» interdependientes se vuelven imposibles de auditar y de modificar sin romper algo.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>Ejemplo clave:</strong> un algoritmo de detección de fraude queda obsoleto en un mes porque los delincuentes cambian de táctica. La programación tradicional no puede seguir ese ritmo.
+        </div>
+
+        <!-- 2. APRENDIZAJE SUPERVISADO -->
+        <h3>2. Aprendizaje Supervisado: el paradigma «profesor-alumno»</h3>
+        <p>Es el modelo más robusto y utilizado en la industria actual. Se basa en una premisa sencilla: aprender del pasado para predecir el futuro mediante un proceso de <strong>etiquetado</strong>. Es como un alumno que estudia con un libro de ejercicios que tiene las soluciones al final.</p>
+
+        <h4>Tipos de modelos supervisados</h4>
+
+        <div class="compare-grid">
+            <div class="compare-col supervised">
+                <h4>📊 Regresión (predicción de cantidades)</h4>
+                <p>Buscamos predecir un valor numérico exacto dentro de una escala continua. No nos interesan categorías, sino <strong>magnitudes</strong>.</p>
+                <ul>
+                    <li><strong>Caso energético:</strong> las eléctricas predicen el consumo de una ciudad para decidir cuánta energía comprar en el mercado mayorista.</li>
+                    <li><strong>Caso logístico:</strong> estimar el costo de combustible y tiempos de entrega cruzando variables complejas (precio del crudo, eficiencia del motor, relieve de las rutas).</li>
+                    <li><strong>Valor de vida del cliente (LTV):</strong> predecir cuánto dinero gastará un cliente específico a lo largo de toda su relación con la marca.</li>
+                </ul>
+            </div>
+            <div class="compare-col supervised">
+                <h4>🏷️ Clasificación (decisiones binarias/multiclase)</h4>
+                <p>Buscamos asignar una <strong>etiqueta</strong> o categoría a un dato nuevo. No nos interesa el «cuánto», sino el «qué es» o «en qué grupo cae».</p>
+                <ul>
+                    <li><strong>Gestión de riesgo crediticio:</strong> clasificar solicitantes en «Bajo», «Medio» o «Alto» riesgo para automatizar aprobaciones.</li>
+                    <li><strong>Ciberseguridad:</strong> filtros de correo que clasifican cada mensaje en «Seguro», «Spam» o «Phishing».</li>
+                    <li><strong>Diagnóstico médico asistido:</strong> clasificar radiografías como «Normal» o «Patológica».</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 3. APRENDIZAJE NO SUPERVISADO -->
+        <h3>3. Aprendizaje No Supervisado: el enfoque del «descubridor»</h3>
+        <p>A diferencia del supervisado, aquí no hay etiquetas ni «respuestas correctas» de antemano. El algoritmo recibe datos <strong>crudos</strong> y debe encontrar el orden dentro del caos por sí solo. Es la herramienta perfecta para la innovación, ya que revela conexiones que los humanos no sospechamos porque no sabemos qué estamos buscando exactamente.</p>
+
+        <h4>Tipos de algoritmos no supervisados</h4>
+
+        <div class="compare-grid">
+            <div class="compare-col unsupervised">
+                <h4>🔍 Clustering (agrupación inteligente)</h4>
+                <p>Agrupa elementos que comparten características comunes, creando <strong>«racimos» (clusters)</strong> de forma orgánica. Es como pedirle a alguien que ordene una caja llena de piezas de Lego mezcladas sin darle instrucciones.</p>
+                <ul>
+                    <li><strong>Hiper-personalización en marketing:</strong> en lugar de segmentos sociodemográficos clásicos («Hombres de 30 a 40 años»), el clustering revela grupos por comportamiento: «Usuarios que compran tecnología solo de noche y tras leer al menos tres reseñas».</li>
+                    <li><strong>Optimización de redes de distribución:</strong> agrupar tiendas no por proximidad geográfica, sino por similitud en los patrones de consumo.</li>
+                    <li><strong>Descubrimiento de fármacos:</strong> agrupar moléculas con estructuras similares que podrían reaccionar de la misma manera ante una enfermedad.</li>
+                </ul>
+            </div>
+            <div class="compare-col unsupervised">
+                <h4>🛡️ Detección de Anomalías (el guardián)</h4>
+                <p>Este modelo aprende el patrón de comportamiento <strong>«normal»</strong> y genera una señal de alarma cuando algo rompe ese patrón. Es un sistema de defensa extremadamente eficaz porque no necesita saber cómo es la «amenaza», solo necesita saber qué es lo «habitual».</p>
+                <ul>
+                    <li><strong>Prevención de fraude bancario:</strong> si sueles gastar 20€ en cafeterías y aparece un cargo de 2.000€ en una tienda de lujo en otro continente, el modelo bloquea instantáneamente.</li>
+                    <li><strong>Mantenimiento predictivo industrial:</strong> sensores que captan vibraciones imperceptibles en una turbina. El algoritmo detecta cambios sutiles y alerta de que una pieza fallará en los próximos 10 días.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 4. APRENDIZAJE POR REFUERZO -->
+        <h3>4. Aprendizaje por Refuerzo: el camino de la experiencia directa</h3>
+        <p>Es el enfoque más avanzado y se basa en la <strong>interacción dinámica</strong>. No aprende de bases de datos estáticas, sino de la acción. Es muy similar a entrenar a una mascota o a cómo un niño aprende a caminar: si la acción acerca al objetivo, recibe una <strong>«recompensa»</strong>; si lo aleja, recibe un <strong>«castigo»</strong>.</p>
+
+        <div class="compare-grid">
+            <div class="compare-col reinforcement">
+                <h4>🔄 Mecanismo de funcionamiento</h4>
+                <ul>
+                    <li><strong>Agente y entorno:</strong> el agente (la IA) interactúa con un entorno (la web, la bolsa de valores, un almacén).</li>
+                    <li><strong>Exploración vs. Explotación:</strong> dilema estratégico. ¿Sigues haciendo lo que sabes que funciona (<em>explotación</em>) o pruebas algo nuevo para ver si obtienes mayor recompensa (<em>exploración</em>)? En los negocios, es el equilibrio entre optimizar el producto actual o innovar con uno nuevo.</li>
+                    <li><strong>Iteración masiva:</strong> cientos de miles a millones de pruebas hasta que el algoritmo encuentra la política óptima.</li>
+                </ul>
+            </div>
+            <div class="compare-col reinforcement">
+                <h4>🎯 Aplicaciones de frontera</h4>
+                <ul>
+                    <li><strong>Sistemas de recomendación evolutivos:</strong> TikTok o YouTube usan este modelo. Si te quedas viendo un video, el «agente» recibe recompensa y te mostrará más contenido similar. Si lo pasas rápido, cambia de rumbo inmediatamente.</li>
+                    <li><strong>Optimización de precios dinámicos:</strong> aerolíneas y Uber ajustan el precio segundo a segundo. El algoritmo aprende cuál es el precio máximo que el mercado está dispuesto a pagar en cada momento.</li>
+                    <li><strong>Robótica y logística:</strong> robots que aprenden autónomamente a mover cajas por un almacén de la forma más rápida posible, adaptándose si se añade un nuevo pasillo.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 5. MÉTRICAS DE ÉXITO -->
+        <h3>5. Métricas de éxito de negocio: más allá de los porcentajes</h3>
+        <p>Para un directivo, una IA con un 99% de precisión técnica puede ser un desastre financiero si ese 1% de error ocurre en el momento más inoportuno. Es vital traducir las métricas estadísticas a impacto económico.</p>
+
+        <h4>Precisión vs. Recall: el costo del error</h4>
+        <table>
+            <thead><tr><th>Métrica</th><th>Qué mide</th><th>Coste empresarial</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Precisión</strong></td>
+                    <td>Si el modelo dice «Este cliente va a dejar la empresa», ¿qué tan fiable es?</td>
+                    <td>Una precisión baja significa que gastaremos dinero en costosas campañas de retención para personas que nunca pensaron en irse.</td>
+                </tr>
+                <tr>
+                    <td><strong>Recall / Sensibilidad</strong></td>
+                    <td>Si hay 100 fraudes reales, ¿cuántos fue capaz de ver el modelo?</td>
+                    <td>Un recall bajo significa que el dinero de la empresa se está escapando porque el modelo es «demasiado cauto» y no ve el peligro.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>La Matriz de Confusión: visualizando dónde se equivoca el modelo</h4>
+        <p>No todos los errores valen lo mismo:</p>
+        <div class="info-box warning-box">
+            <strong>Falso Negativo (costo de la omisión):</strong> no detectar un cáncer o un fraude. El costo es altísimo en términos de vidas o dinero.<br><br>
+            <strong>Falso Positivo (costo de la molestia):</strong> bloquear la tarjeta a un cliente que está de viaje por error. El costo es la molestia del cliente y el soporte técnico.
+        </div>
+
+        <!-- 6. VALIDACIÓN Y SESGO -->
+        <h3>6. Validación y Sesgo: la responsabilidad ética y técnica</h3>
+
+        <h4>Overfitting vs. Underfitting</h4>
+        <table>
+            <thead><tr><th>Problema</th><th>Descripción</th><th>Causa</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Overfitting (sobreajuste)</strong></td>
+                    <td>El modelo se vuelve «demasiado listo» para los datos del pasado. Memoriza las anécdotas en lugar de aprender las lecciones generales.</td>
+                    <td>Algoritmo muy potente aplicado a datos poco complejos. Funciona perfecto en las pruebas pero falla estrepitosamente en el mercado real.</td>
+                </tr>
+                <tr>
+                    <td><strong>Underfitting (bajo ajuste)</strong></td>
+                    <td>El modelo es demasiado simple y no es capaz de ver los patrones básicos.</td>
+                    <td>Modelo incapaz de capturar la complejidad de los datos. Como intentar predecir el mercado de valores usando solo una regla de tres.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Sesgo histórico y el peligro de la «Caja Negra»</h4>
+        <p>Si una IA de selección de talento se entrena con datos de los últimos 20 años de una empresa donde nunca se contrató a mujeres para puestos directivos, el algoritmo <strong>«aprenderá» que ser hombre es un requisito para el éxito</strong>. Estadísticamente correcto, éticamente inaceptable.</p>
+
+        <div class="warning-box info-box">
+            <strong>Responsabilidad directaiva:</strong> la responsabilidad legal y ética de los resultados de la IA recae en los líderes humanos. Debemos exigir <strong>IA Explicable (XAI)</strong>: modelos que puedan «explicar» por qué tomaron una decisión, evitando que la tecnología sea una caja negra.
+        </div>
+
+        <!-- 7. MLOPS -->
+        <h3>7. Introducción a MLOps: la IA en el mundo real</h3>
+        <p>El 80% de los proyectos de IA fallan porque mueren en el ordenador del científico de datos. <strong>MLOps (Machine Learning Operations)</strong> es la disciplina que garantiza que la IA sea una herramienta de producción estable y no un experimento aislado.</p>
+
+        <h4>El desafío de la degradación: Data Drift</h4>
+        <p>A diferencia del software tradicional, un modelo de IA se «pudre» con el tiempo. El comportamiento de los consumidores cambia; por ejemplo, un modelo que predecía perfectamente las ventas de viajes en 2019 se volvió completamente inútil en marzo de 2020.</p>
+
+        <div class="info-box">
+            <strong>Data Drift:</strong> cambio en la distribución de los datos que hace que el modelo se degrade. MLOps se encarga de que el sistema detecte esta caída de rendimiento y se reentrene automáticamente con datos frescos.
+        </div>
+
+        <h4>Los tres pilares del liderazgo en la era del Machine Learning</h4>
+        <ol style="margin-left:1.3rem;">
+            <li><strong>Saber qué preguntar:</strong> la IA es excelente dando respuestas, pero los humanos debemos definir el problema de negocio correcto a resolver.</li>
+            <li><strong>Cuidar la materia prima:</strong> sin datos limpios, éticos y representativos, el modelo será inútil o peligroso.</li>
+            <li><strong>Hibridación Humano-Máquina:</strong> la IA debe actuar como un «copiloto». El sistema predice y sugiere, pero el humano aporta el contexto, la ética y el juicio estratégico final.</li>
+        </ol>
+    </section>
+
+    <!-- ================= EJEMPLOS ================= -->
+    <section id="ejemplos" class="content-section">
+        <h2>💡 Ejemplos Prácticos y Simuladores</h2>
+
+        <h3>Ejemplo 1 · El cambio de paradigma: programar vs. entrenar</h3>
+        <p>En el software tradicional, si quieres detectar spam, programas reglas como «si el mensaje contiene «OFERTA!!!» en mayúsculas, marcar como spam». En Machine Learning, le das 100.000 correos ya etiquetados como «spam» o «no spam» y el algoritmo <strong>deduce sus propias reglas</strong>, descubriendo patrones que un humano nunca habría pensado (por ejemplo, la combinación de ciertas palabras en un orden específico).</p>
+
+        <h3>Ejemplo 2 · Simulador de Matriz de Confusión</h3>
+        <p>Selecciona cada celda de la matriz para entender qué representa y cuál es su coste empresarial.</p>
+
+        <div class="sim-box">
+            <div class="matrix-wrap">
+                <div class="matrix-axis" style="transform: rotate(270deg);">REALIDAD</div>
+                <div class="matrix-axis"><strong>Sí tiene la condición</strong></div>
+                <div class="matrix-axis"><strong>No tiene la condición</strong></div>
+
+                <div class="matrix-cell" data-type="tp">
+                    <div class="matrix-cell">
+                        <span class="mc-label">VP</span>
+                        <span class="mc-sub">Verdadero<br>Positivo</span>
+                    </div>
+                </div>
+                <div class="matrix-cell" data-type="fp">
+                    <div class="matrix-cell">
+                        <span class="mc-label">FP</span>
+                        <span class="mc-sub">Falso<br>Positivo</span>
+                    </div>
+                </div>
+
+                <div class="matrix-cell" data-type="fn">
+                    <div class="matrix-cell">
+                        <span class="mc-label">FN</span>
+                        <span class="mc-sub">Falso<br>Negativo</span>
+                    </div>
+                </div>
+                <div class="matrix-cell" data-type="tn">
+                    <div class="matrix-cell">
+                        <span class="mc-label">VN</span>
+                        <span class="mc-sub">Verdadero<br>Negativo</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="matrixDetail" class="matrix-detail">
+                Haz clic en cualquier celda para ver su significado y coste empresarial.
+            </div>
+        </div>
+
+        <h3>Ejemplo 3 · Simulador de Tolerancia al Error</h3>
+        <p>Ajusta el umbral de decisión para ver cómo cambia la precisión y el recall. Observa el compromiso (trade-off) entre ambos.</p>
+
+        <div class="sim-box">
+            <label for="thresholdSlider"><strong>Umbral de decisión:</strong> <span id="thresholdValue">50</span>%</label>
+            <input type="range" id="thresholdSlider" class="threshold-slider" min="0" max="100" value="50">
+
+            <div class="kpi-mini">
+                <div><strong>📈 Precisión:</strong> <span id="precisionVal">—</span>%</div>
+                <div><strong>🔍 Recall:</strong> <span id="recallVal">—</span>%</div>
+                <div><strong>⚠️ Falsos Positivos:</strong> <span id="fpCount">—</span></div>
+                <div><strong>🚨 Falsos Negativos:</strong> <span id="fnCount">—</span></div>
+            </div>
+
+            <div class="metric-row">
+                <span>Precisión</span>
+                <div class="metric-bar"><span id="precisionBar"></span></div>
+                <span class="metric-val" id="precisionPct">—</span>
+            </div>
+            <div class="metric-row">
+                <span>Recall</span>
+                <div class="metric-bar"><span id="recallBar"></span></div>
+                <span class="metric-val" id="recallPct">—</span>
+            </div>
+
+            <div id="thresholdFeedback" class="info-box" style="margin-top:1rem;"></div>
+        </div>
+
+        <h3>Ejemplo 4 · Exploración vs. Explotación en negocios</h3>
+        <p>Imagina que tienes un restaurante online con 3 platos estrella. Sabes que el plato A vende bien (explotación). Pero quizás el plato C, que aún no has promocionado mucho, podría ser aún más rentable (exploración).</p>
+
+        <div class="info-box">
+            <strong>Estrategia:</strong> dedica el 80% de tu presupuesto a promocionar lo que ya sabes que funciona (A) y el 20% a probar opciones nuevas (B y C). Este balance es lo que los algoritmos de refuerzo optimizan continuamente.
+        </div>
+    </section>
+
+    <!-- ================= CASOS ================= -->
+    <section id="casos" class="content-section">
+        <h2>💼 Casos Prácticos de la Asignatura</h2>
+
+        <!-- CASO 1: CHURN PREDICTION -->
+        <div class="case-card">
+            <div class="case-header">
+                <h3>Caso Práctico 3 · Optimización de la Retención de Clientes (Churn Prediction)</h3>
+                <button class="solution-toggle" aria-expanded="false">Ver Solución</button>
+            </div>
+
+            <p><strong>Escenario.</strong> Una operadora de telecomunicaciones nacional ha detectado que su tasa de abandono de clientes ha aumentado un 12% en el último semestre. La dirección sospecha que los clientes se marchan a la competencia debido a ofertas agresivas, pero no logran identificar exactamente quiénes se irán ni por qué. Actualmente, el departamento de marketing lanza campañas de fidelización genéricas (descuentos masivos) a toda su base de datos, lo que resulta en un alto coste y un impacto financiero negativo en el margen de beneficio.</p>
+
+            <div class="solution-content">
+                <h4>Análisis del problema</h4>
+                <table>
+                    <thead><tr><th>Dimensión</th><th>Situación actual</th><th>Objetivo futuro</th></tr></thead>
+                    <tbody>
+                        <tr><td>Enfoque</td><td>Reactivo (actuar después de que el cliente se vaya)</td><td>Proactivo (anticipar antes de que se marche)</td></tr>
+                        <tr><td>Método</td><td>Campañas masivas genéricas</td><td>Segmentación quirúrgica basada en predicción</td></tr>
+                        <tr><td>Coste</td><td>Alto (descuentos a clientes que no iban a marcharse)</td><td>Optimizado (solo a clientes de riesgo)</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Solución propuesta: Aprendizaje Supervisado (Clasificación)</h4>
+                <ol style="margin-left:1.3rem;">
+                    <li><strong>Recolección de datos históricos:</strong> recopilar el comportamiento de los clientes que se fueron (churn) y los que se quedaron durante los últimos 12 meses.</li>
+                    <li><strong>Etiquetado:</strong> cada cliente recibe una etiqueta binaria: «Fuga» (1) o «No fuga» (0).</li>
+                    <li><strong>Entrenamiento del modelo:</strong> algoritmo de clasificación que aprende patrones predictivos (frecuencia de llamadas al servicio técnico, cambios de tarifa, interacciones con la app, etc.).</li>
+                    <li><strong>Implementación de la matriz de confusión:</strong> definir qué error es más costoso:<ul style="margin-left:1.3rem;">
+                        <li><strong>Falso Negativo:</strong> no detectar a un cliente que se va → pérdida de ingresos.</li>
+                        <li><strong>Falso Positivo:</strong> ofrecer descuento a un cliente que no se iba → coste marginal del descuento.</li>
+                    </ul></li>
+                    <li><strong>Optimización del recall:</strong> en este caso, priorizar el recall (detectar el máximo número de fugas posibles) aunque baje un poco la precisión.</li>
+                </ol>
+
+                <h4>Resultados esperados</h4>
+                <ul style="margin-left:1.3rem;">
+                    <li>Reducción de la tasa de abandono del 12% al 7% en 6 meses.</li>
+                    <li>Optimización del presupuesto de marketing (ahorro del 40% en campañas masivas).</li>
+                    <li>Aumento de la satisfacción del cliente (intervenciones personalizadas y oportunas).</li>
+                </ul>
+
+                <div class="info-box success-box">
+                    <strong>Clave del caso:</strong> transitar de Business Intelligence (reportar que el churn fue del 12%) a Machine Learning (predecir quién se irá el próximo mes).
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 2: CLUSTERING PARA FÁRMACO -->
+        <div class="case-card">
+            <div class="case-header">
+                <h3>Caso Práctico 4 · Segmentación Inteligente para el Lanzamiento de un Nuevo Fármaco</h3>
+                <button class="solution-toggle" aria-expanded="false">Ver Solución</button>
+            </div>
+
+            <p><strong>Escenario.</strong> Una empresa biotecnológica ha desarrollado un nuevo suplemento nutricional diseñado para mejorar el rendimiento cognitivo. A diferencia de sus productos anteriores, no quieren dirigirse a segmentos sociodemográficos tradicionales (ej. «hombres de 40 a 50 años»), ya que saben que el comportamiento de compra en salud digital es mucho más sutil y no lineal. La empresa dispone de una base de datos de 2 millones de usuarios web con registros de navegación, reseñas leídas, horas de conexión y tipos de productos consultados, pero estos datos están «crudos» y no tienen etiquetas de éxito previas.</p>
+
+            <div class="solution-content">
+                <h4>Análisis del problema</h4>
+                <table>
+                    <thead><tr><th>Dimensión</th><th>Situación actual</th><th>Requerimiento futuro</th></tr></thead>
+                    <tbody>
+                        <tr><td>Datos disponibles</td><td>2M de usuarios sin etiquetar (crudos)</td><td>Micro-segmentos orgánicos descubiertos</td></tr>
+                        <tr><td>Enfoque tradicional</td><td>Segmentación sociodemográfica rígida</td><td>Segmentación conductual flexible</td></tr>
+                        <tr><td>Presupuesto publicitario</td><td>Disperso en audiencias amplias</td><td>Inversión quirúrgica en clusters de alto potencial</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Solución propuesta: Aprendizaje No Supervisado (Clustering)</h4>
+                <ol style="margin-left:1.3rem;">
+                    <li><strong>Preparación de datos:</strong> normalización de variables (horas de conexión, tipos de productos consultados, interacción con reseñas, etc.).</li>
+                    <li><strong>Aplicación de algoritmo de clustering:</strong> usar K-Means o DBSCAN para agrupar usuarios por similitudes orgánicas (sin etiquetas previas).</li>
+                    <li><strong>Análisis de clusters resultantes:</strong><ul style="margin-left:1.3rem;">
+                        <li><em>Cluster A:</em> «Usuarios nocturnos que consultan artículos sobre estrés cognitivo y compran tras leer 3+ reseñas».</li>
+                        <li><em>Cluster B:</em> «Usuarios diurnos que comparan precios y solo compran con descuentos superiores al 25%».</li>
+                        <li><em>Cluster C:</em> «Usuarios recurrentes que consumen contenido sobre biohacking y tienen alta propensión a recomendar».</li>
+                    </ul></li>
+                    <li><strong>Estrategia de personalización:</strong> diseñar campañas específicas para cada cluster (mensajes diferentes, canales diferentes, timing diferente).</li>
+                    <li><strong>Validación con A/B testing:</strong> comparar el ROI de la segmentación por clustering vs. la segmentación tradicional.</li>
+                </ol>
+
+                <h4>Resultados esperados</h4>
+                <ul style="margin-left:1.3rem;">
+                    <li>Detectar 3-5 micro-segmentos no evidentes para el marketing tradicional.</li>
+                    <li>Aumentar la tasa de conversión del 2% al 5% mediante mensajes hiper-personalizados.</li>
+                    <li>Reducir el coste de adquisición de cliente (CAC) en un 35% al enfocar el presupuesto.</li>
+                </ul>
+
+                <div class="info-box success-box">
+                    <strong>Clave del caso:</strong> el clustering descubre oportunidades que los humanos no vemos porque partimos de preconcepciones (edad, género, ubicación) que no explican realmente el comportamiento de compra.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TEST ================= -->
+    <section id="test" class="content-section">
+        <h2>🎯 Test de Autoevaluación · Unidad 2</h2>
+        <p>20 preguntas de opción múltiple. Se considera superado con un <strong>80 % de aciertos o más</strong> (16/20).</p>
+
+        <div class="score-bar">
+            <span>Progreso del test</span>
+            <span><strong id="scoreCorrect">0</strong> aciertos · <strong id="scoreDone">0</strong>/20 respondidas</span>
+        </div>
+
+        <div id="quizContainer">
+
+        <!-- Q1 -->
+        <div class="quiz-question" data-answer="c">
+            <p>1. ¿Qué peligro ético existe si una IA se entrena con datos históricos sesgados?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. El modelo se volverá inútil debido al fenómeno del Data Drift.</div>
+                <div class="quiz-option" data-value="b">B. El algoritmo dejará de funcionar y el sistema se detendrá por completo.</div>
+                <div class="quiz-option" data-value="c">C. La IA aprenderá y automatizará los prejuicios presentes en dichos datos.</div>
+                <div class="quiz-option" data-value="d">D. Se incrementará la transparencia y la explicabilidad del sistema.</div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question" data-answer="b">
+            <p>2. ¿Cuál es una de las funciones de la disciplina MLOps?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Escribir las reglas de negocio en un sistema de tipo «Si-Entonces».</div>
+                <div class="quiz-option" data-value="b">B. Garantizar que el sistema detecte caídas de rendimiento y se reentrene.</div>
+                <div class="quiz-option" data-value="c">C. Eliminar la necesidad de usar datos frescos para el entrenamiento.</div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question" data-answer="d">
+            <p>3. ¿Qué significa para un líder de negocio el paso de «programar» a «entrenar» sistemas?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Dejar de utilizar algoritmos estadísticos para volver a la programación tradicional.</div>
+                <div class="quiz-option" data-value="b">B. Aumentar la cantidad de reglas lógicas que el programador debe articular.</div>
+                <div class="quiz-option" data-value="c">C. Sustituir los procesos de toma de decisiones por reportes del pasado.</div>
+                <div class="quiz-option" data-value="d">D. Pasar de sistemas que reportan el pasado a sistemas que anticipan el futuro.</div>
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-question" data-answer="c">
+            <p>4. ¿A qué fenómeno se refiere el término «Data Drift»?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Al robo de datos personales por parte de delincuentes cibernéticos.</div>
+                <div class="quiz-option" data-value="b">B. A la limpieza manual que realiza un científico de datos el 80% de su tiempo.</div>
+                <div class="quiz-option" data-value="c">C. Al cambio en el comportamiento de los datos que hace que el modelo se degrade.</div>
+                <div class="quiz-option" data-value="d">D. A la capacidad de un robot para moverse por un almacén de forma autónoma.</div>
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-question" data-answer="c">
+            <p>5. ¿Cuál es una de las razones fundamentales por las que el enfoque de «reglas fijas» es insuficiente hoy en día?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. El exceso de programadores capaces de actualizar la lógica manual.</div>
+                <div class="quiz-option" data-value="b">B. La naturaleza determinista de los sistemas de cómputo actuales.</div>
+                <div class="quiz-option" data-value="c">C. La imposibilidad humana de procesar simultáneamente billones de puntos de datos.</div>
+                <div class="quiz-option" data-value="d">D. La reducción del volumen de datos que manejan las empresas modernas.</div>
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-question" data-answer="a">
+            <p>6. ¿Qué es la IA Explicable (XAI) y por qué es importante para un líder?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Son modelos que pueden explicar su decisión, evitando que sean una caja negra.</div>
+                <div class="quiz-option" data-value="b">B. Es una técnica para asegurar que el modelo memorice todos los datos históricos.</div>
+                <div class="quiz-option" data-value="c">C. Es una herramienta para automatizar el despido de personal de soporte técnico.</div>
+                <div class="quiz-option" data-value="d">D. Es el proceso de traducir porcentajes estadísticos a idiomas extranjeros.</div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="quiz-question" data-answer="c">
+            <p>7. ¿Qué permite el clustering en el ámbito del marketing hiper-personalizado?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Predecir el margen de error mínimo en las ventas del próximo martes.</div>
+                <div class="quiz-option" data-value="b">B. Programar reglas rígidas basadas en el sexo y la edad del consumidor.</div>
+                <div class="quiz-option" data-value="c">C. Revelar grupos por comportamiento que van más allá de segmentos sociodemográficos.</div>
+            </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="quiz-question" data-answer="b">
+            <p>8. ¿Qué ocurre cuando un modelo de IA sufre de Sobreajuste (Overfitting)?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. El modelo es demasiado simple y no ve los patrones básicos de los datos.</div>
+                <div class="quiz-option" data-value="b">B. El modelo memoriza anécdotas del pasado y falla al lanzarse al mercado real.</div>
+                <div class="quiz-option" data-value="c">C. El sistema se reentrena automáticamente para adaptarse al cambio de mercado.</div>
+                <div class="quiz-option" data-value="d">D. La IA explica de forma clara y lógica por qué tomó cada decisión.</div>
+            </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="quiz-question" data-answer="c">
+            <p>9. Para un directivo, ¿qué significa que un modelo de IA tenga un «Recall» bajo?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Que el modelo está generando demasiadas falsas alarmas innecesarias.</div>
+                <div class="quiz-option" data-value="b">B. Que el costo de mantenimiento de los servidores es demasiado elevado.</div>
+                <div class="quiz-option" data-value="c">C. Que el modelo es demasiado cauto y no es capaz de ver peligros reales.</div>
+                <div class="quiz-option" data-value="d">D. Que los datos del pasado han sido memorizados perfectamente por la máquina.</div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="quiz-question" data-answer="c">
+            <p>10. ¿Qué utilidad tiene la clasificación en la Gestión de Riesgo Crediticio?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Predecir el valor exacto en euros que un cliente gastará en diez años.</div>
+                <div class="quiz-option" data-value="b">B. Identificar vibraciones imperceptibles en una turbina industrial.</div>
+                <div class="quiz-option" data-value="c">C. Automatizar la aprobación de créditos asignando categorías de riesgo.</div>
+                <div class="quiz-option" data-value="d">D. Agrupar a los clientes por su comportamiento de compra nocturna.</div>
+            </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="quiz-question" data-answer="c">
+            <p>11. ¿En qué consiste el Aprendizaje por Refuerzo?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. En el análisis de sentimientos positivos o negativos en redes sociales.</div>
+                <div class="quiz-option" data-value="b">B. En la limpieza de datos históricos para evitar el sobreajuste.</div>
+                <div class="quiz-option" data-value="c">C. En aprender mediante la interacción dinámica, recibiendo recompensas o castigos.</div>
+                <div class="quiz-option" data-value="d">D. En la predicción de flujos de inventario para evitar roturas de stock.</div>
+            </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="quiz-question" data-answer="a">
+            <p>12. ¿A qué se refiere el concepto de «Exploración vs. Explotación» en los negocios?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Al equilibrio entre optimizar el producto actual o innovar con uno nuevo.</div>
+                <div class="quiz-option" data-value="b">B. A la decisión de contratar más científicos de datos o más programadores.</div>
+                <div class="quiz-option" data-value="c">C. Al proceso de limpiar datos estructurados frente a los no estructurados.</div>
+                <div class="quiz-option" data-value="d">D. A la diferencia entre usar una CPU normal o una tarjeta gráfica GPU.</div>
+            </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="quiz-question" data-answer="b">
+            <p>13. ¿Cuál es el objetivo principal del Aprendizaje No Supervisado?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Comparar respuestas con una solución correcta al final de un libro.</div>
+                <div class="quiz-option" data-value="b">B. Encontrar orden y conexiones ocultas en datos crudos sin etiquetas.</div>
+                <div class="quiz-option" data-value="c">C. Clasificar imágenes de radiografías como «Normal» o «Patológica».</div>
+            </div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="quiz-question" data-answer="a">
+            <p>14. ¿Cuándo se utiliza un modelo de Regresión en la industria?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Cuando buscamos predecir un valor numérico exacto dentro de una escala continua.</div>
+                <div class="quiz-option" data-value="b">B. Cuando el objetivo es asignar una etiqueta binaria como «Spam» o «Seguro».</div>
+                <div class="quiz-option" data-value="c">C. Cuando necesitamos agrupar moléculas sin conocer su estructura previa.</div>
+                <div class="quiz-option" data-value="d">D. Cuando se desea penalizar a una mascota virtual mediante puntos negativos.</div>
+            </div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="quiz-question" data-answer="b">
+            <p>15. ¿Cómo funciona un sistema de Detección de Anomalías para prevenir el fraude?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Clasificando todas las compras en una tienda de lujo como seguras.</div>
+                <div class="quiz-option" data-value="b">B. Aprendiendo el patrón normal de comportamiento y alertando cuando este se rompe.</div>
+                <div class="quiz-option" data-value="c">C. Solicitando a un programador que escriba una regla para cada país del mundo.</div>
+                <div class="quiz-option" data-value="d">D. Entrenando a un agente para que explore nuevas formas de gastar dinero.</div>
+            </div>
+        </div>
+
+        <!-- Q16 -->
+        <div class="quiz-question" data-answer="c">
+            <p>16. ¿Qué pilar debe garantizar el liderazgo para el éxito de un proyecto de IA?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. El uso exclusivo de la intuición para ignorar las evidencias científicas.</div>
+                <div class="quiz-option" data-value="b">B. La sustitución total del juicio humano por la complejidad del algoritmo.</div>
+                <div class="quiz-option" data-value="c">C. La hibridación humano-máquina, donde la IA actúa como un copiloto.</div>
+                <div class="quiz-option" data-value="d">D. La delegación total de la limpieza de datos a terceros sin supervisión.</div>
+            </div>
+        </div>
+
+        <!-- Q17 -->
+        <div class="quiz-question" data-answer="c">
+            <p>17. ¿En qué premisa se basa el modelo de Aprendizaje Supervisado?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. En dejar que el algoritmo encuentre orden dentro del caos sin etiquetas.</div>
+                <div class="quiz-option" data-value="b">B. En la interacción dinámica entre un agente y un entorno físico.</div>
+                <div class="quiz-option" data-value="c">C. En aprender del pasado mediante un proceso de etiquetado de datos.</div>
+                <div class="quiz-option" data-value="d">D. En la eliminación total de los parámetros internos del algoritmo.</div>
+            </div>
+        </div>
+
+        <!-- Q18 -->
+        <div class="quiz-question" data-answer="c">
+            <p>18. En una Matriz de Confusión, ¿qué representa un «Falso Negativo»?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. El costo de molestar a un cliente bloqueando su tarjeta por error.</div>
+                <div class="quiz-option" data-value="b">B. Un error técnico que ocurre cuando el modelo es demasiado complejo.</div>
+                <div class="quiz-option" data-value="c">C. El costo de la omisión, como no detectar un cáncer o un fraude real.</div>
+                <div class="quiz-option" data-value="d">D. La precisión total del sistema expresada en un porcentaje estadístico.</div>
+            </div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="quiz-question" data-answer="c">
+            <p>19. ¿Qué modelo de aprendizaje utilizan plataformas como TikTok para sus recomendaciones?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Clasificación multiclase basada en el historial médico del usuario.</div>
+                <div class="quiz-option" data-value="b">B. Regresión lineal para predecir el tiempo exacto de visualización.</div>
+                <div class="quiz-option" data-value="c">C. Aprendizaje por refuerzo donde el sistema aprende si el usuario pasa el video.</div>
+                <div class="quiz-option" data-value="d">D. Clustering para agrupar usuarios únicamente por su proximidad geográfica.</div>
+            </div>
+        </div>
+
+        <!-- Q20 -->
+        <div class="quiz-question" data-answer="b">
+            <p>20. Según el texto, ¿por qué fallan el 80% de los proyectos de IA?</p>
+            <div class="quiz-options">
+                <div class="quiz-option" data-value="a">A. Por la falta de potencia de cómputo en las tarjetas gráficas modernas.</div>
+                <div class="quiz-option" data-value="b">B. Porque mueren en el ordenador del científico de datos sin llegar a producción.</div>
+                <div class="quiz-option" data-value="c">C. Porque los algoritmos de regresión son demasiado sencillos para el mercado.</div>
+                <div class="quiz-option" data-value="d">D. Por el elevado costo del etiquetado manual en el aprendizaje supervisado.</div>
+            </div>
+        </div>
+
+        </div><!-- /#quizContainer -->
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.5rem;">
+            <button class="sim-btn" onclick="resetQuiz()">🔄 Reiniciar test</button>
+            <button class="sim-btn" onclick="revealAll()">👁️ Revelar todas las respuestas</button>
+        </div>
+
+        <div id="quizResult" class="info-box" style="display:none; margin-top:1.5rem;"></div>
+    </section>
+
+    <!-- ================= GLOSARIO ================= -->
+    <section id="glosario" class="content-section">
+        <h2>📑 Glosario · Unidad 2</h2>
+        <input type="text" id="localSearch" class="search-input" style="width:100%; max-width:420px; margin-bottom:1.3rem;" placeholder="🔍 Buscar término...">
+
+        <div id="glossaryList">
+            <div class="glossary-term">
+                <span class="term-name">Aprendizaje Supervisado</span>
+                <span class="term-def">Paradigma donde el algoritmo aprende de datos etiquetados (con respuestas conocidas). Es como un alumno que estudia con un libro de ejercicios que tiene las soluciones al final.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Aprendizaje No Supervisado</span>
+                <span class="term-def">Paradigma donde el algoritmo recibe datos crudos sin etiquetas y debe encontrar patrones ocultos por sí mismo. Ideal para descubrimiento e innovación.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Aprendizaje por Refuerzo</span>
+                <span class="term-def">Enfoque basado en interacción dinámica: el agente aprende mediante prueba-error, recibiendo recompensas o castigos del entorno.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Regresión</span>
+                <span class="term-def">Tipo de modelo supervisado que predice un valor numérico exacto dentro de una escala continua (ej. ventas futuras, consumo energético).</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Clasificación</span>
+                <span class="term-def">Tipo de modelo supervisado que asigna una etiqueta o categoría a un dato nuevo (ej. «spam/no spam», «riesgo bajo/alto»).</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Clustering</span>
+                <span class="term-def">Algoritmo no supervisado que agrupa elementos similares en «racimos» (clusters) sin reglas predefinidas. Útil para segmentación conductual.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Detección de Anomalías</span>
+                <span class="term-def">Modelo que aprende el patrón «normal» y alerta cuando algo rompe ese patrón. Usado en fraude bancario y mantenimiento predictivo.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Precisión (Precision)</span>
+                <span class="term-def">Métrica que mide: de las veces que el modelo dijo «sí», cuántas veces tuvo razón. Importante cuando el falso positivo es costoso.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Recall (Sensibilidad)</span>
+                <span class="term-def">Métrica que mide: de todos los casos reales positivos, cuántos fue capaz de detectar el modelo. Importante cuando el falso negativo es crítico.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Matriz de Confusión</span>
+                <span class="term-def">Tabla que visualiza los aciertos y errores de un modelo: Verdaderos Positivos, Falsos Positivos, Verdaderos Negativos, Falsos Negativos.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Falso Positivo</span>
+                <span class="term-def">El modelo alerta de algo que no existe (ej. bloquear la tarjeta de un cliente que está de viaje). Coste: molestia del cliente.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Falso Negativo</span>
+                <span class="term-def">El modelo no detecta algo que sí existe (ej. no detectar un fraude real). Coste: omisión crítica (dinero perdido, vidas en riesgo).</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Overfitting (Sobreajuste)</span>
+                <span class="term-def">Cuando el modelo memoriza los datos de entrenamiento en lugar de aprender patrones generales. Precisión perfecta en pruebas, pésima en producción.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Underfitting (Bajo Ajuste)</span>
+                <span class="term-def">Cuando el modelo es demasiado simple para capturar la complejidad de los datos. No aprende ni en entrenamiento ni en producción.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Data Drift</span>
+                <span class="term-def">Cambio en la distribución de los datos que hace que el modelo se degrade con el tiempo. Requiere reentrenamiento continuo.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">MLOps</span>
+                <span class="term-def">Disciplina que garantiza que los algoritmos de IA sean vigentes de forma ininterrumpida mediante monitorización, datos frescos y reentrenamiento automático.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">XAI (IA Explicable)</span>
+                <span class="term-def">Técnicas que permiten a los modelos «explicar» por qué tomaron una decisión, evitando la «caja negra» y cumpliendo normativas europeas.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Exploración vs. Explotación</span>
+                <span class="term-def">Dilema estratégico en refuerzo: ¿sigues haciendo lo que sabes que funciona (explotación) o pruebas algo nuevo (exploración)?</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Hibridación Humano-Máquina</span>
+                <span class="term-def">Filosofía donde la IA actúa como copiloto: predice y sugiere, pero el humano aporta contexto, ética y juicio final.</span>
+            </div>
+            <div class="glossary-term">
+                <span class="term-name">Business Intelligence (BI)</span>
+                <span class="term-def">Sistemas que reportan el pasado (qué vendimos el mes pasado). Machine Learning va más allá: anticipa el futuro.</span>
+            </div>
+        </div>
+    </section>
+
+    </main
+
     
-    <script src="../js/main.js"></script>
-    <script src="../js/search.js"></script>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <p>&copy; 2026 - Metodologías de aprendizaje humano e inteligencia artificial | Universitas Europaea</p>
+        <a href="#" class="back-to-top">↑ Volver arriba</a>
+    </div>
+</footer>
+
+<script src="../js/main.js"></script>
+<script src="../js/search.js"></script>
+
+<!-- ================= SCRIPTS ESPECÍFICOS UNIDAD 1 ================= -->
+<script>
+/* ---------- CICLO DE VIDA INTERACTIVO ---------- */
+document.querySelectorAll('.lifecycle-step').forEach(step => {
+    step.addEventListener('click', () => {
+        const n = step.dataset.step;
+        document.querySelectorAll('.lifecycle-step').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.lifecycle-detail').forEach(d => d.classList.remove('active'));
+        step.classList.add('active');
+        document.querySelector(`.lifecycle-detail[data-detail="${n}"]`).classList.add('active');
+    });
+});
+
+/* ---------- SIMULADOR: ¿ES IA O REGLAS? ---------- */
+const simScenarios = [
+    { text: "Un ascensor que decide cerrar la puerta y subir al piso solicitado.", answer: "reglas", why: "Sigue reglas fijas escritas por un humano. No aprende nada de la experiencia." },
+    { text: "Un sistema que analizó 10 millones de radiografías por sí mismo y ahora marca zonas sospechosas.", answer: "ia", why: "Ha aprendido patrones de forma autónoma a partir de un volumen masivo de datos." },
+    { text: "Un cajero que aplica «si el saldo es menor que 0, denegar la operación».", answer: "reglas", why: "Es una condición explícita escrita por el programador. Software tradicional puro." },
+    { text: "Un filtro de spam que se reajusta cada vez que los usuarios marcan un correo como «no es spam».", answer: "ia", why: "Aprende de las etiquetas de los usuarios y actualiza su criterio con la experiencia." },
+    { text: "Un termostato que enciende la calefacción cuando baja de 18 °C.", answer: "reglas", why: "Umbral fijo predefinido. No hay aprendizaje ni adaptación." },
+    { text: "Un sistema de recomendación que observa tu comportamiento y cambia lo que te sugiere.", answer: "ia", why: "Aprende de patrones de comportamiento reales, no de reglas escritas a mano." },
+    { text: "Un sistema que descubrió por sí solo que las harinas y los huevos se compran juntos.", answer: "ia", why: "Patrón descubierto de forma autónoma a partir de miles de transacciones históricas." },
+    { text: "Una hoja de cálculo con la fórmula «=SI(A2>2000;\"Apto\";\"No apto\")».", answer: "reglas", why: "Regla explícita definida por una persona. Es determinista y no aprende." }
+];
+let simIdx = -1, simScore = 0;
+
+function simStart() {
+    simIdx = 0; simScore = 0;
+    document.getElementById('simTotal').textContent = simScenarios.length;
+    simRender();
+}
+
+function simRender() {
+    const fb = document.getElementById('simFeedback');
+    fb.className = 'sim-feedback';
+    fb.textContent = '';
+    if (simIdx >= simScenarios.length) {
+        document.getElementById('simScenario').innerHTML =
+            `<strong>🏁 Fin del simulador.</strong><br>Has acertado <strong>${simScore}</strong> de <strong>${simScenarios.length}</strong> escenarios.`;
+        document.getElementById('simCounter').textContent = simScenarios.length;
+        return;
+    }
+    document.getElementById('simScenario').textContent = simScenarios[simIdx].text;
+    document.getElementById('simCounter').textContent = simIdx + 1;
+}
+
+function simAnswer(choice) {
+    if (simIdx < 0 || simIdx >= simScenarios.length) return;
+    const s = simScenarios[simIdx];
+    const fb = document.getElementById('simFeedback');
+    const ok = choice === s.answer;
+    if (ok) simScore++;
+    fb.className = 'sim-feedback show ' + (ok ? 'ok' : 'no');
+    fb.innerHTML = (ok ? '✅ <strong>Correcto.</strong> ' : '❌ <strong>No exactamente.</strong> ') +
+        `La respuesta es <strong>${s.answer === 'ia' ? 'IA' : 'reglas fijas'}</strong>. ${s.why}`;
+    simIdx++;
+    setTimeout(() => { if (simIdx <= simScenarios.length) simRender(); }, 1900);
+}
+
+/* ---------- SIMULADOR DE NORMALIZACIÓN ---------- */
+function normUpdate() {
+    const raw = document.getElementById('normInput').value;
+    const out = document.getElementById('normOutput');
+    if (!raw.trim()) { out.textContent = '—'; return; }
+
+    let v = raw.trim();
+
+    // Divisas
+    const money = v.match(/^([\d.,]+)\s*(€|eur|euros?)?$/i);
+    if (money && (/€|eur|euros?/i.test(v))) {
+        let num = money[1].replace(/\.(?=\d{3}\b)/g, '').replace(',', '.');
+        const n = parseFloat(num);
+        if (!isNaN(n)) { out.textContent = n.toFixed(2) + ' EUR'; return; }
+    }
+    if (/^(€|eur|euros?)$/i.test(v)) { out.textContent = 'EUR (moneda)'; return; }
+
+    // Fechas dd/mm/aaaa, dd-mm-aaaa, aaaa-mm-dd
+    let m = v.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+    if (m) {
+        let d = m[1].padStart(2,'0'), mo = m[2].padStart(2,'0'), y = m[3];
+        if (y.length === 2) y = '20' + y;
+        out.textContent = `${y}-${mo}-${d} (ISO 8601)`;
+        return;
+    }
+    m = v.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+    if (m) {
+        out.textContent = `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')} (ISO 8601)`;
+        return;
+    }
+
+    // Texto: trim + capitalización
+    v = v.replace(/\s+/g, ' ');
+    out.textContent = v.charAt(0).toUpperCase() + v.slice(1).toLowerCase();
+}
+
+/* ---------- TEST ---------- */
+const TOTAL_Q = 20;
+let answered = 0, correct = 0;
+const done = new Set();
+
+document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.addEventListener('click', function () {
+        const q = this.closest('.quiz-question');
+        if (done.has(q)) return;
+        done.add(q);
+
+        const chosen = this.dataset.value;
+        const right = q.dataset.answer;
+        answered++;
+
+        q.querySelectorAll('.quiz-option').forEach(o => {
+            if (o.dataset.value === right) o.classList.add('correct');
+            else if (o.dataset.value === chosen) o.classList.add('incorrect');
+        });
+
+        if (chosen === right) correct++;
+        updateScore();
+    });
+});
+
+function updateScore() {
+    document.getElementById('scoreCorrect').textContent = correct;
+    document.getElementById('scoreDone').textContent = answered;
+
+    if (answered === TOTAL_Q) {
+        const pct = Math.round((correct / TOTAL_Q) * 100);
+        const box = document.getElementById('quizResult');
+        const passed = pct >= 80;
+        box.style.display = 'block';
+        box.className = 'info-box ' + (passed ? 'success-box' : 'warning-box');
+        box.innerHTML = `<strong>${passed ? '🎉 Test superado' : '📚 A repasar'} — ${correct}/${TOTAL_Q} (${pct} %).</strong><br>` +
+            (passed
+                ? 'Cumples el criterio del 80 % exigido por la asignatura.'
+                : 'El criterio de superación es del 80 % (16/20). Revisa las preguntas falladas.');
+    }
+}
+
+function resetQuiz() {
+    answered = 0; correct = 0; done.clear();
+    document.querySelectorAll('.quiz-question').forEach(q => q.dataset.answered = 'false');
+    document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('correct', 'incorrect'));
+    document.getElementById('quizResult').style.display = 'none';
+    updateScore();
+}
+
+function revealAll() {
+    document.querySelectorAll('.quiz-question').forEach(q => {
+        const right = q.dataset.answer;
+        q.querySelectorAll('.quiz-option').forEach(o => {
+            if (o.dataset.value === right) o.classList.add('correct');
+        });
+    });
+}
+</script>
 </body>
 </html>
+
