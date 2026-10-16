@@ -20,36 +20,49 @@ document.addEventListener('DOMContentLoaded', () => {
         sections.forEach(section => observer.observe(section));
     }
     
-    // === SHOW/HIDE SOLUCIÓN ===
+    // === SHOW/HIDE SOLUCIÓN (CASOS PRÁCTICOS) ===
     document.querySelectorAll('.solution-toggle').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            content.style.display = content.style.display === 'block' ? 'none' : 'block';
-            this.textContent = content.style.display === 'block' ? 'Ocultar Solución' : 'Ver Solución';
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // El panel NO es hermano del botón: subimos al .case-card y buscamos dentro
+            const card = this.closest('.case-card');
+            const content = card
+                ? card.querySelector('.solution-content')
+                : this.nextElementSibling; // fallback por si algún caso tiene otra estructura
+
+            if (!content) {
+                console.warn('No se encontró .solution-content para este botón:', this);
+                return;
+            }
+
+            const abriendo = content.style.display !== 'block';
+            content.style.display = abriendo ? 'block' : 'none';
+            this.textContent = abriendo ? 'Ocultar Solución' : 'Ver Solución';
+            this.setAttribute('aria-expanded', abriendo ? 'true' : 'false');
         });
     });
     
-    // === CHECK ANSWER TEST ===
+        // === CHECK ANSWER TEST ===
     document.querySelectorAll('.quiz-option').forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             const parent = this.closest('.quiz-question');
+            if (parent.dataset.answered === 'true') return;   // ya respondida → ignorar
+            parent.dataset.answered = 'true';
+
             const correct = parent.dataset.answer;
             const selected = this.dataset.value;
-            
+
             parent.querySelectorAll('.quiz-option').forEach(opt => {
-                opt.onclick = null;
+                if (opt.dataset.value === correct) opt.classList.add('correct');
+                else if (opt.dataset.value === selected) opt.classList.add('incorrect');
             });
-            
-            if (selected === correct) {
-                this.classList.add('correct');
-            } else {
-                this.classList.add('incorrect');
-                parent.querySelectorAll('.quiz-option').forEach(opt => {
-                    if (opt.dataset.value === correct) {
-                        opt.classList.add('correct');
-                    }
-                });
-            }
+
+            const evt = new CustomEvent('quizAnswered', {
+                detail: { correct: selected === correct }
+            });
+            parent.dispatchEvent(evt);
         });
     });
     

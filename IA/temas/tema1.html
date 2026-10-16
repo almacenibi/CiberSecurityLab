@@ -478,7 +478,7 @@
         <div class="case-card">
             <div class="case-header">
                 <h3>Caso Práctico 1 · El dilema de la modernización (IA Simbólica vs. Subsimbólica)</h3>
-                <button class="solution-toggle">Ver Solución</button>
+                <button class="solution-toggle" aria-expanded="false">Ver Solución</button>
             </div>
 
             <p><strong>Escenario.</strong> Una entidad bancaria tradicional utiliza un sistema de «Sistemas Expertos» basado en reglas lógicas rígidas para la concesión de préstamos personales: <em>«Si la nómina es &gt; 2000 € Y no hay deudas previas, ENTONCES aprobar»</em>. El modelo es totalmente transparente y explicable para los reguladores, pero el banco está perdiendo cuota de mercado frente a las fintech. El sistema es «frágil» y no soporta la ambigüedad del mundo real: muchos clientes con ingresos variables (autónomos, nómadas digitales) son rechazados automáticamente a pesar de tener solvencia, porque el sistema no puede «aprender» patrones que no estén predefinidos. El Director de Operaciones debe proponer una transición hacia Machine Learning (IA Subsimbólica) <strong>sin comprometer la seguridad ni la capacidad de explicar las decisiones ante una auditoría</strong>.</p>
@@ -521,7 +521,7 @@
         <div class="case-card">
             <div class="case-header">
                 <h3>Caso Práctico 2 · El desafío del «Data Swamp» en el sector retail</h3>
-                <button class="solution-toggle">Ver Solución</button>
+                <button class="solution-toggle" aria-expanded="false">Ver Solución</button>
             </div>
 
             <p><strong>Escenario.</strong> Una multinacional de moda rápida ha acumulado petabytes de información durante la última década. Posee datos estructurados (precios, fechas de facturación) en sus Data Warehouses, pero también una cantidad masiva de datos no estructurados: audios de atención al cliente, fotos de redes sociales donde se etiqueta a la marca y contratos de proveedores en PDF. Estos últimos se almacenan en un Data Lake <strong>sin un índice claro</strong>, lo que ha convertido su infraestructura en un «Data Swamp» donde es imposible encontrar información útil. La dirección sospecha que está perdiendo una ventaja competitiva enorme al no entender el <em>«por qué»</em> de las compras. Se requiere un plan para transformar este caos en valor real de negocio utilizando el ciclo de vida del dato.</p>
@@ -1077,7 +1077,8 @@ function updateScore() {
 
 function resetQuiz() {
     answered = 0; correct = 0; done.clear();
-    document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('correct','incorrect'));
+    document.querySelectorAll('.quiz-question').forEach(q => q.dataset.answered = 'false');
+    document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('correct', 'incorrect'));
     document.getElementById('quizResult').style.display = 'none';
     updateScore();
 }
