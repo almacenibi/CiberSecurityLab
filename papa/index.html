@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Recuperación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-4 mb-5 max-w-md">
+        <h2 class="text-center mb-4">Registro Diario</h2>
+        
+        <div id="alertSuccess" class="alert alert-success d-none" role="alert">
+            ¡Registro guardado correctamente!
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form id="registroForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Fecha</label>
+                        <input type="date" class="form-control" name="fecha" id="fecha" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hora / Sesión</label>
+                        <select class="form-select" name="hora" required>
+                            <option value="">Selecciona...</option>
+                            <option value="Mañana">Mañana</option>
+                            <option value="Mediodía">Mediodía</option>
+                            <option value="Tarde">Tarde</option>
+                            <option value="Noche">Noche</option>
+                            <option value="Madrugada">Madrugada</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tiempo Andando/De pie (minutos)</label>
+                        <input type="number" class="form-control" name="tiempo" required placeholder="Ej: 20">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nivel de Dolor al parar (0-10)</label>
+                        <input type="range" class="form-range" name="dolor" min="0" max="10" id="rangoDolor" value="0" oninput="valorDolor.innerText = this.value">
+                        <div class="text-center fw-bold fs-5 text-danger" id="valorDolor">0</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Motivo de la parada</label>
+                        <input type="text" class="form-control" name="motivo" placeholder="Ej: Fatiga, calambre, por precaución...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Medicación tomada</label>
+                        <input type="text" class="form-control" name="medicacion" placeholder="Ej: Paracetamol a las 17:00">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Observaciones / Ayuda</label>
+                        <textarea class="form-control" name="observaciones" rows="3" placeholder="Progreso, ánimo, ayuda necesitada en aseo..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fs-5" id="btnSubmit">Guardar Registro</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Autocompletar con la fecha de hoy
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        const form = document.getElementById('registroForm');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const alertSuccess = document.getElementById('alertSuccess');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Guardando...";
+
+            // REEMPLAZAR POR LA URL DE TU APPS SCRIPT
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzRIKEh4pSPqdR9sYH8EWNWD8yOKT1sT5Z0JApZy5hWv15S4fjb_OkMc74vXnujOrhJ/exec'; 
+            
+            const formData = new FormData(form);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(response => {
+                    alertSuccess.classList.remove('d-none');
+                    form.reset();
+                    document.getElementById('fecha').valueAsDate = new Date();
+                    document.getElementById('valorDolor').innerText = '0';
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = "Guardar Registro";
+                    window.scrollTo(0,0);
+                    setTimeout(() => alertSuccess.classList.add('d-none'), 5000);
+                })
+                .catch(error => {
+                    alert("Hubo un error al guardar. Inténtalo de nuevo.");
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = "Guardar Registro";
+                });
+        });
+    </script>
+</body>
+</html>
