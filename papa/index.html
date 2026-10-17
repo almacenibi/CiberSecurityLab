@@ -101,6 +101,7 @@
                                     <th>Fecha/Hora</th>
                                     <th>Min.</th>
                                     <th>Dolor</th>
+                                    <th>Detalles</th>
                                     <th>Borrar</th>
                                 </tr>
                             </thead>
@@ -168,14 +169,22 @@
             fetch(scriptURL)
                 .then(res => res.json())
                 .then(data => {
-                    // Invertimos el array para ver lo más reciente arriba
                     data.reverse().forEach(row => {
                         const tr = document.createElement('tr');
-                        // Resumimos info en columnas para que quepa en móviles
+                        
+                        // 1. Preparamos el bloque unificado de detalles
+                        let detalles = '';
+                        if(row.motivo) detalles += `<strong>Motivo:</strong> ${row.motivo}<br>`;
+                        if(row.medicacion) detalles += `<strong>Med.:</strong> ${row.medicacion}<br>`;
+                        if(row.observaciones) detalles += `<strong>Obs.:</strong> ${row.observaciones}`;
+                        if(!detalles) detalles = '<span class="text-muted">-</span>'; // Si todo está vacío
+
+                        // 2. Insertamos las 5 columnas en la tabla
                         tr.innerHTML = `
-                            <td><strong>${row.fecha}</strong><br><small>${row.hora}</small></td>
+                            <td class="text-nowrap"><strong>${row.fecha}</strong><br><small>${row.hora}</small></td>
                             <td>${row.tiempo}'</td>
                             <td>${row.dolor}/10</td>
+                            <td style="min-width: 150px; font-size: 0.85em;">${detalles}</td>
                             <td>
                                 <button class="btn btn-sm btn-danger" onclick="deleteRecord(${row.fila}, this)">[X]</button>
                             </td>
