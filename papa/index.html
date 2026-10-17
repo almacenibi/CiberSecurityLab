@@ -53,21 +53,24 @@
                             <label class="form-label fw-bold">Fecha</label>
                             <input type="date" class="form-control" name="fecha" id="fecha" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Hora / Sesión</label>
-                            <select class="form-select" name="hora" required>
-                                <option value="">Selecciona...</option>
-                                <option value="Mañana">Mañana</option>
-                                <option value="Mediodía">Mediodía</option>
-                                <option value="Tarde">Tarde</option>
-                                <option value="Noche">Noche</option>
-                                <option value="Madrugada">Madrugada</option>
-                            </select>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Hora Inicio</label>
+                                <input type="time" class="form-control" name="horaInicio" id="horaInicio" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Hora Fin</label>
+                                <input type="time" class="form-control" name="horaFin" id="horaFin" required>
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Tiempo Andando/De pie (min)</label>
-                            <input type="number" class="form-control" name="tiempo" required placeholder="Ej: 20">
+                            <label class="form-label fw-bold">Tiempo (min)</label>
+                            <!-- Le hemos puesto id="tiempoTotal" para autocalcularlo -->
+                            <input type="number" class="form-control" name="tiempo" id="tiempoTotal" required placeholder="Se calcula solo">
                         </div>
+
+
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nivel de Dolor (0-10)</label>
                             <input type="range" class="form-range" name="dolor" min="0" max="10" id="rangoDolor" value="0" oninput="valorDolor.innerText = this.value">
@@ -151,7 +154,8 @@
 
     <script>
         // ¡¡IMPORTANTE!! PEGA AQUÍ TU URL GENERADA EN APPS SCRIPT
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwvAVXbbw6UEmdKue1BiJY7RAeZYf4IdMn3YvMNeTTByqP7tH5W0tUgSXC5jlF6NHSv/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbytVeDz4JkPWDiYOb6TOWXfJEFogN4asX8eqtjhD21aZj-N7bvpo0BqVb9XQYry-SlR/exec';
+        
         
         // Función para navegar entre pantallas
         function showView(viewId) {
@@ -170,6 +174,23 @@
 
         // ---------- LÓGICA DEL FORMULARIO (GUARDAR) ----------
         const form = document.getElementById('registroForm');
+        // Auto-calcular tiempo
+        const inputInicio = document.getElementById('horaInicio');
+        const inputFin = document.getElementById('horaFin');
+        const inputTiempo = document.getElementById('tiempoTotal');
+
+        function calcularTiempo() {
+            if (inputInicio.value && inputFin.value) {
+                const [hInicio, mInicio] = inputInicio.value.split(':').map(Number);
+                const [hFin, mFin] = inputFin.value.split(':').map(Number);
+                let minutos = (hFin * 60 + mFin) - (hInicio * 60 + mInicio);
+                if (minutos < 0) minutos += 24 * 60; // Por si pasa de medianoche
+                inputTiempo.value = minutos;
+            }
+        }
+        inputInicio.addEventListener('change', calcularTiempo);
+        inputFin.addEventListener('change', calcularTiempo);
+        
         form.addEventListener('submit', e => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
@@ -218,7 +239,7 @@
 
                         // 2. Insertamos las 5 columnas en la tabla
                         tr.innerHTML = `
-                            <td class="text-nowrap"><strong>${row.fecha}</strong><br><small>${row.hora}</small></td>
+                            <td class="text-nowrap"><strong>${row.fecha}</strong><br><small>${row.horaInicio} - ${row.horaFin}</small></td>
                             <td>${row.tiempo}'</td>
                             <td>${row.dolor}/10</td>
                             <td style="min-width: 150px; font-size: 0.85em;">${detalles}</td>
