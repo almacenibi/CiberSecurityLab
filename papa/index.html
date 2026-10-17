@@ -11,7 +11,8 @@
     </style>
 </head>
 <body class="bg-light">
-    <div class="container mt-4 mb-5 max-w-md">
+    <!-- Contenedor principal de la App (oculto al imprimir) -->
+    <div id="appContainer" class="container mt-4 mb-5 max-w-md d-print-none">
         <h2 class="text-center mb-4 text-primary">🏥 Recuperación Lumbar</h2>
         
         <!-- VISTA 1: MENÚ PRINCIPAL -->
@@ -36,6 +37,14 @@
                     <h5 class="card-title">📖 Guía y Precauciones</h5>
                     <p class="card-text text-muted small">Pautas médicas, posturas y cómo ayudarle.</p>
                     <button class="btn btn-outline-info w-100 py-3 fs-5" onclick="showView('viewGuide')">Consultar Guía</button>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">📄 Informes</h5>
+                    <p class="card-text text-muted small">Genera un PDF para el médico filtrando por fechas.</p>
+                    <button class="btn btn-outline-success w-100 py-3 fs-5" onclick="showView('viewReports')">Ir a Informes</button>
                 </div>
             </div>
         </div>
@@ -150,8 +159,48 @@
                 </div>
             </div>
         </div>
-    </div>
 
+        <!-- VISTA 5: INFORMES -->
+        <div id="viewReports" class="d-none">
+            <button class="btn btn-sm btn-secondary mb-3" onclick="showView('viewMenu')">← Volver al Menú</button>
+            
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">Generar Informe PDF</h5>
+                    <form id="formInformes">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha Inicio</label>
+                            <input type="date" class="form-control" id="informeInicio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha Fin (Opcional)</label>
+                            <input type="date" class="form-control" id="informeFin">
+                            <div class="form-text small">Si lo dejas en blanco, solo se hará el informe del día de inicio.</div>
+                        </div>
+                        <div id="informeError" class="alert alert-danger d-none small"></div>
+                        <button type="submit" class="btn btn-success w-100 py-2 fs-5" id="btnGenerarPdf">Crear PDF</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- CONTENEDOR DEL INFORME PDF (Solo visible al imprimir) -->
+    <div id="printArea" class="container-fluid d-none d-print-block mt-4">
+        <h2 class="text-center mb-2">🏥 Informe de Recuperación Lumbar</h2>
+        <h5 class="text-center text-muted mb-4" id="printFechas"></h5>
+        <table class="table table-bordered table-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Horario</th>
+                    <th>Tiempo (min)</th>
+                    <th>Dolor</th>
+                    <th>Detalles (Motivo, Med., Obs.)</th>
+                </tr>
+            </thead>
+            <tbody id="printBody"></tbody>
+        </table>
+    </div>
     <script>
         // ¡¡IMPORTANTE!! PEGA AQUÍ TU URL GENERADA EN APPS SCRIPT
         const scriptURL = 'https://script.google.com/macros/s/AKfycbytVeDz4JkPWDiYOb6TOWXfJEFogN4asX8eqtjhD21aZj-N7bvpo0BqVb9XQYry-SlR/exec';
@@ -227,17 +276,25 @@
             fetch(scriptURL)
                 .then(res => res.json())
                 .then(data => {
+                    let currentDateGroup = null; // Variable para controlar el cambio de día
+
                     data.reverse().forEach(row => {
+                        // 1. Detección de cambio de día para agrupar visualmente
+                        if (row.fecha !== currentDateGroup) {
+                            currentDateGroup = row.fecha;
+                            const trGroup = document.createElement('tr');
+                            trGroup.innerHTML = `<td colspan="5" class="bg-secondary text-white text-center py-1 fw-bold" style="font-size: 0.9em; letter-spacing: 1px;">📅 ${currentDateGroup}</td>`;
+                            tbody.appendChild(trGroup);
+                        }
+
                         const tr = document.createElement('tr');
                         
-                        // 1. Preparamos el bloque unificado de detalles
                         let detalles = '';
                         if(row.motivo) detalles += `<strong>Motivo:</strong> ${row.motivo}<br>`;
                         if(row.medicacion) detalles += `<strong>Med.:</strong> ${row.medicacion}<br>`;
                         if(row.observaciones) detalles += `<strong>Obs.:</strong> ${row.observaciones}`;
-                        if(!detalles) detalles = '<span class="text-muted">-</span>'; // Si todo está vacío
+                        if(!detalles) detalles = '<span class="text-muted">-</span>';
 
-                        // 2. Insertamos las 5 columnas en la tabla
                         tr.innerHTML = `
                             <td class="text-nowrap"><strong>${row.fecha}</strong><br><small>${row.horaInicio} - ${row.horaFin}</small></td>
                             <td>${row.tiempo}'</td>
@@ -278,6 +335,107 @@
                     });
             }
         }
+    
+        // Añadir viewReports a la función showView
+        const oldShowView = showView;
+        showView = function(viewId) {
+            document.getElementById('viewReports').classList.add('d-none'); // Ocultar informes
+            oldShowView(viewId);
+        };
+
+        // ---------- LÓGICA DE INFORMES PDF ----------
+        
+        // Función auxiliar para convertir DD/MM/YYYY o YYYY-MM-DD de Google Sheets a YYYY-MM-DD para comparar
+        function parseDateString(dateStr) {
+            if (!dateStr) return '';
+            if (dateStr.includes('-')) return dateStr;
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split('/');
+                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            }
+            return dateStr;
+        }
+
+        document.getElementById('formInformes').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const errBox = document.getElementById('informeError');
+            errBox.classList.add('d-none');
+            
+            const btnPdf = document.getElementById('btnGenerarPdf');
+            
+            const inicio = document.getElementById('informeInicio').value;
+            let fin = document.getElementById('informeFin').value;
+            
+            // Si fecha fin está vacía, se iguala a la de inicio
+            if (!fin) fin = inicio;
+
+            // Validación de rango
+            if (fin < inicio) {
+                errBox.innerText = "Error: La fecha de fin no puede ser anterior a la de inicio.";
+                errBox.classList.remove('d-none');
+                return;
+            }
+
+            btnPdf.disabled = true;
+            btnPdf.innerText = "Recopilando datos...";
+
+            // Obtenemos los datos desde Apps Script
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(data => {
+                    const printBody = document.getElementById('printBody');
+                    printBody.innerHTML = '';
+                    let count = 0;
+
+                    // Filtrar y rellenar tabla
+                    data.forEach(row => {
+                        const rowDateStr = parseDateString(row.fecha);
+                        
+                        if (rowDateStr >= inicio && rowDateStr <= fin) {
+                            count++;
+                            const tr = document.createElement('tr');
+                            
+                            let detalles = '';
+                            if(row.motivo) detalles += `<strong>Motivo:</strong> ${row.motivo}<br>`;
+                            if(row.medicacion) detalles += `<strong>Med.:</strong> ${row.medicacion}<br>`;
+                            if(row.observaciones) detalles += `<strong>Obs.:</strong> ${row.observaciones}`;
+
+                            tr.innerHTML = `
+                                <td>${row.fecha}</td>
+                                <td>${row.horaInicio} - ${row.horaFin}</td>
+                                <td>${row.tiempo} min</td>
+                                <td>${row.dolor}</td>
+                                <td>${detalles}</td>
+                            `;
+                            printBody.appendChild(tr);
+                        }
+                    });
+
+                    btnPdf.disabled = false;
+                    btnPdf.innerText = "Crear PDF";
+
+                    if (count === 0) {
+                        errBox.innerText = "No hay registros para este rango de fechas.";
+                        errBox.classList.remove('d-none');
+                        return;
+                    }
+
+                    // Título del PDF
+                    document.getElementById('printFechas').innerText = (inicio === fin) 
+                        ? `Registros del día: ${inicio}` 
+                        : `Período: ${inicio} al ${fin}`;
+
+                    // Invocar ventana nativa de impresión (exportar a PDF)
+                    window.print();
+                })
+                .catch(err => {
+                    errBox.innerText = "Error al conectar con la base de datos.";
+                    errBox.classList.remove('d-none');
+                    btnPdf.disabled = false;
+                    btnPdf.innerText = "Crear PDF";
+                });
+        });
     </script>
 </body>
 </html>
