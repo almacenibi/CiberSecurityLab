@@ -17,35 +17,52 @@
         
         <!-- VISTA 1: MENÚ PRINCIPAL -->
         <div id="viewMenu" class="text-center">
-            <div class="card shadow-sm mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Añadir nuevo registro</h5>
-                    <p class="card-text text-muted small">Registra un nuevo paseo o tiempo en pie.</p>
-                    <button class="btn btn-primary w-100 py-3 fs-5" onclick="showView('viewForm')">📝 Registrar Andar</button>
+            <div class="row g-3">
+                
+                <!-- Opción 1: Registrar Andar (Azul) -->
+                <div class="col-12 col-md-6">
+                    <div class="card shadow-sm h-100 bg-primary text-white border-0" onclick="showView('viewForm')" style="cursor: pointer; transition: 0.2s;">
+                        <div class="card-body py-4">
+                            <div class="display-1 mb-2">🚶‍♂️</div>
+                            <h4 class="card-title fw-bold">Añadir Registro</h4>
+                            <p class="card-text small opacity-75">Nuevo paseo o tiempo en pie</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Historial</h5>
-                    <p class="card-text text-muted small">Revisa los progresos y elimina errores.</p>
-                    <button class="btn btn-outline-secondary w-100 py-3 fs-5" onclick="showView('viewList')">📊 Consultar Registros</button>
-                </div>
-            </div>
-            
-            <div class="card shadow-sm mt-3">
-                <div class="card-body">
-                    <h5 class="card-title">📖 Guía y Precauciones</h5>
-                    <p class="card-text text-muted small">Pautas médicas, posturas y cómo ayudarle.</p>
-                    <button class="btn btn-outline-info w-100 py-3 fs-5" onclick="showView('viewGuide')">Consultar Guía</button>
-                </div>
-            </div>
 
-            <div class="card shadow-sm mt-3">
-                <div class="card-body">
-                    <h5 class="card-title">📄 Informes</h5>
-                    <p class="card-text text-muted small">Genera un PDF para el médico filtrando por fechas.</p>
-                    <button class="btn btn-outline-success w-100 py-3 fs-5" onclick="showView('viewReports')">Ir a Informes</button>
+                <!-- Opción 2: Historial (Amarillo) -->
+                <div class="col-12 col-md-6">
+                    <div class="card shadow-sm h-100 bg-warning text-dark border-0" onclick="showView('viewList')" style="cursor: pointer; transition: 0.2s;">
+                        <div class="card-body py-4">
+                            <div class="display-1 mb-2">📊</div>
+                            <h4 class="card-title fw-bold">Ver Historial</h4>
+                            <p class="card-text small opacity-75">Revisa registros y progresos</p>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Opción 3: Guía Médica (Celeste) -->
+                <div class="col-12 col-md-6">
+                    <div class="card shadow-sm h-100 bg-info text-dark border-0" onclick="showView('viewGuide')" style="cursor: pointer; transition: 0.2s;">
+                        <div class="card-body py-4">
+                            <div class="display-1 mb-2">🩺</div>
+                            <h4 class="card-title fw-bold">Guía Médica</h4>
+                            <p class="card-text small opacity-75">Precauciones y posturas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opción 4: Informes PDF (Verde) -->
+                <div class="col-12 col-md-6">
+                    <div class="card shadow-sm h-100 bg-success text-white border-0" onclick="showView('viewReports')" style="cursor: pointer; transition: 0.2s;">
+                        <div class="card-body py-4">
+                            <div class="display-1 mb-2">📄</div>
+                            <h4 class="card-title fw-bold">Informes PDF</h4>
+                            <p class="card-text small opacity-75">Genera PDF para el médico</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
         
