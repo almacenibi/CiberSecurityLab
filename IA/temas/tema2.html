@@ -389,34 +389,28 @@
 
         <div class="sim-box">
             <div class="matrix-wrap">
-                <div class="matrix-axis" style="transform: rotate(270deg);">REALIDAD</div>
-                <div class="matrix-axis"><strong>Sí tiene la condición</strong></div>
-                <div class="matrix-axis"><strong>No tiene la condición</strong></div>
+                <div class="matrix-axis"></div>
+                <div class="matrix-axis"><strong>Modelo dice «Sí»</strong></div>
+                <div class="matrix-axis"><strong>Modelo dice «No»</strong></div>
 
+                <div class="matrix-axis"><strong>Realidad: Sí</strong></div>
                 <div class="matrix-cell" data-type="tp">
-                    <div class="matrix-cell">
-                        <span class="mc-label">VP</span>
-                        <span class="mc-sub">Verdadero<br>Positivo</span>
-                    </div>
+                    <span class="mc-label">VP</span>
+                    <span class="mc-sub">Verdadero<br>Positivo</span>
                 </div>
-                <div class="matrix-cell" data-type="fp">
-                    <div class="matrix-cell">
-                        <span class="mc-label">FP</span>
-                        <span class="mc-sub">Falso<br>Positivo</span>
-                    </div>
+                <div class="matrix-cell" data-type="fn">
+                    <span class="mc-label">FN</span>
+                    <span class="mc-sub">Falso<br>Negativo</span>
                 </div>
 
-                <div class="matrix-cell" data-type="fn">
-                    <div class="matrix-cell">
-                        <span class="mc-label">FN</span>
-                        <span class="mc-sub">Falso<br>Negativo</span>
-                    </div>
+                <div class="matrix-axis"><strong>Realidad: No</strong></div>
+                <div class="matrix-cell" data-type="fp">
+                    <span class="mc-label">FP</span>
+                    <span class="mc-sub">Falso<br>Positivo</span>
                 </div>
                 <div class="matrix-cell" data-type="tn">
-                    <div class="matrix-cell">
-                        <span class="mc-label">VN</span>
-                        <span class="mc-sub">Verdadero<br>Negativo</span>
-                    </div>
+                    <span class="mc-label">VN</span>
+                    <span class="mc-sub">Verdadero<br>Negativo</span>
                 </div>
             </div>
 
@@ -885,9 +879,7 @@
         </div>
     </section>
 
-    </main
-
-    
+</main>
 </div>
 
 <!-- FOOTER -->
@@ -901,99 +893,97 @@
 <script src="../js/main.js"></script>
 <script src="../js/search.js"></script>
 
-<!-- ================= SCRIPTS ESPECÍFICOS UNIDAD 1 ================= -->
+<!-- ================= SCRIPTS ESPECÍFICOS UNIDAD 2 ================= -->
 <script>
-/* ---------- CICLO DE VIDA INTERACTIVO ---------- */
-document.querySelectorAll('.lifecycle-step').forEach(step => {
-    step.addEventListener('click', () => {
-        const n = step.dataset.step;
-        document.querySelectorAll('.lifecycle-step').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.lifecycle-detail').forEach(d => d.classList.remove('active'));
-        step.classList.add('active');
-        document.querySelector(`.lifecycle-detail[data-detail="${n}"]`).classList.add('active');
+/* ---------- MATRIZ DE CONFUSIÓN INTERACTIVA ---------- */
+const MATRIX_INFO = {
+    tp: {
+        title: '✅ Verdadero Positivo (VP)',
+        body: 'El modelo dijo «sí» y la realidad era «sí». Es el acierto que buscamos: se detectó el fraude real, se identificó al paciente enfermo. No tiene coste de error, pero forzarlo en exceso suele rebajar la precisión del sistema.'
+    },
+    fp: {
+        title: '⚠️ Falso Positivo (FP) — el coste de la molestia',
+        body: 'El modelo dijo «sí» pero la realidad era «no». Ejemplo: bloquear la tarjeta de un cliente que está de viaje, o marcar como spam un correo legítimo. El coste es la molestia del cliente y el trabajo de soporte. Es un error tolerable cuando el coste de la omisión es mucho mayor.'
+    },
+    fn: {
+        title: '🚨 Falso Negativo (FN) — el coste de la omisión',
+        body: 'El modelo dijo «no» pero la realidad era «sí». Ejemplo: no detectar un cáncer, no detectar un fraude real, denegar una hipoteca a alguien solvente. El coste es altísimo: dinero perdido, vidas en riesgo, daño reputacional. Es el error que hay que minimizar cuando la decisión es crítica.'
+    },
+    tn: {
+        title: '✅ Verdadero Negativo (VN)',
+        body: 'El modelo dijo «no» y la realidad era «no». Ejemplo: autorizar una transacción normal, descartar una radiografía sana. Es el acierto silencioso: no genera alarma, pero sostiene la credibilidad del sistema.'
+    }
+};
+
+document.querySelectorAll('.matrix-cell').forEach(cell => {
+    cell.addEventListener('click', function () {
+        document.querySelectorAll('.matrix-cell').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+
+        const info = MATRIX_INFO[this.dataset.type];
+        const box = document.getElementById('matrixDetail');
+        if (!info || !box) return;
+        box.innerHTML = '<strong>' + info.title + '</strong><br>' + info.body;
     });
 });
 
-/* ---------- SIMULADOR: ¿ES IA O REGLAS? ---------- */
-const simScenarios = [
-    { text: "Un ascensor que decide cerrar la puerta y subir al piso solicitado.", answer: "reglas", why: "Sigue reglas fijas escritas por un humano. No aprende nada de la experiencia." },
-    { text: "Un sistema que analizó 10 millones de radiografías por sí mismo y ahora marca zonas sospechosas.", answer: "ia", why: "Ha aprendido patrones de forma autónoma a partir de un volumen masivo de datos." },
-    { text: "Un cajero que aplica «si el saldo es menor que 0, denegar la operación».", answer: "reglas", why: "Es una condición explícita escrita por el programador. Software tradicional puro." },
-    { text: "Un filtro de spam que se reajusta cada vez que los usuarios marcan un correo como «no es spam».", answer: "ia", why: "Aprende de las etiquetas de los usuarios y actualiza su criterio con la experiencia." },
-    { text: "Un termostato que enciende la calefacción cuando baja de 18 °C.", answer: "reglas", why: "Umbral fijo predefinido. No hay aprendizaje ni adaptación." },
-    { text: "Un sistema de recomendación que observa tu comportamiento y cambia lo que te sugiere.", answer: "ia", why: "Aprende de patrones de comportamiento reales, no de reglas escritas a mano." },
-    { text: "Un sistema que descubrió por sí solo que las harinas y los huevos se compran juntos.", answer: "ia", why: "Patrón descubierto de forma autónoma a partir de miles de transacciones históricas." },
-    { text: "Una hoja de cálculo con la fórmula «=SI(A2>2000;\"Apto\";\"No apto\")».", answer: "reglas", why: "Regla explícita definida por una persona. Es determinista y no aprende." }
+/* ---------- SIMULADOR DE UMBRAL: PRECISIÓN vs RECALL ---------- */
+// 40 casos reales positivos (fraudes) con puntuación del modelo
+const POS_SCORES = Array.from({ length: 40 }, (_, i) =>
+    0.10 + 0.895 * Math.pow(i / 39, 0.75)
+);
+
+// 150 casos reales negativos, agrupados por tramos de puntuación
+const NEG_BINS = [
+    [0.002, 27], [0.052, 19], [0.103, 18], [0.152, 12], [0.203, 12],
+    [0.252, 10], [0.303, 10], [0.352, 8],  [0.403, 8],  [0.452, 6],
+    [0.502, 4],  [0.552, 3],  [0.603, 3],  [0.652, 2],  [0.703, 2],
+    [0.752, 2],  [0.803, 1],  [0.852, 1],  [0.903, 1],  [0.952, 1]
 ];
-let simIdx = -1, simScore = 0;
+const NEG_SCORES = NEG_BINS.flatMap(([score, n]) => Array(n).fill(score));
 
-function simStart() {
-    simIdx = 0; simScore = 0;
-    document.getElementById('simTotal').textContent = simScenarios.length;
-    simRender();
+function renderThreshold() {
+    const slider = document.getElementById('thresholdSlider');
+    if (!slider) return;
+
+    const t = Number(slider.value) / 100;
+    document.getElementById('thresholdValue').textContent = slider.value;
+
+    let tp = 0, fn = 0, fp = 0, tn = 0;
+    POS_SCORES.forEach(s => (s >= t ? tp++ : fn++));
+    NEG_SCORES.forEach(s => (s >= t ? fp++ : tn++));
+
+    const precision = (tp + fp) > 0 ? (tp / (tp + fp)) * 100 : null;
+    const recall = (tp + fn) > 0 ? (tp / (tp + fn)) * 100 : 0;
+
+    const fmt = v => (v === null ? '—' : v.toFixed(1));
+
+    document.getElementById('precisionVal').textContent = fmt(precision);
+    document.getElementById('recallVal').textContent = fmt(recall);
+    document.getElementById('fpCount').textContent = fp;
+    document.getElementById('fnCount').textContent = fn;
+
+    document.getElementById('precisionBar').style.width = (precision || 0) + '%';
+    document.getElementById('recallBar').style.width = recall + '%';
+    document.getElementById('precisionPct').textContent = fmt(precision) + '%';
+    document.getElementById('recallPct').textContent = fmt(recall) + '%';
+
+    const fb = document.getElementById('thresholdFeedback');
+    let msg;
+    if (t < 0.3) {
+        msg = '<strong>Umbral permisivo.</strong> Detectas casi todos los fraudes reales (recall alto), pero disparas muchísimas falsas alarmas: ' + fp + ' clientes legítimos bloqueados. Sirve para decisiones donde <em>omitir</em> es catastrófico y molestar es barato.';
+    } else if (t <= 0.6) {
+        msg = '<strong>Zona de equilibrio.</strong> Con ' + fp + ' falsos positivos y ' + fn + ' falsos negativos, el modelo reparte el coste del error entre ambas partes. Es el punto de partida razonable antes de decidir qué error duele más.';
+    } else {
+        msg = '<strong>Umbral estricto.</strong> Casi no molestas a nadie (' + fp + ' falsos positivos), pero se te escapan ' + fn + ' fraudes reales. Solo es aceptable si el coste de molestar a un cliente es mayor que el de la pérdida.';
+    }
+    fb.innerHTML = msg;
 }
 
-function simRender() {
-    const fb = document.getElementById('simFeedback');
-    fb.className = 'sim-feedback';
-    fb.textContent = '';
-    if (simIdx >= simScenarios.length) {
-        document.getElementById('simScenario').innerHTML =
-            `<strong>🏁 Fin del simulador.</strong><br>Has acertado <strong>${simScore}</strong> de <strong>${simScenarios.length}</strong> escenarios.`;
-        document.getElementById('simCounter').textContent = simScenarios.length;
-        return;
-    }
-    document.getElementById('simScenario').textContent = simScenarios[simIdx].text;
-    document.getElementById('simCounter').textContent = simIdx + 1;
-}
-
-function simAnswer(choice) {
-    if (simIdx < 0 || simIdx >= simScenarios.length) return;
-    const s = simScenarios[simIdx];
-    const fb = document.getElementById('simFeedback');
-    const ok = choice === s.answer;
-    if (ok) simScore++;
-    fb.className = 'sim-feedback show ' + (ok ? 'ok' : 'no');
-    fb.innerHTML = (ok ? '✅ <strong>Correcto.</strong> ' : '❌ <strong>No exactamente.</strong> ') +
-        `La respuesta es <strong>${s.answer === 'ia' ? 'IA' : 'reglas fijas'}</strong>. ${s.why}`;
-    simIdx++;
-    setTimeout(() => { if (simIdx <= simScenarios.length) simRender(); }, 1900);
-}
-
-/* ---------- SIMULADOR DE NORMALIZACIÓN ---------- */
-function normUpdate() {
-    const raw = document.getElementById('normInput').value;
-    const out = document.getElementById('normOutput');
-    if (!raw.trim()) { out.textContent = '—'; return; }
-
-    let v = raw.trim();
-
-    // Divisas
-    const money = v.match(/^([\d.,]+)\s*(€|eur|euros?)?$/i);
-    if (money && (/€|eur|euros?/i.test(v))) {
-        let num = money[1].replace(/\.(?=\d{3}\b)/g, '').replace(',', '.');
-        const n = parseFloat(num);
-        if (!isNaN(n)) { out.textContent = n.toFixed(2) + ' EUR'; return; }
-    }
-    if (/^(€|eur|euros?)$/i.test(v)) { out.textContent = 'EUR (moneda)'; return; }
-
-    // Fechas dd/mm/aaaa, dd-mm-aaaa, aaaa-mm-dd
-    let m = v.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
-    if (m) {
-        let d = m[1].padStart(2,'0'), mo = m[2].padStart(2,'0'), y = m[3];
-        if (y.length === 2) y = '20' + y;
-        out.textContent = `${y}-${mo}-${d} (ISO 8601)`;
-        return;
-    }
-    m = v.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
-    if (m) {
-        out.textContent = `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')} (ISO 8601)`;
-        return;
-    }
-
-    // Texto: trim + capitalización
-    v = v.replace(/\s+/g, ' ');
-    out.textContent = v.charAt(0).toUpperCase() + v.slice(1).toLowerCase();
+const thresholdSlider = document.getElementById('thresholdSlider');
+if (thresholdSlider) {
+    thresholdSlider.addEventListener('input', renderThreshold);
+    renderThreshold();
 }
 
 /* ---------- TEST ---------- */
@@ -1057,4 +1047,3 @@ function revealAll() {
 </script>
 </body>
 </html>
-
