@@ -3,104 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Recuperación</title>
+    <title>App Recuperación</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .max-w-md { max-width: 600px; margin: auto; }
+        .table-responsive { font-size: 0.9rem; }
+    </style>
 </head>
 <body class="bg-light">
     <div class="container mt-4 mb-5 max-w-md">
-        <h2 class="text-center mb-4">Registro Diario</h2>
+        <h2 class="text-center mb-4 text-primary">🏥 Recuperación Lumbar</h2>
         
-        <div id="alertSuccess" class="alert alert-success d-none" role="alert">
-            ¡Registro guardado correctamente!
+        <!-- VISTA 1: MENÚ PRINCIPAL -->
+        <div id="viewMenu" class="text-center">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Añadir nuevo registro</h5>
+                    <p class="card-text text-muted small">Registra un nuevo paseo o tiempo en pie.</p>
+                    <button class="btn btn-primary w-100 py-3 fs-5" onclick="showView('viewForm')">📝 Registrar Andar</button>
+                </div>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Historial</h5>
+                    <p class="card-text text-muted small">Revisa los progresos y elimina errores.</p>
+                    <button class="btn btn-outline-secondary w-100 py-3 fs-5" onclick="showView('viewList')">📊 Consultar Registros</button>
+                </div>
+            </div>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <form id="registroForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha</label>
-                        <input type="date" class="form-control" name="fecha" id="fecha" required>
-                    </div>
+        <!-- VISTA 2: FORMULARIO -->
+        <div id="viewForm" class="d-none">
+            <button class="btn btn-sm btn-secondary mb-3" onclick="showView('viewMenu')">← Volver al Menú</button>
+            <div id="alertSuccess" class="alert alert-success d-none" role="alert">¡Guardado correctamente!</div>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="registroForm">
+                        <input type="hidden" name="action" value="insert">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha</label>
+                            <input type="date" class="form-control" name="fecha" id="fecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Hora / Sesión</label>
+                            <select class="form-select" name="hora" required>
+                                <option value="">Selecciona...</option>
+                                <option value="Mañana">Mañana</option>
+                                <option value="Mediodía">Mediodía</option>
+                                <option value="Tarde">Tarde</option>
+                                <option value="Noche">Noche</option>
+                                <option value="Madrugada">Madrugada</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tiempo Andando/De pie (min)</label>
+                            <input type="number" class="form-control" name="tiempo" required placeholder="Ej: 20">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nivel de Dolor (0-10)</label>
+                            <input type="range" class="form-range" name="dolor" min="0" max="10" id="rangoDolor" value="0" oninput="valorDolor.innerText = this.value">
+                            <div class="text-center fw-bold fs-5 text-danger" id="valorDolor">0</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Motivo de la parada</label>
+                            <input type="text" class="form-control" name="motivo">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Medicación tomada</label>
+                            <input type="text" class="form-control" name="medicacion">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Observaciones / Ayuda</label>
+                            <textarea class="form-control" name="observaciones" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fs-5" id="btnSubmit">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Hora / Sesión</label>
-                        <select class="form-select" name="hora" required>
-                            <option value="">Selecciona...</option>
-                            <option value="Mañana">Mañana</option>
-                            <option value="Mediodía">Mediodía</option>
-                            <option value="Tarde">Tarde</option>
-                            <option value="Noche">Noche</option>
-                            <option value="Madrugada">Madrugada</option>
-                        </select>
+        <!-- VISTA 3: LISTADO Y CONSULTA -->
+        <div id="viewList" class="d-none">
+            <button class="btn btn-sm btn-secondary mb-3" onclick="showView('viewMenu')">← Volver al Menú</button>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div id="loadingMsg" class="text-center my-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2">Cargando registros...</p>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Tiempo Andando/De pie (minutos)</label>
-                        <input type="number" class="form-control" name="tiempo" required placeholder="Ej: 20">
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover d-none" id="recordsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Fecha/Hora</th>
+                                    <th>Min.</th>
+                                    <th>Dolor</th>
+                                    <th>Borrar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Nivel de Dolor al parar (0-10)</label>
-                        <input type="range" class="form-range" name="dolor" min="0" max="10" id="rangoDolor" value="0" oninput="valorDolor.innerText = this.value">
-                        <div class="text-center fw-bold fs-5 text-danger" id="valorDolor">0</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Motivo de la parada</label>
-                        <input type="text" class="form-control" name="motivo" placeholder="Ej: Fatiga, calambre, por precaución...">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Medicación tomada</label>
-                        <input type="text" class="form-control" name="medicacion" placeholder="Ej: Paracetamol a las 17:00">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Observaciones / Ayuda</label>
-                        <textarea class="form-control" name="observaciones" rows="3" placeholder="Progreso, ánimo, ayuda necesitada en aseo..."></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 py-2 fs-5" id="btnSubmit">Guardar Registro</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Autocompletar con la fecha de hoy
-        document.getElementById('fecha').valueAsDate = new Date();
+        // ¡¡IMPORTANTE!! PEGA AQUÍ TU URL GENERADA EN APPS SCRIPT
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwvAVXbbw6UEmdKue1BiJY7RAeZYf4IdMn3YvMNeTTByqP7tH5W0tUgSXC5jlF6NHSv/exec';
+        
+        // Función para navegar entre pantallas
+        function showView(viewId) {
+            document.getElementById('viewMenu').classList.add('d-none');
+            document.getElementById('viewForm').classList.add('d-none');
+            document.getElementById('viewList').classList.add('d-none');
+            document.getElementById(viewId).classList.remove('d-none');
 
+            if(viewId === 'viewList') {
+                loadRecords();
+            } else if (viewId === 'viewForm') {
+                document.getElementById('fecha').valueAsDate = new Date();
+            }
+        }
+
+        // ---------- LÓGICA DEL FORMULARIO (GUARDAR) ----------
         const form = document.getElementById('registroForm');
-        const btnSubmit = document.getElementById('btnSubmit');
-        const alertSuccess = document.getElementById('alertSuccess');
-
         form.addEventListener('submit', e => {
             e.preventDefault();
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = "Guardando...";
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerText = "Guardando...";
 
-            // REEMPLAZAR POR LA URL DE TU APPS SCRIPT
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzRIKEh4pSPqdR9sYH8EWNWD8yOKT1sT5Z0JApZy5hWv15S4fjb_OkMc74vXnujOrhJ/exec'; 
-            
             const formData = new FormData(form);
 
             fetch(scriptURL, { method: 'POST', body: formData })
                 .then(response => {
-                    alertSuccess.classList.remove('d-none');
+                    document.getElementById('alertSuccess').classList.remove('d-none');
                     form.reset();
                     document.getElementById('fecha').valueAsDate = new Date();
                     document.getElementById('valorDolor').innerText = '0';
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerText = "Guardar Registro";
+                    btn.disabled = false;
+                    btn.innerText = "Guardar";
                     window.scrollTo(0,0);
-                    setTimeout(() => alertSuccess.classList.add('d-none'), 5000);
+                    setTimeout(() => document.getElementById('alertSuccess').classList.add('d-none'), 3000);
                 })
                 .catch(error => {
-                    alert("Hubo un error al guardar. Inténtalo de nuevo.");
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerText = "Guardar Registro";
+                    alert("Error al guardar.");
+                    btn.disabled = false;
+                    btn.innerText = "Guardar";
                 });
         });
+
+        // ---------- LÓGICA DEL LISTADO (LEER) ----------
+        function loadRecords() {
+            document.getElementById('loadingMsg').classList.remove('d-none');
+            document.getElementById('recordsTable').classList.add('d-none');
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(data => {
+                    // Invertimos el array para ver lo más reciente arriba
+                    data.reverse().forEach(row => {
+                        const tr = document.createElement('tr');
+                        // Resumimos info en columnas para que quepa en móviles
+                        tr.innerHTML = `
+                            <td><strong>${row.fecha}</strong><br><small>${row.hora}</small></td>
+                            <td>${row.tiempo}'</td>
+                            <td>${row.dolor}/10</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="deleteRecord(${row.fila}, this)">[X]</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    document.getElementById('loadingMsg').classList.add('d-none');
+                    document.getElementById('recordsTable').classList.remove('d-none');
+                })
+                .catch(err => alert("Error cargando los datos."));
+        }
+
+        // ---------- LÓGICA DE BORRADO ----------
+        function deleteRecord(fila, btnRef) {
+            // Feedback nativo Si/No
+            if(confirm('¿Estás seguro de que quieres eliminar este registro? Esta acción no se puede deshacer.')) {
+                btnRef.innerText = "...";
+                btnRef.disabled = true;
+
+                const formData = new FormData();
+                formData.append('action', 'delete');
+                formData.append('fila', fila);
+
+                fetch(scriptURL, { method: 'POST', body: formData })
+                    .then(res => {
+                        alert("Registro eliminado.");
+                        loadRecords(); // Recargamos la lista para actualizar los índices de fila
+                    })
+                    .catch(err => {
+                        alert("Error al eliminar.");
+                        btnRef.innerText = "[X]";
+                        btnRef.disabled = false;
+                    });
+            }
+        }
     </script>
 </body>
 </html>
