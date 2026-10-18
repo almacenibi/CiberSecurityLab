@@ -115,7 +115,8 @@
     <!-- 3. PANTALLA: FORMULARIO DE PARTES -->
     <div id="form-section" class="app-section">
         <!-- Botón Volver -->
-        <button class="btn btn-outline-secondary mb-3 shadow-sm" onclick="navegarA('menu-section')">
+        <!-- Botón Volver (NUEVO ONCLICK) -->
+        <button class="btn btn-outline-secondary mb-3 shadow-sm" onclick="cancelarEdicionYVolver()">
             <i class="bi bi-arrow-left"></i> Volver al menú
         </button>
 
@@ -162,7 +163,7 @@
                         </div>
                     </div>
 
-                    <!-- Zona de edición (Solo visible al modificar) -->
+                    <!-- Zona de edición (Solo visible al modificar)
                     <div id="zona_edicion_parte" style="display: none;" class="mb-4 p-3 bg-light border rounded">
                         <label class="form-label fw-bold text-secondary"><i class="bi bi-archive"></i> Parte Anterior Registrado</label>
                         <textarea class="form-control bg-white mb-2 text-muted" id="parte_anterior" rows="3" disabled></textarea>
@@ -173,7 +174,7 @@
                                 <i class="bi bi-exclamation-triangle"></i> Borrar el histórico anterior al guardar (Acción irreversible)
                             </label>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="mb-3">
                         <label class="form-label fw-bold" id="label_nuevo_parte">Desarrollo del Parte</label>
@@ -184,8 +185,22 @@
                         <label class="form-label fw-bold">
                             <i class="bi bi-camera"></i> Adjuntar Imagen
                         </label>
+                        
+                        <!-- Contenedor mini imagen (Solo visible al editar si ya hay foto) -->
+                        <div id="contenedor_mini_imagen" class="mb-2" style="display: none;">
+                            <div class="position-relative d-inline-block border rounded p-1">
+                                <img id="mini_imagen_preview" src="" alt="Imagen" style="max-height: 80px; max-width: 120px; object-fit: cover; opacity: 0.8;">
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 start-100 translate-middle rounded-circle p-0" style="width: 24px; height: 24px;" onclick="quitarImagenPrevia()" title="Eliminar imagen actual">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                            <input type="hidden" id="imagen_actual_url" value="">
+                            <p class="small text-muted mt-1 mb-0">Imagen actual. Toca la X para reemplazarla.</p>
+                        </div>
+                        
+                        <!-- Input normal para subir foto -->
                         <input type="file" class="form-control" id="imagen" accept="image/*">
-                        <div class="form-text">Solo una imagen. Se guardará en Drive automáticamente.</div>
+                        <div class="form-text">Se guardará en Drive automáticamente.</div>
                     </div>
 
                     <!-- AQUÍ IREMOS PONIENDO EL BOTÓN DE ENVIAR Y EL SPINNER DE CARGA AL ENVIAR -->
@@ -281,7 +296,7 @@
     //const API_URL = 'https://script.google.com/macros/s/AKfycbzpmpu-dTLEjLSJzodUGJDy25ArTIN-SR6sr1mWtjKXk50JP3cNccAVtLqdotq-ibXP/exec';
     //const API_URL = 'https://script.google.com/macros/s/AKfycbxAlHA79uex0TYOyKox408xiOBS8LnTypH4oIximuiJyxyS7C7ppp6NUWvhJINCAcAj/exec';
     //const API_URL = 'https://script.google.com/macros/s/AKfycbyib_sM2qYM80XpuYzdmgrDQ_KPfCO-OabA3cwj8S4TRxQUBzKzcwUCowQaDV9bz1A/exec';
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxBJWEiFZVkCIkpUiiiyLp1nFwfzUkkvXRASvbF9jn3isEI-8GulN4PRrJyjmXoTGQp/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwCKnOnYSIoBSBZsVOecLPvCu0WWWtzN1hynTFRcwUL23Ph7qN_X414SQU1AkBa-bY/exec';
     
     let datosApp = {};
     let usuarioValidado = null; 
@@ -444,72 +459,106 @@
         }
     });
 
-    //Añadidas PARA EDITAR
+    //Añadidas PARA EDITAR --> Ultima revisión 
     // VARIABLE GLOBAL PARA SABER SI ESTAMOS CREANDO O EDITANDO
     let modoEdicionId = null;
 
-    // 1. FUNCIÓN PARA DIBUJAR LA LISTA DE TAREAS
+    // --- FUNCIONES PARA LA MINI-IMAGEN Y CANCELAR ---
+    function quitarImagenPrevia() {
+        document.getElementById("contenedor_mini_imagen").style.display = "none";
+        document.getElementById("imagen_actual_url").value = "";
+        document.getElementById("imagen").style.display = "block";
+        document.getElementById("imagen").value = ""; // Vaciamos el input
+    }
+
+    function cancelarEdicionYVolver() {
+        modoEdicionId = null;
+        document.getElementById("formularioTareas").reset();
+        document.getElementById("lugar").tomselect.clear();
+        configurarFechasPorDefecto();
+        quitarImagenPrevia();
+        document.querySelector("#form-section .card-title").innerText = "Nuevo Parte de Trabajo";
+        document.getElementById("btnEnviarParte").innerHTML = '<i class="bi bi-send-check"></i> Enviar Parte';
+        navegarA('menu-section');
+    }
+
+    // --- DISEÑO DEL LISTADO CON AGRUPACIÓN POR MESES ---
     function cargarListadoTareas() {
         const contenedor = document.getElementById("contenedorListaTareas");
-        contenedor.innerHTML = ""; // Limpiamos el boceto estático
+        contenedor.innerHTML = ""; 
         
-        // Filtramos solo las tareas del usuario logueado
         const misTareas = datosApp.tareas.filter(t => t.usuario === usuarioValidado);
-        
         if(misTareas.length === 0) {
             contenedor.innerHTML = "<p class='text-muted text-center mt-4'>No tienes partes registrados.</p>";
             return;
         }
 
-        // En un futuro aquí agruparemos por meses. Por ahora mostramos todas en bloque.
-        let htmlLista = `<div class="list-group shadow-sm mb-4">`;
-        
+        // Agrupamos las tareas por mes y año (Ej: "octubre 2026")
+        const tareasPorMes = {};
         misTareas.forEach(tarea => {
-            // Buscamos los nombres bonitos cruzando con los IDs guardados
-            const nombreLugar = datosApp.clientes.find(c => c.id === tarea.lugar)?.nombre || "Lugar desconocido";
-            const nombreEstado = datosApp.estados.find(e => e.id === tarea.estado)?.nombre || tarea.estado;
-            
-            // Damos formato a la fecha para mostrarla más amigable (DD/MM/AAAA)
-            const fInicioFormato = tarea.fecha_inicio.split('-').reverse().join('/');
-            const fFinFormato = tarea.fecha_fin.split('-').reverse().join('/');
+            const fecha = new Date(tarea.fecha_inicio);
+            // Si la fecha es inválida, evitamos que pete
+            if(isNaN(fecha)) return;
+            const mesAnio = fecha.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            if(!tareasPorMes[mesAnio]) tareasPorMes[mesAnio] = [];
+            tareasPorMes[mesAnio].push(tarea);
+        });
 
-            htmlLista += `
-                <div class="list-group-item p-3">
-                    <div class="row align-items-center g-3">
-                        <div class="col-12 col-md-9">
-                            <h5 class="fw-bold mb-1">${nombreLugar}</h5>
-                            <p class="text-muted mb-2">${tarea.descripcion_corta}</p>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge bg-light text-dark border"><i class="bi bi-calendar-event text-secondary"></i> ${fInicioFormato} - ${fFinFormato}</span>
-                                <span class="badge bg-info text-dark"><i class="bi bi-info-circle"></i> ${nombreEstado}</span>
+        let htmlLista = "";
+        
+        for (const [mes, tareas] of Object.entries(tareasPorMes)) {
+            // Título del mes
+            htmlLista += `<h6 class="fw-bold text-primary mt-4 mb-3 text-uppercase border-bottom border-primary border-2 pb-1 d-inline-block">${mes}</h6>`;
+            htmlLista += `<div class="list-group shadow-sm mb-4">`;
+            
+            tareas.forEach(tarea => {
+                const nombreLugar = datosApp.clientes.find(c => c.id === tarea.lugar)?.nombre || "Lugar desconocido";
+                const nombreEstado = datosApp.estados.find(e => e.id === tarea.estado)?.nombre || tarea.estado;
+                const fInicio = tarea.fecha_inicio.split('-').reverse().join('/');
+                const fFin = tarea.fecha_fin.split('-').reverse().join('/');
+                
+                // Color dinámico según estado
+                let badgeColor = "bg-info text-dark";
+                if(nombreEstado.toLowerCase().includes("pendiente")) badgeColor = "bg-warning text-dark";
+                if(nombreEstado.toLowerCase().includes("resuelto")) badgeColor = "bg-success text-white";
+
+                htmlLista += `
+                    <div class="list-group-item p-3">
+                        <div class="row align-items-center g-3">
+                            <div class="col-12 col-md-9">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <h5 class="fw-bold mb-0">${nombreLugar}</h5>
+                                </div>
+                                <p class="text-muted mb-2">${tarea.descripcion_corta}</p>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-calendar-event text-secondary"></i> ${fInicio} - ${fFin}</span>
+                                    <span class="badge ${badgeColor}"><i class="bi bi-info-circle"></i> ${nombreEstado}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 d-flex flex-row flex-md-column gap-2 justify-content-end">
+                                <button class="btn btn-sm btn-outline-primary w-100" onclick="prepararEdicion('${tarea.id}')">
+                                    <i class="bi bi-pencil-square"></i> Modificar
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger w-100" onclick="alert('Eliminar en desarrollo')">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
                             </div>
                         </div>
-                        <div class="col-12 col-md-3 d-flex flex-row flex-md-column gap-2 justify-content-end">
-                            <button class="btn btn-sm btn-outline-primary w-100" onclick="prepararEdicion('${tarea.id}')">
-                                <i class="bi bi-pencil-square"></i> Modificar
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger w-100" onclick="eliminarTarea('${tarea.id}')">
-                                <i class="bi bi-trash"></i> Eliminar
-                            </button>
-                        </div>
                     </div>
-                </div>
-            `;
-        });
-        
-        htmlLista += `</div>`;
+                `;
+            });
+            htmlLista += `</div>`;
+        }
         contenedor.innerHTML = htmlLista;
     }
 
-    // 2. FUNCIÓN PARA PREPARAR EL FORMULARIO EN MODO "EDICIÓN"
+    // --- PREPARAR LA EDICIÓN (Simplificada) ---
     function prepararEdicion(idTarea) {
         const tarea = datosApp.tareas.find(t => t.id === idTarea);
         if(!tarea) return;
 
-        // Marcamos la variable global con el ID que estamos editando
         modoEdicionId = tarea.id;
 
-        // Rellenamos los campos con los datos guardados
         document.getElementById("lugar").tomselect.setValue(tarea.lugar);
         document.getElementById("tipo").value = tarea.tipo;
         document.getElementById("estado").value = tarea.estado;
@@ -517,22 +566,88 @@
         document.getElementById("fecha_inicio").value = tarea.fecha_inicio;
         document.getElementById("fecha_fin").value = tarea.fecha_fin;
 
-        // Lógica del Parte (Antiguo vs Nuevo)
-        document.getElementById("zona_edicion_parte").style.display = "block"; // Mostramos zona histórica
-        document.getElementById("parte_anterior").value = tarea.parte; // Bloqueado
-        document.getElementById("parte").value = ""; // Vaciamos el nuevo para que escriba
-        document.getElementById("label_nuevo_parte").innerText = "Añadir al Parte (Nuevo desarrollo)";
-        
-        // Desmarcamos el checkbox de borrado por seguridad
-        document.getElementById("borrar_parte_anterior").checked = false;
+        // Limpiamos el prefijo "[DD/MM/AAAA | X Días] - " para que editen solo el texto limpio
+        let textoLimpio = tarea.parte;
+        const regex = /^\[.*?\] - /;
+        if(regex.test(textoLimpio)) {
+            textoLimpio = textoLimpio.replace(regex, "");
+        }
+        document.getElementById("parte").value = textoLimpio; 
 
-        // Cambiamos textos de la interfaz
-        document.querySelector("#form-section .card-title").innerText = "Modificar Parte de Trabajo";
+        // Lógica de la mini-imagen
+        if(tarea.imagen && tarea.imagen.includes("http")) {
+            document.getElementById("contenedor_mini_imagen").style.display = "block";
+            document.getElementById("mini_imagen_preview").src = tarea.imagen;
+            document.getElementById("imagen_actual_url").value = tarea.imagen;
+            document.getElementById("imagen").style.display = "none"; // Ocultar input nuevo
+        } else {
+            quitarImagenPrevia();
+        }
+
+        document.querySelector("#form-section .card-title").innerText = "Modificar Parte";
         document.getElementById("btnEnviarParte").innerHTML = '<i class="bi bi-arrow-repeat"></i> Actualizar Parte';
 
-        // Navegamos al formulario
         navegarA('form-section');
     }
+
+    // --- ENVIAR DATOS (Sabe si crea o edita) ---
+    document.getElementById("formularioTareas").addEventListener("submit", function(e) {
+        e.preventDefault(); 
+        
+        const btnEnviar = document.getElementById("btnEnviarParte");
+        btnEnviar.disabled = true;
+        btnEnviar.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Guardando...';
+
+        const fInicio = new Date(document.getElementById("fecha_inicio").value);
+        const fFin = new Date(document.getElementById("fecha_fin").value);
+        const diffTiempo = Math.abs(fFin - fInicio);
+        const dias = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24)) + 1; 
+        
+        const fechaHoy = new Date().toLocaleDateString('es-ES');
+        const textoParteFinal = `[${fechaHoy} | ${dias} Días] - ${document.getElementById("parte").value}`;
+
+        const payload = {
+            modo: modoEdicionId ? "editar" : "crear", // <--- CLAVE PARA EL BACKEND
+            idRegistro: modoEdicionId,
+            lugar: document.getElementById("lugar").value,
+            tipo: document.getElementById("tipo").value,
+            estado: document.getElementById("estado").value,
+            descripcion_corta: document.getElementById("descripcion_corta").value,
+            fecha_inicio: document.getElementById("fecha_inicio").value,
+            fecha_fin: document.getElementById("fecha_fin").value,
+            parte: textoParteFinal,
+            usuario: usuarioValidado,
+            equipo: equipoValidado,
+            imagenBase64: "",
+            mimeType: "",
+            nombreArchivo: "",
+            // Pasamos la URL vieja por si no suben foto nueva
+            imagen_actual_url: document.getElementById("imagen_actual_url").value 
+        };
+
+        const inputImagen = document.getElementById("imagen");
+        if (inputImagen.files.length > 0) {
+            const archivo = inputImagen.files[0];
+            const reader = new FileReader();
+            reader.onload = function(evento) {
+                const idLugarSelec = document.getElementById("lugar").value;
+                const clienteObj = datosApp.clientes.find(c => c.id === idLugarSelec);
+                const nombreLugar = clienteObj ? clienteObj.nombre : "Lugar";
+                
+                const lugarNormalizado = nombreLugar.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "_").replace(/_+/g, "_");
+                const nombreOriginalLimpio = archivo.name.replace(/[^a-zA-Z0-9.]/g, "_").replace(/_+/g, "_");
+                
+                payload.imagenBase64 = evento.target.result.split(',')[1]; 
+                payload.mimeType = archivo.type;
+                payload.nombreArchivo = lugarNormalizado + "_" + nombreOriginalLimpio;
+                
+                enviarAlBackend(payload, btnEnviar);
+            };
+            reader.readAsDataURL(archivo);
+        } else {
+            enviarAlBackend(payload, btnEnviar);
+        }
+    });
 
 
     // Función que hace la petición POST al Google Apps Script
