@@ -293,50 +293,53 @@
 
 <!-- LÓGICA DE LA APLICACIÓN -->
 <script>
-    //const API_URL = 'https://script.google.com/macros/s/AKfycbzpmpu-dTLEjLSJzodUGJDy25ArTIN-SR6sr1mWtjKXk50JP3cNccAVtLqdotq-ibXP/exec';
-    //const API_URL = 'https://script.google.com/macros/s/AKfycbxAlHA79uex0TYOyKox408xiOBS8LnTypH4oIximuiJyxyS7C7ppp6NUWvhJINCAcAj/exec';
-    //const API_URL = 'https://script.google.com/macros/s/AKfycbyib_sM2qYM80XpuYzdmgrDQ_KPfCO-OabA3cwj8S4TRxQUBzKzcwUCowQaDV9bz1A/exec';
     const API_URL = 'https://script.google.com/macros/s/AKfycbwCKnOnYSIoBSBZsVOecLPvCu0WWWtzN1hynTFRcwUL23Ph7qN_X414SQU1AkBa-bY/exec';
     
     let datosApp = {};
     let usuarioValidado = null; 
     let equipoValidado = null;  
+    let modoEdicionId = null;
 
-    // Función genérica para cambiar entre pantallas
+    // --- 1. NAVEGACIÓN Y CARGA INICIAL ---
     function navegarA(idSeccion) {
-        // Ocultamos todas las secciones
         document.querySelectorAll('.app-section').forEach(el => el.style.display = 'none');
-        // Mostramos la solicitada
         document.getElementById(idSeccion).style.display = 'block';
-        
-        // El header de usuario se muestra siempre que estemos logueados (fuera del login y loading)
         if(idSeccion !== 'login-section' && idSeccion !== 'loading') {
             document.getElementById('user-header').style.display = 'block';
         }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Al arrancar, mostramos el loading
         navegarA('loading');
-        
+        cargarDatosDesdeAPI(true); // true = es la primera carga (vamos a login)
+    });
+
+    // Función que descarga los datos (sirve para inicio y para refrescar tras guardar)
+    function cargarDatosDesdeAPI(esCargaInicial = false) {
         fetch(API_URL)
             .then(response => response.json())
             .then(data => {
                 datosApp = data;
-                rellenarDesplegables();
-                configurarFechasPorDefecto();
-                // Una vez cargado, vamos al login
-                navegarA('login-section');
+                if(esCargaInicial) {
+                    rellenarDesplegables();
+                    configurarFechasPorDefecto();
+                    navegarA('login-section');
+                }
             })
             .catch(error => {
                 console.error("Error al cargar datos:", error);
-                document.getElementById("loading").innerHTML = "<p class='text-danger mt-3'><i class='bi bi-exclamation-triangle'></i> Error de conexión con la base de datos.</p>";
+                if(esCargaInicial) {
+                    document.getElementById("loading").innerHTML = "<p class='text-danger mt-3'><i class='bi bi-exclamation-triangle'></i> Error de conexión con la base de datos.</p>";
+                }
             });
-    });
+    }
 
     function rellenarDesplegables() {
         const cargarOpciones = (selectId, lista) => {
             const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Selecciona...</option>'; // Limpiamos antes de rellenar
+            if(selectId === 'lugar') select.innerHTML = '<option value="">Selecciona o escribe para buscar...</option>';
+            
             lista.forEach(item => {
                 let opcion = document.createElement("option");
                 opcion.value = item.id; 
@@ -349,11 +352,11 @@
         cargarOpciones("tipo", datosApp.tipologias);
         cargarOpciones("estado", datosApp.estados);
 
-        new TomSelect("#lugar", {
-            create: false,
-            placeholder: "Escribe para buscar el lugar...",
-            sortField: { field: "text", direction: "asc" }
-        });
+        // Destruimos TomSelect si ya existía (para evitar errores al refrescar) y lo creamos
+        if (document.getElementById("lugar").tomselect) {
+            document.getElementById("lugar").tomselect.destroy();
+        }
+        new TomSelect("#lugar", { create: false, sortField: { field: "text", direction: "asc" } });
     }
 
     function configurarFechasPorDefecto() {
@@ -362,6 +365,7 @@
         document.getElementById("fecha_fin").value = hoy;
     }
 
+    // --- 2. LOGIN ---
     document.getElementById("btnLogin").addEventListener("click", function() {
         const emailIngresado = document.getElementById("emailInput").value.trim().toLowerCase();
         const usuarioEncontrado = datosApp.usuarios.find(u => u.id.toLowerCase() === emailIngresado);
@@ -369,120 +373,16 @@
         if (usuarioEncontrado) {
             usuarioValidado = usuarioEncontrado.id;
             equipoValidado = usuarioEncontrado.extra;
-
-            // Rellenamos el mini-header superior
             document.getElementById("headerNombre").innerText = usuarioEncontrado.nombre;
             const equipoObj = datosApp.equipos.find(e => e.id === equipoValidado);
             document.getElementById("headerEquipo").innerText = equipoObj ? equipoObj.nombre : equipoValidado;
-
-            // Navegamos al menú principal
             navegarA('menu-section');
         } else {
             document.getElementById("loginError").style.display = "block";
         }
     });
 
-    // -------- ZONA PARA LA LÓGICA DE ENVÍO DE FORMULARIO -------- //
-    // -------- ZONA PARA LA LÓGICA DE ENVÍO DE FORMULARIO -------- //
-    document.getElementById("formularioTareas").addEventListener("submit", function(e) {
-        e.preventDefault(); 
-        
-        const btnEnviar = document.getElementById("btnEnviarParte");
-        // Cambiamos el botón a estado "cargando"
-        btnEnviar.disabled = true;
-        btnEnviar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
-
-        // 1. Calcular los días empleados (Mínimo 1 día si es la misma fecha)
-        const fInicio = new Date(document.getElementById("fecha_inicio").value);
-        const fFin = new Date(document.getElementById("fecha_fin").value);
-        const diffTiempo = Math.abs(fFin - fInicio);
-        const dias = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24)) + 1; 
-        
-        // 2. Formatear el texto del Parte
-        const fechaHoy = new Date().toLocaleDateString('es-ES');
-        const textoOriginal = document.getElementById("parte").value;
-        const textoParteFinal = `[${fechaHoy} | ${dias} Días] - ${textoOriginal}`;
-
-        // 3. Preparar el paquete JSON básico
-        const payload = {
-            lugar: document.getElementById("lugar").value,
-            tipo: document.getElementById("tipo").value,
-            estado: document.getElementById("estado").value,
-            descripcion_corta: document.getElementById("descripcion_corta").value,
-            fecha_inicio: document.getElementById("fecha_inicio").value,
-            fecha_fin: document.getElementById("fecha_fin").value,
-            parte: textoParteFinal,
-            usuario: usuarioValidado,
-            equipo: equipoValidado,
-            imagenBase64: "",
-            mimeType: "",
-            nombreArchivo: ""
-        };
-
-        // 4. Leer la imagen (si la hay) y enviarla
-        const inputImagen = document.getElementById("imagen");
-        if (inputImagen.files.length > 0) {
-            const archivo = inputImagen.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(evento) {
-                const base64Completo = evento.target.result;
-                
-                // --- NUEVA LÓGICA DE NOMBRE DE ARCHIVO ---
-                // 1. Buscamos el nombre real del lugar usando el ID seleccionado en el desplegable
-                const idLugarSelec = document.getElementById("lugar").value;
-                const clienteObj = datosApp.clientes.find(c => c.id === idLugarSelec);
-                const nombreLugar = clienteObj ? clienteObj.nombre : "Lugar_Desconocido";
-                
-                // 2. Normalizamos el lugar (quitamos acentos, ñ, y cambiamos caracteres raros/espacios por guión bajo)
-                const lugarNormalizado = nombreLugar
-                    .normalize("NFD") // Separa las letras de los acentos
-                    .replace(/[\u0300-\u036f]/g, "") // Borra los acentos
-                    .replace(/[^a-zA-Z0-9]/g, "_") // Cambia lo que no sea letra o número por _
-                    .replace(/_+/g, "_"); // Evita que haya varios guiones bajos seguidos (ej: "__")
-                
-                // 3. Limpiamos también el nombre original de la cámara por seguridad
-                const nombreOriginalLimpio = archivo.name.replace(/[^a-zA-Z0-9.]/g, "_").replace(/_+/g, "_");
-                
-                // 4. Asignamos al payload
-                payload.imagenBase64 = base64Completo.split(',')[1]; 
-                payload.mimeType = archivo.type;
-                payload.nombreArchivo = lugarNormalizado + "_" + nombreOriginalLimpio;
-                // -----------------------------------------
-                
-                enviarAlBackend(payload, btnEnviar);
-            };
-            reader.readAsDataURL(archivo);
-        } else {
-            // Si no hay imagen, enviamos directamente
-            enviarAlBackend(payload, btnEnviar);
-        }
-    });
-
-    //Añadidas PARA EDITAR --> Ultima revisión 
-    // VARIABLE GLOBAL PARA SABER SI ESTAMOS CREANDO O EDITANDO
-    let modoEdicionId = null;
-
-    // --- FUNCIONES PARA LA MINI-IMAGEN Y CANCELAR ---
-    function quitarImagenPrevia() {
-        document.getElementById("contenedor_mini_imagen").style.display = "none";
-        document.getElementById("imagen_actual_url").value = "";
-        document.getElementById("imagen").style.display = "block";
-        document.getElementById("imagen").value = ""; // Vaciamos el input
-    }
-
-    function cancelarEdicionYVolver() {
-        modoEdicionId = null;
-        document.getElementById("formularioTareas").reset();
-        document.getElementById("lugar").tomselect.clear();
-        configurarFechasPorDefecto();
-        quitarImagenPrevia();
-        document.querySelector("#form-section .card-title").innerText = "Nuevo Parte de Trabajo";
-        document.getElementById("btnEnviarParte").innerHTML = '<i class="bi bi-send-check"></i> Enviar Parte';
-        navegarA('menu-section');
-    }
-
-    // --- DISEÑO DEL LISTADO CON AGRUPACIÓN POR MESES ---
+    // --- 3. LISTADO Y EDICIÓN ---
     function cargarListadoTareas() {
         const contenedor = document.getElementById("contenedorListaTareas");
         contenedor.innerHTML = ""; 
@@ -493,34 +393,48 @@
             return;
         }
 
-        // Agrupamos las tareas por mes y año (Ej: "octubre 2026")
         const tareasPorMes = {};
         misTareas.forEach(tarea => {
-            const fecha = new Date(tarea.fecha_inicio);
-            // Si la fecha es inválida, evitamos que pete
-            if(isNaN(fecha)) return;
-            const mesAnio = fecha.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            let mesAnio = "Fecha Desconocida";
+            
+            // Lógica a prueba de fallos para fechas
+            if (tarea.fecha_inicio) {
+                try {
+                    let d;
+                    if (tarea.fecha_inicio.includes("-")) {
+                        d = new Date(tarea.fecha_inicio);
+                    } else if (tarea.fecha_inicio.includes("/")) {
+                        const partes = tarea.fecha_inicio.split("/"); // Asume DD/MM/YYYY
+                        d = new Date(partes[2], partes[1] - 1, partes[0]);
+                    } else {
+                        d = new Date(tarea.fecha_inicio);
+                    }
+                    if (!isNaN(d)) {
+                        mesAnio = d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    }
+                } catch(e) {}
+            }
+
             if(!tareasPorMes[mesAnio]) tareasPorMes[mesAnio] = [];
             tareasPorMes[mesAnio].push(tarea);
         });
 
         let htmlLista = "";
-        
         for (const [mes, tareas] of Object.entries(tareasPorMes)) {
-            // Título del mes
             htmlLista += `<h6 class="fw-bold text-primary mt-4 mb-3 text-uppercase border-bottom border-primary border-2 pb-1 d-inline-block">${mes}</h6>`;
             htmlLista += `<div class="list-group shadow-sm mb-4">`;
             
             tareas.forEach(tarea => {
                 const nombreLugar = datosApp.clientes.find(c => c.id === tarea.lugar)?.nombre || "Lugar desconocido";
                 const nombreEstado = datosApp.estados.find(e => e.id === tarea.estado)?.nombre || tarea.estado;
-                const fInicio = tarea.fecha_inicio.split('-').reverse().join('/');
-                const fFin = tarea.fecha_fin.split('-').reverse().join('/');
                 
-                // Color dinámico según estado
+                // Limpieza visual de fechas para el listado
+                const fInicio = tarea.fecha_inicio.includes("-") ? tarea.fecha_inicio.split('-').reverse().join('/') : tarea.fecha_inicio;
+                const fFin = tarea.fecha_fin.includes("-") ? tarea.fecha_fin.split('-').reverse().join('/') : tarea.fecha_fin;
+                
                 let badgeColor = "bg-info text-dark";
                 if(nombreEstado.toLowerCase().includes("pendiente")) badgeColor = "bg-warning text-dark";
-                if(nombreEstado.toLowerCase().includes("resuelto")) badgeColor = "bg-success text-white";
+                if(nombreEstado.toLowerCase().includes("resuelto") || nombreEstado.toLowerCase().includes("cerrado")) badgeColor = "bg-success text-white";
 
                 htmlLista += `
                     <div class="list-group-item p-3">
@@ -552,7 +466,6 @@
         contenedor.innerHTML = htmlLista;
     }
 
-    // --- PREPARAR LA EDICIÓN (Simplificada) ---
     function prepararEdicion(idTarea) {
         const tarea = datosApp.tareas.find(t => t.id === idTarea);
         if(!tarea) return;
@@ -563,10 +476,11 @@
         document.getElementById("tipo").value = tarea.tipo;
         document.getElementById("estado").value = tarea.estado;
         document.getElementById("descripcion_corta").value = tarea.descripcion_corta;
-        document.getElementById("fecha_inicio").value = tarea.fecha_inicio;
-        document.getElementById("fecha_fin").value = tarea.fecha_fin;
+        
+        // Forzamos formato YYYY-MM-DD para que el input type="date" no se rompa
+        document.getElementById("fecha_inicio").value = tarea.fecha_inicio.includes("/") ? tarea.fecha_inicio.split("/").reverse().join("-") : tarea.fecha_inicio;
+        document.getElementById("fecha_fin").value = tarea.fecha_fin.includes("/") ? tarea.fecha_fin.split("/").reverse().join("-") : tarea.fecha_fin;
 
-        // Limpiamos el prefijo "[DD/MM/AAAA | X Días] - " para que editen solo el texto limpio
         let textoLimpio = tarea.parte;
         const regex = /^\[.*?\] - /;
         if(regex.test(textoLimpio)) {
@@ -574,12 +488,11 @@
         }
         document.getElementById("parte").value = textoLimpio; 
 
-        // Lógica de la mini-imagen
         if(tarea.imagen && tarea.imagen.includes("http")) {
             document.getElementById("contenedor_mini_imagen").style.display = "block";
             document.getElementById("mini_imagen_preview").src = tarea.imagen;
             document.getElementById("imagen_actual_url").value = tarea.imagen;
-            document.getElementById("imagen").style.display = "none"; // Ocultar input nuevo
+            document.getElementById("imagen").style.display = "none"; 
         } else {
             quitarImagenPrevia();
         }
@@ -590,7 +503,25 @@
         navegarA('form-section');
     }
 
-    // --- ENVIAR DATOS (Sabe si crea o edita) ---
+    function quitarImagenPrevia() {
+        document.getElementById("contenedor_mini_imagen").style.display = "none";
+        document.getElementById("imagen_actual_url").value = "";
+        document.getElementById("imagen").style.display = "block";
+        document.getElementById("imagen").value = ""; 
+    }
+
+    function cancelarEdicionYVolver() {
+        modoEdicionId = null;
+        document.getElementById("formularioTareas").reset();
+        document.getElementById("lugar").tomselect.clear();
+        configurarFechasPorDefecto();
+        quitarImagenPrevia();
+        document.querySelector("#form-section .card-title").innerText = "Nuevo Parte de Trabajo";
+        document.getElementById("btnEnviarParte").innerHTML = '<i class="bi bi-send-check"></i> Enviar Parte';
+        navegarA('menu-section');
+    }
+
+    // --- 4. ENVÍO AL BACKEND (¡Único evento!) ---
     document.getElementById("formularioTareas").addEventListener("submit", function(e) {
         e.preventDefault(); 
         
@@ -607,7 +538,7 @@
         const textoParteFinal = `[${fechaHoy} | ${dias} Días] - ${document.getElementById("parte").value}`;
 
         const payload = {
-            modo: modoEdicionId ? "editar" : "crear", // <--- CLAVE PARA EL BACKEND
+            modo: modoEdicionId ? "editar" : "crear", 
             idRegistro: modoEdicionId,
             lugar: document.getElementById("lugar").value,
             tipo: document.getElementById("tipo").value,
@@ -621,7 +552,6 @@
             imagenBase64: "",
             mimeType: "",
             nombreArchivo: "",
-            // Pasamos la URL vieja por si no suben foto nueva
             imagen_actual_url: document.getElementById("imagen_actual_url").value 
         };
 
@@ -633,7 +563,6 @@
                 const idLugarSelec = document.getElementById("lugar").value;
                 const clienteObj = datosApp.clientes.find(c => c.id === idLugarSelec);
                 const nombreLugar = clienteObj ? clienteObj.nombre : "Lugar";
-                
                 const lugarNormalizado = nombreLugar.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "_").replace(/_+/g, "_");
                 const nombreOriginalLimpio = archivo.name.replace(/[^a-zA-Z0-9.]/g, "_").replace(/_+/g, "_");
                 
@@ -649,26 +578,19 @@
         }
     });
 
-
-    // Función que hace la petición POST al Google Apps Script
     function enviarAlBackend(payload, btn) {
         fetch(API_URL, {
             method: 'POST',
             body: JSON.stringify(payload),
-            headers: {
-                // Usamos text/plain para evitar errores de CORS con Google Scripts
-                'Content-Type': 'text/plain;charset=utf-8' 
-            }
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         })
         .then(response => response.json())
         .then(data => {
             if(data.estado === "ok") {
-                alert("✅ ¡Parte registrado correctamente!");
-                document.getElementById("formularioTareas").reset(); // Limpiamos formulario
-                // Reseteamos el desplegable predictivo
-                document.getElementById("lugar").tomselect.clear(); 
-                configurarFechasPorDefecto(); 
-                navegarA('menu-section'); // Devolvemos al usuario al menú
+                alert("✅ ¡Guardado correctamente!");
+                // Pedimos los datos actualizados a Sheets en segundo plano
+                cargarDatosDesdeAPI(false); 
+                cancelarEdicionYVolver(); // Esto limpia todo y nos manda al menú
             } else {
                 alert("❌ Error al guardar en Sheets: " + data.error);
             }
@@ -678,9 +600,8 @@
             alert("⚠️ Error de red al enviar el parte. Revisa tu conexión.");
         })
         .finally(() => {
-            // Restauramos el botón a la normalidad
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-send-check"></i> Enviar Parte';
+            btn.innerHTML = modoEdicionId ? '<i class="bi bi-arrow-repeat"></i> Actualizar Parte' : '<i class="bi bi-send-check"></i> Enviar Parte';
         });
     }
 
