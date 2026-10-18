@@ -383,6 +383,29 @@
     });
 
     // --- 3. LISTADO Y EDICIÓN ---
+
+    // Función auxiliar inteligente para forzar la fecha al formato AAAA-MM-DD que exige el formulario
+    function convertirAFechaInput(fechaStr) {
+        if (!fechaStr) return new Date().toISOString().split('T')[0];
+        try {
+            let p = fechaStr.split(/[-/]/);
+            if(p.length === 3) {
+                let year = p[0].length === 4 ? p[0] : p[2];
+                let day = p[0].length === 4 ? p[2] : p[0];
+                let month = p[1];
+                if(year.length === 2) year = "20" + year;
+                return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            }
+        } catch(e) {}
+        return new Date().toISOString().split('T')[0];
+    }
+
+    // Función auxiliar para acortar fechas en el listado (Ej: 18/10/26)
+    function formatoFechaCorta(fechaStr) {
+        const f = convertirAFechaInput(fechaStr).split('-');
+        return `${f[2]}/${f[1]}/${f[0].slice(-2)}`;
+    }
+
     function cargarListadoTareas() {
         const contenedor = document.getElementById("contenedorListaTareas");
         contenedor.innerHTML = ""; 
@@ -396,31 +419,18 @@
         const tareasPorMes = {};
         misTareas.forEach(tarea => {
             let mesAnio = "Fecha Desconocida";
-            
-            // Lógica a prueba de fallos para fechas
-            if (tarea.fecha_inicio) {
-                try {
-                    let d;
-                    if (tarea.fecha_inicio.includes("-")) {
-                        d = new Date(tarea.fecha_inicio);
-                    } else if (tarea.fecha_inicio.includes("/")) {
-                        const partes = tarea.fecha_inicio.split("/"); // Asume DD/MM/YYYY
-                        d = new Date(partes[2], partes[1] - 1, partes[0]);
-                    } else {
-                        d = new Date(tarea.fecha_inicio);
-                    }
-                    if (!isNaN(d)) {
-                        mesAnio = d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                    }
-                } catch(e) {}
+            const fechaInput = convertirAFechaInput(tarea.fecha_inicio);
+            const d = new Date(fechaInput);
+            if (!isNaN(d)) {
+                mesAnio = d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
             }
-
             if(!tareasPorMes[mesAnio]) tareasPorMes[mesAnio] = [];
             tareasPorMes[mesAnio].push(tarea);
         });
 
         let htmlLista = "";
         for (const [mes, tareas] of Object.entries(tareasPorMes)) {
+            // Título del mes
             htmlLista += `<h6 class="fw-bold text-primary mt-4 mb-3 text-uppercase border-bottom border-primary border-2 pb-1 d-inline-block">${mes}</h6>`;
             htmlLista += `<div class="list-group shadow-sm mb-4">`;
             
@@ -428,27 +438,38 @@
                 const nombreLugar = datosApp.clientes.find(c => c.id === tarea.lugar)?.nombre || "Lugar desconocido";
                 const nombreEstado = datosApp.estados.find(e => e.id === tarea.estado)?.nombre || tarea.estado;
                 
-                // Limpieza visual de fechas para el listado
-                const fInicio = tarea.fecha_inicio.includes("-") ? tarea.fecha_inicio.split('-').reverse().join('/') : tarea.fecha_inicio;
-                const fFin = tarea.fecha_fin.includes("-") ? tarea.fecha_fin.split('-').reverse().join('/') : tarea.fecha_fin;
+                const fInicioCorta = formatoFechaCorta(tarea.fecha_inicio);
+                const fFinCorta = formatoFechaCorta(tarea.fecha_fin);
                 
+                // Estilos dinámicos para los badges según el estado
                 let badgeColor = "bg-info text-dark";
-                if(nombreEstado.toLowerCase().includes("pendiente")) badgeColor = "bg-warning text-dark";
-                if(nombreEstado.toLowerCase().includes("resuelto") || nombreEstado.toLowerCase().includes("cerrado")) badgeColor = "bg-success text-white";
+                let iconEstado = "bi-info-circle";
+                const estadoLower = nombreEstado.toLowerCase();
+                
+                if(estadoLower.includes("pendiente") || estadoLower.includes("curso")) {
+                    badgeColor = "bg-warning text-dark";
+                    iconEstado = "bi-clock-history";
+                } else if(estadoLower.includes("resuelto") || estadoLower.includes("cerrado") || estadoLower.includes("fin")) {
+                    badgeColor = "bg-success text-white";
+                    iconEstado = "bi-check-circle";
+                }
 
+                // INYECCIÓN EXACTA DEL BOCETO
                 htmlLista += `
                     <div class="list-group-item p-3">
                         <div class="row align-items-center g-3">
+                            <!-- Info de la tarea -->
                             <div class="col-12 col-md-9">
                                 <div class="d-flex justify-content-between align-items-start mb-1">
                                     <h5 class="fw-bold mb-0">${nombreLugar}</h5>
                                 </div>
                                 <p class="text-muted mb-2">${tarea.descripcion_corta}</p>
                                 <div class="d-flex flex-wrap gap-2">
-                                    <span class="badge bg-light text-dark border"><i class="bi bi-calendar-event text-secondary"></i> ${fInicio} - ${fFin}</span>
-                                    <span class="badge ${badgeColor}"><i class="bi bi-info-circle"></i> ${nombreEstado}</span>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-calendar-event text-secondary"></i> ${fInicioCorta} - ${fFinCorta}</span>
+                                    <span class="badge ${badgeColor}"><i class="bi ${iconEstado}"></i> ${nombreEstado}</span>
                                 </div>
                             </div>
+                            <!-- Botones de acción -->
                             <div class="col-12 col-md-3 d-flex flex-row flex-md-column gap-2 justify-content-end">
                                 <button class="btn btn-sm btn-outline-primary w-100" onclick="prepararEdicion('${tarea.id}')">
                                     <i class="bi bi-pencil-square"></i> Modificar
@@ -477,9 +498,9 @@
         document.getElementById("estado").value = tarea.estado;
         document.getElementById("descripcion_corta").value = tarea.descripcion_corta;
         
-        // Forzamos formato YYYY-MM-DD para que el input type="date" no se rompa
-        document.getElementById("fecha_inicio").value = tarea.fecha_inicio.includes("/") ? tarea.fecha_inicio.split("/").reverse().join("-") : tarea.fecha_inicio;
-        document.getElementById("fecha_fin").value = tarea.fecha_fin.includes("/") ? tarea.fecha_fin.split("/").reverse().join("-") : tarea.fecha_fin;
+        // Uso de la función inteligente para asegurar que no se pierda la fecha
+        document.getElementById("fecha_inicio").value = convertirAFechaInput(tarea.fecha_inicio);
+        document.getElementById("fecha_fin").value = convertirAFechaInput(tarea.fecha_fin);
 
         let textoLimpio = tarea.parte;
         const regex = /^\[.*?\] - /;
@@ -497,10 +518,43 @@
             quitarImagenPrevia();
         }
 
+        // Cambiamos textos para modo edición
         document.querySelector("#form-section .card-title").innerText = "Modificar Parte";
         document.getElementById("btnEnviarParte").innerHTML = '<i class="bi bi-arrow-repeat"></i> Actualizar Parte';
+        
+        // Cambiamos el texto y acción del botón volver
+        const btnVolver = document.querySelector("#form-section .btn-outline-secondary");
+        if(btnVolver) btnVolver.innerHTML = '<i class="bi bi-arrow-left"></i> Volver al listado';
 
         navegarA('form-section');
+    }
+
+    // Navegación inteligente al cancelar/terminar de editar
+    function cancelarEdicionYVolver() {
+        // ¿De dónde veníamos?
+        const destino = modoEdicionId ? 'list-section' : 'menu-section';
+        modoEdicionId = null;
+        
+        // Reseteos visuales
+        document.getElementById("formularioTareas").reset();
+        if(document.getElementById("lugar").tomselect) {
+            document.getElementById("lugar").tomselect.clear();
+        }
+        configurarFechasPorDefecto();
+        quitarImagenPrevia();
+        
+        document.querySelector("#form-section .card-title").innerText = "Nuevo Parte de Trabajo";
+        document.getElementById("btnEnviarParte").innerHTML = '<i class="bi bi-send-check"></i> Enviar Parte';
+        
+        const btnVolver = document.querySelector("#form-section .btn-outline-secondary");
+        if(btnVolver) btnVolver.innerHTML = '<i class="bi bi-arrow-left"></i> Volver al menú';
+
+        // Si volvemos al listado (porque hemos guardado o cancelado una edición), lo repintamos
+        if(destino === 'list-section') {
+            cargarListadoTareas();
+        }
+        
+        navegarA(destino);
     }
 
     function quitarImagenPrevia() {
