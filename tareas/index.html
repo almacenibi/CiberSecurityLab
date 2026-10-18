@@ -114,9 +114,8 @@
 
     <!-- 3. PANTALLA: FORMULARIO DE PARTES -->
     <div id="form-section" class="app-section">
-        <!-- Botón Volver -->
-        <!-- Botón Volver (NUEVO ONCLICK) -->
-        <button class="btn btn-outline-secondary mb-3 shadow-sm" onclick="cancelarEdicionYVolver()">
+        <!-- Botón Volver (ACTUALIZADO) -->
+        <button type="button" class="btn btn-outline-secondary mb-3 shadow-sm" onclick="accionVolver()">
             <i class="bi bi-arrow-left"></i> Volver al menú
         </button>
 
@@ -530,12 +529,10 @@
     }
 
     // Navegación inteligente al cancelar/terminar de editar
-    function cancelarEdicionYVolver() {
-        // Calculamos adónde ir: Si nos lo dicen, vamos ahí. Si no, miramos si estábamos editando.
-        const destino = destinoForzado ? destinoForzado : (modoEdicionId ? 'list-section' : 'menu-section');
-        modoEdicionId = null;
+    // --- NUEVAS FUNCIONES DE NAVEGACIÓN Y LIMPIEZA ---
+    function limpiarFormulario() {
+        modoEdicionId = null; // Apagamos el modo edición
         
-        // Reseteos visuales
         document.getElementById("formularioTareas").reset();
         if(document.getElementById("lugar").tomselect) {
             document.getElementById("lugar").tomselect.clear();
@@ -543,18 +540,25 @@
         configurarFechasPorDefecto();
         quitarImagenPrevia();
         
+        // Restauramos los textos originales del formulario
         document.querySelector("#form-section .card-title").innerText = "Nuevo Parte de Trabajo";
         document.getElementById("btnEnviarParte").innerHTML = '<i class="bi bi-send-check"></i> Enviar Parte';
         
         const btnVolver = document.querySelector("#form-section .btn-outline-secondary");
         if(btnVolver) btnVolver.innerHTML = '<i class="bi bi-arrow-left"></i> Volver al menú';
+    }
 
-        // Si volvemos al listado (porque hemos guardado o cancelado una edición), lo repintamos
-        if(destino === 'list-section') {
-            cargarListadoTareas();
+    function accionVolver() {
+        if (modoEdicionId) {
+            // Si estábamos modificando: Limpiamos, repintamos las tareas y vamos al listado
+            limpiarFormulario();
+            cargarListadoTareas(); 
+            navegarA('list-section');
+        } else {
+            // Si estábamos creando un parte nuevo: Limpiamos y vamos al menú principal
+            limpiarFormulario();
+            navegarA('menu-section');
         }
-        
-        navegarA(destino);
     }
 
     function quitarImagenPrevia() {
@@ -641,15 +645,22 @@
         .then(response => response.json())
         .then(data => {
             if(data.estado === "ok") {
-                // Cambiamos el texto del botón mientras bajan los datos nuevos
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sincronizando cambios...';
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sincronizando datos...';
                 
-                // Pedimos los datos y ESPERAMOS a que termine (.then)
+                // Pedimos los datos frescos y ESPERAMOS a que lleguen (.then)
                 cargarDatosDesdeAPI(false).then(() => {
-                    alert("✅ ¡Guardado correctamente!");
-                    // Si veníamos de editar vamos a la lista, si es nuevo vamos al menú
-                    const destinoFinal = payload.modo === "editar" ? 'list-section' : 'menu-section';
-                    cancelarEdicionYVolver(destinoFinal);
+                    alert("✅ ¡Parte guardado correctamente!");
+                    
+                    if (payload.modo === "editar") {
+                        // Forzamos volver al listado con los datos nuevos recién bajados
+                        limpiarFormulario();
+                        cargarListadoTareas(); // <-- Aquí forzamos pintar las tarjetas actualizadas
+                        navegarA('list-section');
+                    } else {
+                        // Si era nuevo, volvemos al menú principal
+                        limpiarFormulario();
+                        navegarA('menu-section');
+                    }
                 });
 
             } else {
