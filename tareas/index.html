@@ -88,7 +88,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6">
-                <div class="card shadow-sm menu-card h-100 p-4 text-center" onclick="navegarA('list-section')">
+                <div class="card shadow-sm menu-card h-100 p-4 text-center" onclick="cargarListadoTareas(); navegarA('list-section');">
                     <i class="bi bi-card-list menu-icon"></i>
                     <h5 class="fw-bold">Revisar Listado</h5>
                     <p class="text-muted small mb-0">Ver tus partes anteriores</p>
@@ -280,6 +280,8 @@
     //const API_URL = 'https://script.google.com/macros/s/AKfycbzpmpu-dTLEjLSJzodUGJDy25ArTIN-SR6sr1mWtjKXk50JP3cNccAVtLqdotq-ibXP/exec';
     //const API_URL = 'https://script.google.com/macros/s/AKfycbxAlHA79uex0TYOyKox408xiOBS8LnTypH4oIximuiJyxyS7C7ppp6NUWvhJINCAcAj/exec';
     const API_URL = 'https://script.google.com/macros/s/AKfycbyib_sM2qYM80XpuYzdmgrDQ_KPfCO-OabA3cwj8S4TRxQUBzKzcwUCowQaDV9bz1A/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxBJWEiFZVkCIkpUiiiyLp1nFwfzUkkvXRASvbF9jn3isEI-8GulN4PRrJyjmXoTGQp/exec';
+    
     let datosApp = {};
     let usuarioValidado = null; 
     let equipoValidado = null;  
@@ -440,6 +442,97 @@
             enviarAlBackend(payload, btnEnviar);
         }
     });
+
+    //Añadidas PARA EDITAR
+    // VARIABLE GLOBAL PARA SABER SI ESTAMOS CREANDO O EDITANDO
+    let modoEdicionId = null;
+
+    // 1. FUNCIÓN PARA DIBUJAR LA LISTA DE TAREAS
+    function cargarListadoTareas() {
+        const contenedor = document.getElementById("contenedorListaTareas");
+        contenedor.innerHTML = ""; // Limpiamos el boceto estático
+        
+        // Filtramos solo las tareas del usuario logueado
+        const misTareas = datosApp.tareas.filter(t => t.usuario === usuarioValidado);
+        
+        if(misTareas.length === 0) {
+            contenedor.innerHTML = "<p class='text-muted text-center mt-4'>No tienes partes registrados.</p>";
+            return;
+        }
+
+        // En un futuro aquí agruparemos por meses. Por ahora mostramos todas en bloque.
+        let htmlLista = `<div class="list-group shadow-sm mb-4">`;
+        
+        misTareas.forEach(tarea => {
+            // Buscamos los nombres bonitos cruzando con los IDs guardados
+            const nombreLugar = datosApp.clientes.find(c => c.id === tarea.lugar)?.nombre || "Lugar desconocido";
+            const nombreEstado = datosApp.estados.find(e => e.id === tarea.estado)?.nombre || tarea.estado;
+            
+            // Damos formato a la fecha para mostrarla más amigable (DD/MM/AAAA)
+            const fInicioFormato = tarea.fecha_inicio.split('-').reverse().join('/');
+            const fFinFormato = tarea.fecha_fin.split('-').reverse().join('/');
+
+            htmlLista += `
+                <div class="list-group-item p-3">
+                    <div class="row align-items-center g-3">
+                        <div class="col-12 col-md-9">
+                            <h5 class="fw-bold mb-1">${nombreLugar}</h5>
+                            <p class="text-muted mb-2">${tarea.descripcion_corta}</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark border"><i class="bi bi-calendar-event text-secondary"></i> ${fInicioFormato} - ${fFinFormato}</span>
+                                <span class="badge bg-info text-dark"><i class="bi bi-info-circle"></i> ${nombreEstado}</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3 d-flex flex-row flex-md-column gap-2 justify-content-end">
+                            <button class="btn btn-sm btn-outline-primary w-100" onclick="prepararEdicion('${tarea.id}')">
+                                <i class="bi bi-pencil-square"></i> Modificar
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger w-100" onclick="eliminarTarea('${tarea.id}')">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        htmlLista += `</div>`;
+        contenedor.innerHTML = htmlLista;
+    }
+
+    // 2. FUNCIÓN PARA PREPARAR EL FORMULARIO EN MODO "EDICIÓN"
+    function prepararEdicion(idTarea) {
+        const tarea = datosApp.tareas.find(t => t.id === idTarea);
+        if(!tarea) return;
+
+        // Marcamos la variable global con el ID que estamos editando
+        modoEdicionId = tarea.id;
+
+        // Rellenamos los campos con los datos guardados
+        document.getElementById("lugar").tomselect.setValue(tarea.lugar);
+        document.getElementById("tipo").value = tarea.tipo;
+        document.getElementById("estado").value = tarea.estado;
+        document.getElementById("descripcion_corta").value = tarea.descripcion_corta;
+        document.getElementById("fecha_inicio").value = tarea.fecha_inicio;
+        document.getElementById("fecha_fin").value = tarea.fecha_fin;
+
+        // Lógica del Parte (Antiguo vs Nuevo)
+        document.getElementById("zona_edicion_parte").style.display = "block"; // Mostramos zona histórica
+        document.getElementById("parte_anterior").value = tarea.parte; // Bloqueado
+        document.getElementById("parte").value = ""; // Vaciamos el nuevo para que escriba
+        document.getElementById("label_nuevo_parte").innerText = "Añadir al Parte (Nuevo desarrollo)";
+        
+        // Desmarcamos el checkbox de borrado por seguridad
+        document.getElementById("borrar_parte_anterior").checked = false;
+
+        // Cambiamos textos de la interfaz
+        document.querySelector("#form-section .card-title").innerText = "Modificar Parte de Trabajo";
+        document.getElementById("btnEnviarParte").innerHTML = '<i class="bi bi-arrow-repeat"></i> Actualizar Parte';
+
+        // Navegamos al formulario
+        navegarA('form-section');
+    }
+
 
     // Función que hace la petición POST al Google Apps Script
     function enviarAlBackend(payload, btn) {
