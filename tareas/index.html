@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Registro de Tareas</title>
+    <!-- Cargamos Bootstrap 5 para el diseño -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Ocultamos secciones al arrancar */
+        #login-section, #form-section { display: none; }
+        .app-container { max-width: 600px; margin: auto; padding-top: 20px; }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container app-container">
+    
+    <!-- PANTALLA DE CARGA INICIAL -->
+    <div id="loading" class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Conectando con la base de datos...</p>
+    </div>
+
+    <!-- PANTALLA 1: LOGIN -->
+    <div id="login-section" class="card shadow-sm mt-5">
+        <div class="card-body">
+            <h4 class="card-title text-center mb-4">Acceso a Tareas</h4>
+            <div class="mb-3">
+                <label for="emailInput" class="form-label">Correo electrónico (Google)</label>
+                <input type="email" class="form-control" id="emailInput" placeholder="tu_correo@gmail.com">
+            </div>
+            <button id="btnLogin" class="btn btn-primary w-100">Entrar</button>
+            <div id="loginError" class="text-danger mt-2 text-center" style="display: none;">Usuario no encontrado o no autorizado.</div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: FORMULARIO DE PARTES -->
+    <div id="form-section" class="card shadow-sm mb-5">
+        <div class="card-body">
+            <h4 class="card-title text-center mb-3">Nuevo Parte</h4>
+            <p class="text-muted text-center mb-4">Hola <span id="nombreUsuarioUI" class="fw-bold"></span> | Equipo: <span id="equipoUI" class="fw-bold"></span></p>
+
+            <form id="formularioTareas">
+                
+                <div class="mb-3">
+                    <label class="form-label">Lugar / Cliente</label>
+                    <select class="form-select" id="lugar" required>
+                        <option value="">Selecciona un lugar...</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select" id="tipo" required>
+                            <option value="">Selecciona...</option>
+                        </select>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="estado" required>
+                            <option value="">Selecciona...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Descripción Corta</label>
+                    <input type="text" class="form-control" id="descripcion_corta" maxlength="100" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input type="date" class="form-control" id="fecha_inicio" required>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Fecha Fin</label>
+                        <input type="date" class="form-control" id="fecha_fin" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Desarrollo del Parte</label>
+                    <textarea class="form-control" id="parte" rows="4" required></textarea>
+                    <small class="text-muted">Las fechas y días empleados se calcularán automáticamente al enviar.</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Adjuntar Imagen</label>
+                    <input type="file" class="form-control" id="imagen" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">Enviar Parte</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- LÓGICA DE LA APLICACIÓN -->
+<script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzpmpu-dTLEjLSJzodUGJDy25ArTIN-SR6sr1mWtjKXk50JP3cNccAVtLqdotq-ibXP/exec';
+    
+    let datosApp = {};
+    let usuarioValidado = null; // Guardará el ID (correo)
+    let equipoValidado = null;  // Guardará el idEquipo (ej. E6-Gestion-admin)
+
+    // Al cargar la página, descargamos los datos
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("loading").style.display = "block";
+        
+        fetch(API_URL)
+            .then(response => response.json())
+            .then(data => {
+                datosApp = data;
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("login-section").style.display = "block";
+                rellenarDesplegables();
+                configurarFechasPorDefecto();
+            })
+            .catch(error => {
+                console.error("Error al cargar datos:", error);
+                document.getElementById("loading").innerHTML = "<p class='text-danger'>Error de conexión con la base de datos.</p>";
+            });
+    });
+
+    // Rellena los select con el formato <option value="ID">Nombre</option>
+    function rellenarDesplegables() {
+        const cargarOpciones = (selectId, lista) => {
+            const select = document.getElementById(selectId);
+            lista.forEach(item => {
+                let opcion = document.createElement("option");
+                opcion.value = item.id; 
+                opcion.text = item.nombre;
+                select.appendChild(opcion);
+            });
+        };
+
+        cargarOpciones("lugar", datosApp.clientes);
+        cargarOpciones("tipo", datosApp.tipologias);
+        cargarOpciones("estado", datosApp.estados);
+    }
+
+    // Configura la fecha de hoy por defecto en los inputs de fecha
+    function configurarFechasPorDefecto() {
+        const hoy = new Date().toISOString().split('T')[0];
+        document.getElementById("fecha_inicio").value = hoy;
+        document.getElementById("fecha_fin").value = hoy;
+    }
+
+    // Lógica del Login
+    document.getElementById("btnLogin").addEventListener("click", function() {
+        const emailIngresado = document.getElementById("emailInput").value.trim().toLowerCase();
+        
+        // Buscamos si el email está en la lista descargada
+        const usuarioEncontrado = datosApp.usuarios.find(u => u.id.toLowerCase() === emailIngresado);
+
+        if (usuarioEncontrado) {
+            // Guardamos datos en memoria
+            usuarioValidado = usuarioEncontrado.id;
+            equipoValidado = usuarioEncontrado.extra;
+
+            // Actualizamos la UI
+            document.getElementById("nombreUsuarioUI").innerText = usuarioEncontrado.nombre;
+            
+            // Buscamos el nombre del equipo para mostrarlo bonito (opcional)
+            const equipoObj = datosApp.equipos.find(e => e.id === equipoValidado);
+            document.getElementById("equipoUI").innerText = equipoObj ? equipoObj.nombre : equipoValidado;
+
+            // Cambiamos de pantalla
+            document.getElementById("login-section").style.display = "none";
+            document.getElementById("form-section").style.display = "block";
+        } else {
+            document.getElementById("loginError").style.display = "block";
+        }
+    });
+
+    // Interceptar el envío del formulario (para la siguiente fase)
+    document.getElementById("formularioTareas").addEventListener("submit", function(e) {
+        e.preventDefault(); // Evita que la página recargue
+        alert("¡Formulario preparado! En la siguiente fase calcularemos los días y enviaremos esto a Google Sheets.");
+    });
+</script>
+
+</body>
+</html>
