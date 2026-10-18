@@ -277,10 +277,97 @@
     });
 
     // -------- ZONA PARA LA LÓGICA DE ENVÍO DE FORMULARIO -------- //
+    // -------- ZONA PARA LA LÓGICA DE ENVÍO DE FORMULARIO -------- //
     document.getElementById("formularioTareas").addEventListener("submit", function(e) {
         e.preventDefault(); 
-        console.log("Formulario enviado. Aquí inyectaremos el código de Base64, cálculo de fechas y el fetch(POST).");
+        
+        const btnEnviar = document.getElementById("btnEnviarParte");
+        // Cambiamos el botón a estado "cargando"
+        btnEnviar.disabled = true;
+        btnEnviar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
+
+        // 1. Calcular los días empleados (Mínimo 1 día si es la misma fecha)
+        const fInicio = new Date(document.getElementById("fecha_inicio").value);
+        const fFin = new Date(document.getElementById("fecha_fin").value);
+        const diffTiempo = Math.abs(fFin - fInicio);
+        const dias = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24)) + 1; 
+        
+        // 2. Formatear el texto del Parte
+        const fechaHoy = new Date().toLocaleDateString('es-ES');
+        const textoOriginal = document.getElementById("parte").value;
+        const textoParteFinal = `[${fechaHoy} | ${dias} Días] - ${textoOriginal}`;
+
+        // 3. Preparar el paquete JSON básico
+        const payload = {
+            lugar: document.getElementById("lugar").value,
+            tipo: document.getElementById("tipo").value,
+            estado: document.getElementById("estado").value,
+            descripcion_corta: document.getElementById("descripcion_corta").value,
+            fecha_inicio: document.getElementById("fecha_inicio").value,
+            fecha_fin: document.getElementById("fecha_fin").value,
+            parte: textoParteFinal,
+            usuario: usuarioValidado,
+            equipo: equipoValidado,
+            imagenBase64: "",
+            mimeType: "",
+            nombreArchivo: ""
+        };
+
+        // 4. Leer la imagen (si la hay) y enviarla
+        const inputImagen = document.getElementById("imagen");
+        if (inputImagen.files.length > 0) {
+            const archivo = inputImagen.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(evento) {
+                const base64Completo = evento.target.result;
+                // Separamos la cabecera del contenido puro en Base64
+                payload.imagenBase64 = base64Completo.split(',')[1]; 
+                payload.mimeType = archivo.type;
+                payload.nombreArchivo = "Parte_" + Date.now() + "_" + archivo.name.replace(/[^a-zA-Z0-9.]/g, ""); // Limpiamos nombre
+                
+                enviarAlBackend(payload, btnEnviar);
+            };
+            reader.readAsDataURL(archivo);
+        } else {
+            // Si no hay imagen, enviamos directamente
+            enviarAlBackend(payload, btnEnviar);
+        }
     });
+
+    // Función que hace la petición POST al Google Apps Script
+    function enviarAlBackend(payload, btn) {
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                // Usamos text/plain para evitar errores de CORS con Google Scripts
+                'Content-Type': 'text/plain;charset=utf-8' 
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.estado === "ok") {
+                alert("✅ ¡Parte registrado correctamente!");
+                document.getElementById("formularioTareas").reset(); // Limpiamos formulario
+                // Reseteamos el desplegable predictivo
+                document.getElementById("lugar").tomselect.clear(); 
+                configurarFechasPorDefecto(); 
+                navegarA('menu-section'); // Devolvemos al usuario al menú
+            } else {
+                alert("❌ Error al guardar en Sheets: " + data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error en POST:", error);
+            alert("⚠️ Error de red al enviar el parte. Revisa tu conexión.");
+        })
+        .finally(() => {
+            // Restauramos el botón a la normalidad
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-send-check"></i> Enviar Parte';
+        });
+    }
 
 </script>
 
