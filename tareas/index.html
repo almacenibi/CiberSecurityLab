@@ -51,7 +51,7 @@
     <!-- 0. PANTALLA DE CARGA INICIAL -->
     <div id="loading" class="text-center mt-5 app-section">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
-        <p class="mt-3 fw-bold text-secondary">Sincronizando datos2...</p>
+        <p class="mt-3 fw-bold text-secondary">Sincronizando datos3...</p>
     </div>
 
     <!-- 1. PANTALLA: LOGIN -->
@@ -316,14 +316,14 @@
 
     // Función que descarga los datos (sirve para inicio y para refrescar tras guardar)
     function cargarDatosDesdeAPI(esCargaInicial = false) {
-        fetch(API_URL)
+        return fetch(API_URL)
             .then(response => response.json())
             .then(data => {
                 datosApp = data;
                 if(esCargaInicial) {
                     rellenarDesplegables();
                     configurarFechasPorDefecto();
-                    navegarA('login-section');
+                    navegarA('list-section');
                 }
             })
             .catch(error => {
@@ -531,8 +531,8 @@
 
     // Navegación inteligente al cancelar/terminar de editar
     function cancelarEdicionYVolver() {
-        // ¿De dónde veníamos?
-        const destino = modoEdicionId ? 'list-section' : 'menu-section';
+        // Calculamos adónde ir: Si nos lo dicen, vamos ahí. Si no, miramos si estábamos editando.
+        const destino = destinoForzado ? destinoForzado : (modoEdicionId ? 'list-section' : 'menu-section');
         modoEdicionId = null;
         
         // Reseteos visuales
@@ -641,21 +641,28 @@
         .then(response => response.json())
         .then(data => {
             if(data.estado === "ok") {
-                alert("✅ ¡Guardado correctamente!");
-                // Pedimos los datos actualizados a Sheets en segundo plano
-                cargarDatosDesdeAPI(false); 
-                cancelarEdicionYVolver(); // Esto limpia todo y nos manda al menú
+                // Cambiamos el texto del botón mientras bajan los datos nuevos
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sincronizando cambios...';
+                
+                // Pedimos los datos y ESPERAMOS a que termine (.then)
+                cargarDatosDesdeAPI(false).then(() => {
+                    alert("✅ ¡Guardado correctamente!");
+                    // Si veníamos de editar vamos a la lista, si es nuevo vamos al menú
+                    const destinoFinal = payload.modo === "editar" ? 'list-section' : 'menu-section';
+                    cancelarEdicionYVolver(destinoFinal);
+                });
+
             } else {
                 alert("❌ Error al guardar en Sheets: " + data.error);
+                btn.disabled = false;
+                btn.innerHTML = payload.modo === "editar" ? '<i class="bi bi-arrow-repeat"></i> Actualizar Parte' : '<i class="bi bi-send-check"></i> Enviar Parte';
             }
         })
         .catch(error => {
             console.error("Error en POST:", error);
             alert("⚠️ Error de red al enviar el parte. Revisa tu conexión.");
-        })
-        .finally(() => {
             btn.disabled = false;
-            btn.innerHTML = modoEdicionId ? '<i class="bi bi-arrow-repeat"></i> Actualizar Parte' : '<i class="bi bi-send-check"></i> Enviar Parte';
+            btn.innerHTML = payload.modo === "editar" ? '<i class="bi bi-arrow-repeat"></i> Actualizar Parte' : '<i class="bi bi-send-check"></i> Enviar Parte';
         });
     }
 
