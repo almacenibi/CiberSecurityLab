@@ -88,7 +88,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6">
-                <div class="card shadow-sm menu-card h-100 p-4 text-center" onclick="alert('Módulo en construcción')">
+                <div class="card shadow-sm menu-card h-100 p-4 text-center" onclick="navegarA('list-section')">
                     <i class="bi bi-card-list menu-icon"></i>
                     <h5 class="fw-bold">Revisar Listado</h5>
                     <p class="text-muted small mb-0">Ver tus partes anteriores</p>
@@ -161,8 +161,21 @@
                         </div>
                     </div>
 
+                    <!-- Zona de edición (Solo visible al modificar) -->
+                    <div id="zona_edicion_parte" style="display: none;" class="mb-4 p-3 bg-light border rounded">
+                        <label class="form-label fw-bold text-secondary"><i class="bi bi-archive"></i> Parte Anterior Registrado</label>
+                        <textarea class="form-control bg-white mb-2 text-muted" id="parte_anterior" rows="3" disabled></textarea>
+                        
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" id="borrar_parte_anterior">
+                            <label class="form-check-label text-danger fw-bold small" for="borrar_parte_anterior">
+                                <i class="bi bi-exclamation-triangle"></i> Borrar el histórico anterior al guardar (Acción irreversible)
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Desarrollo del Parte</label>
+                        <label class="form-label fw-bold" id="label_nuevo_parte">Desarrollo del Parte</label>
                         <textarea class="form-control" id="parte" rows="5" placeholder="Escribe aquí los detalles del trabajo realizado..." required></textarea>
                     </div>
 
@@ -183,6 +196,80 @@
         </div>
     </div>
 
+    <!-- 4. PANTALLA: LISTADO DE PARTES -->
+    <div id="list-section" class="app-section">
+        <!-- Botón Volver -->
+        <button class="btn btn-outline-secondary mb-3 shadow-sm" onclick="navegarA('menu-section')">
+            <i class="bi bi-arrow-left"></i> Volver al menú
+        </button>
+
+        <div class="card shadow">
+            <div class="card-body p-3 p-md-4">
+                <h4 class="card-title fw-bold mb-4 border-bottom pb-2">Mis Tareas Registradas</h4>
+                
+                <!-- Barra de controles: Filtros y Búsqueda -->
+                <div class="row g-2 mb-4">
+                    <div class="col-12 col-md-4">
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-white"><i class="bi bi-calendar3"></i></span>
+                            <select class="form-select border-start-0" id="filtroMes">
+                                <option value="actual">Octubre 2026</option>
+                                <option value="todo">Ver histórico completo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-8 col-md-6">
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control border-start-0" id="buscadorPartes" placeholder="Buscar lugar o descripción...">
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2">
+                        <button class="btn btn-outline-primary w-100 shadow-sm" onclick="alert('Filtros por estado/tipo en desarrollo')">
+                            <i class="bi bi-funnel"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenedor donde Javascript inyectará los meses y las tareas -->
+                <div id="contenedorListaTareas">
+                    
+                    <!-- ESTRUCTURA BOCETO (Javascript lo generará así) -->
+                    <h6 class="fw-bold text-primary mt-4 mb-3 text-uppercase border-bottom border-primary border-2 pb-1 d-inline-block">Octubre 2026</h6>
+                    
+                    <div class="list-group shadow-sm mb-4">
+                        <div class="list-group-item p-3">
+                            <div class="row align-items-center g-3">
+                                <!-- Info de la tarea -->
+                                <div class="col-12 col-md-9">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <h5 class="fw-bold mb-0">Ayuntamiento de Madrid</h5>
+                                    </div>
+                                    <p class="text-muted mb-2">Reparación de luminaria principal</p>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span class="badge bg-light text-dark border"><i class="bi bi-calendar-event text-secondary"></i> 18/10/26 - 19/10/26</span>
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-clock-history"></i> En curso</span>
+                                    </div>
+                                </div>
+                                <!-- Botones de acción -->
+                                <div class="col-12 col-md-3 d-flex flex-row flex-md-column gap-2 justify-content-end">
+                                    <button class="btn btn-sm btn-outline-primary w-100" onclick="alert('Cargando parte para modificar...')">
+                                        <i class="bi bi-pencil-square"></i> Modificar
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger w-100" onclick="alert('¿Seguro que deseas eliminar este parte?')">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FIN ESTRUCTURA BOCETO -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 <!-- Librerías JS -->
