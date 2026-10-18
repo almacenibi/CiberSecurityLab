@@ -322,10 +322,28 @@
             
             reader.onload = function(evento) {
                 const base64Completo = evento.target.result;
-                // Separamos la cabecera del contenido puro en Base64
+                
+                // --- NUEVA LÓGICA DE NOMBRE DE ARCHIVO ---
+                // 1. Buscamos el nombre real del lugar usando el ID seleccionado en el desplegable
+                const idLugarSelec = document.getElementById("lugar").value;
+                const clienteObj = datosApp.clientes.find(c => c.id === idLugarSelec);
+                const nombreLugar = clienteObj ? clienteObj.nombre : "Lugar_Desconocido";
+                
+                // 2. Normalizamos el lugar (quitamos acentos, ñ, y cambiamos caracteres raros/espacios por guión bajo)
+                const lugarNormalizado = nombreLugar
+                    .normalize("NFD") // Separa las letras de los acentos
+                    .replace(/[\u0300-\u036f]/g, "") // Borra los acentos
+                    .replace(/[^a-zA-Z0-9]/g, "_") // Cambia lo que no sea letra o número por _
+                    .replace(/_+/g, "_"); // Evita que haya varios guiones bajos seguidos (ej: "__")
+                
+                // 3. Limpiamos también el nombre original de la cámara por seguridad
+                const nombreOriginalLimpio = archivo.name.replace(/[^a-zA-Z0-9.]/g, "_").replace(/_+/g, "_");
+                
+                // 4. Asignamos al payload
                 payload.imagenBase64 = base64Completo.split(',')[1]; 
                 payload.mimeType = archivo.type;
-                payload.nombreArchivo = "Parte_" + Date.now() + "_" + archivo.name.replace(/[^a-zA-Z0-9.]/g, ""); // Limpiamos nombre
+                payload.nombreArchivo = lugarNormalizado + "_" + nombreOriginalLimpio;
+                // -----------------------------------------
                 
                 enviarAlBackend(payload, btnEnviar);
             };
