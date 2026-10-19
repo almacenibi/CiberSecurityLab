@@ -63,6 +63,17 @@
                     </div>
                 </div>
 
+                <!-- Opción 5: Medicación -->
+                <div class="col-12">
+                    <div class="card shadow-sm border-0" style="background-color: #6f42c1; color: white; cursor: pointer;" onclick="showView('viewMedication')">
+                        <div class="card-body py-4 d-flex align-items-center justify-content-center flex-column text-center">
+                            <div class="display-1 mb-2">💊</div>
+                            <h4 class="card-title fw-bold">Pautas Medicación</h4>
+                            <p class="card-text small opacity-75">Control de pastillas activas y suspendidas</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
         
@@ -200,6 +211,66 @@
                 </div>
             </div>
         </div>
+
+        <!-- VISTA 6: PAUTAS MEDICACIÓN -->
+        <div id="viewMedication" class="d-none">
+            <button class="btn btn-sm btn-secondary mb-3" onclick="showView('viewMenu')">← Volver al Menú</button>
+            
+            <h3 class="text-center mb-4" style="color: #6f42c1;">💊 Control de Medicación</h3>
+
+            <!-- 1. EN ACTIVO (POST-URGENCIAS) -->
+            <div class="card shadow-sm mb-4 border-success">
+                <div class="card-header bg-success text-white fw-bold fs-5">
+                    ✅ [EN ACTIVO] Pauta Post-Urgencias
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Paracetamol (1g):</strong> Analgésico principal. Tomar si hay dolor.</li>
+                        <li class="list-group-item"><strong>Suero oral / Agua:</strong> Beber a pequeños sorbos según tolerancia.</li>
+                        <li class="list-group-item text-danger"><strong>Pastilla de la Tensión (Capenon):</strong> ⚠️ OJO. Medir antes. SI LA TENSIÓN ES MENOR DE 110/70, NO DAR.</li>
+                        <li class="list-group-item"><strong>Inhixa (Heparina):</strong> Mantener inyección diaria.</li>
+                        <li class="list-group-item"><strong>Próstata y Spiriva (Inhalador):</strong> Mantener tratamiento habitual.</li>
+                        <li class="list-group-item"><strong>Nexium (Protector):</strong> Mantener en ayunas.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2. SUSPENDIDA (POST-OPERATORIO) -->
+            <div class="card shadow-sm mb-4 border-danger">
+                <div class="card-header bg-danger text-white fw-bold fs-5 text-decoration-line-through">
+                    ❌ [SUSPENDIDA] Pauta Post-Operatoria
+                </div>
+                <div class="card-body bg-light">
+                    <p class="text-danger small fw-bold mb-2">⚠️ PROHIBIDO TOMAR HASTA NUEVA ORDEN MÉDICA</p>
+                    <ul class="list-group list-group-flush opacity-75">
+                        <li class="list-group-item bg-transparent text-decoration-line-through">Zaldiar (Tramadol + Paracetamol)</li>
+                        <li class="list-group-item bg-transparent text-decoration-line-through">Lyrica (Pregabalina)</li>
+                        <li class="list-group-item bg-transparent text-decoration-line-through">Enantyum / Ibuprofeno / Voltaren</li>
+                        <li class="list-group-item bg-transparent text-decoration-line-through">Diazepam / Urapidil (Suspendidos por riesgo de hipotensión)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 3. PAUTA NORMAL / HABITUAL -->
+            <div class="card shadow-sm mb-4 border-secondary">
+                <div class="card-header bg-secondary text-white fw-bold fs-5">
+                    📝 [NORMAL] Pauta Previa (Habitual)
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item"><strong>Capenon hct 20/5/12,5mg:</strong> 1 comp/24h *(Con precaución TA)*</li>
+                        <li class="list-group-item"><strong>Zyloric (Alopurinol) 100mg:</strong> 1 comp/24h</li>
+                        <li class="list-group-item"><strong>Nexium (Esomeprazol) 40mg:</strong> 1 comp/24h</li>
+                        <li class="list-group-item"><strong>Astudal (Amlodipino) 5mg:</strong> 1 comp/24h</li>
+                        <li class="list-group-item"><strong>Spiriva (Tiotropio):</strong> /24h</li>
+                        <li class="list-group-item"><strong>Neomyx 0,5/0,4mg:</strong> 1 caps/24h</li>
+                        <li class="list-group-item"><strong>Acetilcisteina 600mg:</strong> 1 comp/24h</li>
+                        <li class="list-group-item"><strong>Atorvastatina + ezetimiba:</strong> 1 caps/24h</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
     </div>
     <!-- CONTENEDOR DEL INFORME PDF (Solo visible al imprimir) -->
     <div id="printArea" class="container-fluid d-none d-print-block mt-4">
@@ -229,6 +300,7 @@
             document.getElementById('viewForm').classList.add('d-none');
             document.getElementById('viewList').classList.add('d-none');
             document.getElementById('viewGuide').classList.add('d-none');
+            document.getElementById('viewMedication').classList.add('d-none');
             document.getElementById(viewId).classList.remove('d-none');
 
             if(viewId === 'viewList') {
