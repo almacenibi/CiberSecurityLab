@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filosofía de la Tecnología - Documento de Estudio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #6d4aff 0%, #4a3aff 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 1.2em;
+        }
+        
+        .metadata {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 3px solid #6d4aff;
+        }
+        
+        .metadata table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .metadata td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .metadata strong {
+            color: #6d4aff;
+        }
+        
+        nav {
+            background: #2c3e50;
+            padding: 15px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            background: #6d4aff;
+        }
+        
+        main {
+            padding: 40px;
+        }
+        
+        section {
+            margin-bottom: 50px;
+            scroll-margin-top: 80px;
+        }
+        
+        h2 {
+            color: #6d4aff;
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #6d4aff;
+        }
+        
+        h3 {
+            color: #4a3aff;
+            font-size: 1.5em;
+            margin: 30px 0 20px 0;
+        }
+        
+        h4 {
+            color: #5a4fcf;
+            font-size: 1.2em;
+            margin: 25px 0 15px 0;
+        }
+        
+        .source-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .source-key {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .source-ref {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .source-class {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .class-note {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            font-style: italic;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .class-note::before {
+            content: "📝 NOTA DE CLASE ";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #1565C0;
+        }
+        
+        .key-text {
+            background: #f1f8e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .key-text::before {
+            content: "📖 TEXTO CLAVE ";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #2E7D32;
+        }
+        
+        .ref-text {
+            background: #fff3e0;
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .ref-text::before {
+            content: "📚 TEXTO REFERENCIAL ";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #EF6C00;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #6d4aff;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e8eaf6;
+        }
+        
+        .example-box {
+            background: #f5f5f5;
+            border: 2px dashed #9e9e9e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .example-box h4 {
+            color: #424242;
+            margin-top: 0;
+        }
+        
+        .example-box .scenario {
+            background: #fff9c4;
+            padding: 10px;
+            border-left: 3px solid #fbc02d;
+            margin-bottom: 10px;
+        }
+        
+        .example-box .application {
+            background: #e8f5e9;
+            padding: 10px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .glossary-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .glossary-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .glossary-item strong {
+            color: #6d4aff;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .comparison-table {
+            overflow-x: auto;
+        }
+        
+        .comparison-table table {
+            min-width: 800px;
+        }
+        
+        .citation {
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .author-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #6d4aff;
+        }
+        
+        .author-card h4 {
+            margin-top: 0;
+            color: #6d4aff;
+        }
+        
+        .image-ref {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .image-ref strong {
+            color: #7b1fa2;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        
+        .toc {
+            background: #fafafa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .toc ol {
+            margin-left: 20px;
+        }
+        
+        .toc li {
+            margin: 10px 0;
+        }
+        
+        .toc a {
+            color: #6d4aff;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            main {
+                padding: 20px;
+            }
+            
+            .glossary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .print-btn {
+            background: #6d4aff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 20px 0;
+        }
+        
+        .print-btn:hover {
+            background: #5a4fcf;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Filosofía de la Tecnología</h1>
+            <p>Análisis Integrado de Transcripción, Notas y Textos de Clase</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Unidad 1: Los Pensadores de Referencia</p>
+        </header>
+        
+        <div class="metadata">
+            <table>
+                <tr>
+                    <td><strong>Curso:</strong></td>
+                    <td>Filosofía de la Tecnología (INF26E12)</td>
+                </tr>
+                <tr>
+                    <td><strong>Sesión:</strong></td>
+                    <td>01 - Introducción y Pensadores de Referencia</td>
+                </tr>
+                <tr>
+                    <td><strong>Fecha:</strong></td>
+                    <td>14 de septiembre de 2026</td>
+                </tr>
+                <tr>
+                    <td><strong>Profesor:</strong></td>
+                    <td>Jordi Asensi Sala (Ingeniero en Telecomunicaciones, especialista en gobernanza de IA)</td>
+                </tr>
+                <tr>
+                    <td><strong>Documentos Analizados:</strong></td>
+                    <td>Transcripción completa, Notas de clase, Texto Clave, 3 Textos Referenciales</td>
+                </tr>
+            </table>
+        </div>
+        
+        <nav>
+            <ul>
+                <li><a href="#resumen">Resumen Ejecutivo</a></li>
+                <li><a href="#indice">Índice Detallado</a></li>
+                <li><a href="#autores">Autores Desarrollados</a></li>
+                <li><a href="#ejemplos">Ejemplos Prácticos</a></li>
+                <li><a href="#glosario">Glosario Términos</a></li>
+                <li><a href="#autores-lista">Glosario Autores</a></li>
+            </ul>
+        </nav>
+        
+        <main>
+            <!-- RESUMEN EJECUTIVO -->
+            <section id="resumen">
+                <h2>1. Resumen Ejecutivo</h2>
+                
+                <div class="ref-text">
+                    <strong>Diferenciación de Fuentes:</strong>
+                    <p>Este documento sintetiza tres tipos de materiales:</p>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li><span class="source-key">TEXTO CLAVE</span>: Contenido estructurado del programa oficial (15 secciones sobre pensadores de referencia)</li>
+                        <li><span class="source-ref">TEXTOS REFERENCIALES</span>: Andrew Feenberg (Teoría Crítica), Stanford Encyclopedia, CTS/STS, análisis empírico</li>
+                        <li><span class="source-class">NOTAS DE CLASE</span>: Exposición oral del profesor con ejemplos personales y interacción con alumnos</li>
+                    </ul>
+                </div>
+                
+                <div class="key-text">
+                    <strong>Objetivo del Curso (Texto Clave):</strong>
+                    <p style="margin-top: 10px;">Proporcionar a ingenieros informáticos una base filosófica para comprender que la tecnología no es neutral, incorpora valores y decisiones políticas, y requiere reflexión ética en el diseño e implementación de sistemas.</p>
+                </div>
+                
+                <div class="class-note">
+                    <p><strong>Perspective del Profesor:</strong> "No vamos a opinar sobre si la tecnología es buena o mala. Vamos a analizar qué sesgos tiene un cierto sistema, algoritmo o forma de diseñar, y qué perspectivas están definidas ahí dentro."</p>
+                    <p style="margin-top: 10px;"><strong>Enfoque pedagógico:</strong> La calidad del argumento y la evidencia importan más que la posición tomada. Se valora el pensamiento crítico basado en evidencias.</p>
+                </div>
+                
+                <div class="ref-text">
+                    <strong>Aporte Principal de los Textos Referenciales:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li><strong>Feenberg:</strong> Teoría Crítica de la Tecnología - instrumentalización primaria/secundaria, código técnico, democratización del diseño</li>
+                        <li><strong>Stanford Encyclopedia:</strong> Marco histórico completo (fases clásica y contemporánea), filosofía analítica vs. humanística</li>
+                        <li><strong>CTS/STS:</strong> Teoría Actor-Red, giro empírico, perspectivas decoloniales y feministas</li>
+                        <li><strong>Texto Referencial 1:</strong> Breve guía con preguntas de análisis para cada texto</li>
+                    </ul>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Elemento</th>
+                            <th>Texto Clave</th>
+                            <th>Textos Referenciales</th>
+                            <th>Notas de Clase</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Origen</strong></td>
+                            <td>Programa oficial de la unidad</td>
+                            <td>Artículos académicos externos</td>
+                            <td>Exposición oral del profesor</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Contenido</strong></td>
+                            <td>15 pensadores sistemáticos</td>
+                            <td>Profundización teórica específica</td>
+                            <td>Ejemplos personales, interacciones</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Uso</strong></td>
+                            <td>Estudio obligatorio</td>
+                            <td>Lectura optativa recomendada</td>
+                            <td>Contextualización viva</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ejemplo</strong></td>
+                            <td>Define Gestell de Heidegger</td>
+                            <td>Analiza Feenberg en detalle</td>
+                            <td>Cuenta experiencia con Movistar</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="key-text">
+                    <strong>Mapa Conceptual (ver imagen adjunta):</strong>
+                    <p style="margin-top: 10px;">Los 15 pensadores principales están organizados cronológicamente desde Aristóteles hasta perspectivas decoloniales contemporáneas, con un mapa comparativo que sitúa cada tradición según autonomía de la técnica y posibilidad de transformación.</p>
+                </div>
+            </section>
+            
+            <!-- ÍNDICE DETALLADO -->
+            <section id="indice">
+                <h2>2. Índice Detallado</h2>
+                
+                <div class="toc">
+                    <h3>Contenido del Documento</h3>
+                    <ol>
+                        <li><a href="#resumen">Resumen Ejecutivo</a></li>
+                        <li><a href="#indice">Índice Detallado</a></li>
+                        <li><a href="#autores">3. Autores y Teorías Desarrolladas</a>
+                            <ol>
+                                <li>Aristóteles: Fisis y Techne</li>
+                                <li>Bacon y Descartes: Instrumentalismo</li>
+                                <li>Carl Mitcham: Cartografía del campo</li>
+                                <li>Norbert Wiener: Cibernética</li>
+                                <li>Martin Heidegger: Gestell y Bestánd</li>
+                                <li>Lewis Mumford: Megamáquina</li>
+                                <li>Jacques Ellul: Autonomía de la técnica</li>
+                                <li>Hans Jonas: Principio de responsabilidad</li>
+                                <li>Andrew Feenberg: Teoría Crítica</li>
+                                <li>Langdon Winner: Política de artefactos</li>
+                                <li>Don Ihde: Mediación tecnológica</li>
+                                <li>Judy Wajcman: Perspectiva feminista</li>
+                                <li>Perspectivas decoloniales (Yuk Hui, Couldry & Mejias)</li>
+                                <li>Otros: Ellul, Marcuse, Morozov, Floridi</li>
+                            </ol>
+                        </li>
+                        <li><a href="#ejemplos">4. Ejemplos Prácticos</a></li>
+                        <li><a href="#glosario">5. Glosario de Términos</a></li>
+                        <li><a href="#autores-lista">6. Glosario de Autores</a></li>
+                    </ol>
+                </div>
+            </section>
+            
+            <!-- AUTORES DESARROLLADOS -->
+            <section id="autores">
+                <h2>3. Autores y Teorías Desarrolladas</h2>
+                
+                <!-- ARISTÓTELES -->
+                <div class="author-card">
+                    <h3>3.1 Aristóteles (384-322 a.C.)<span class="source-tag source-key">Texto Clave §2</span><span class="source-tag source-class">Clase</span></h3>
+                    
+                    <p><strong>Idea central:</strong> Distinción entre <em>fisis</em> (lo natural) y <em>techne</em> (lo producido por técnica).</p>
+                    
+                    <div class="key-text">
+                        <strong>Definiciones (Texto Clave):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Fisis:</strong> Aquello que existe por naturaleza, contiene en sí mismo el principio de su desarrollo (semilla → árbol)</li>
+                            <li><strong>Techne:</strong> Lo producido mediante conocimiento técnico, depende de la intención del artesano</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <strong>Ejemplo del profesor:</strong> "Las olas del mar van y vienen sin intervención humana (fisis). Un barco requiere que el humano haga algo para generar ese efecto (techne). La techne conecta con los dioses, por lo que el artesano debe hacer bien su trabajo, no puede hacerlo mal porque estaría insultando a los dioses."</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <strong>Significado contemporáneo (Texto Referencial - Stanford):</strong>
+                        <p>El debate sobre la autonomía de la IA reproduce esta distinción aristotélica: ¿produce algo con principio propio de desarrollo, o sigue siendo producto de la techne humana?</p>
+                    </div>
+                    
+                    <p><strong>Código ético:</strong> De aquí surge la ontología y el código ético en occidente - qué se puede hacer y qué no, qué tiene valor.</p>
+                </div>
+                
+                <!-- BACON Y DESCARTES -->
+                <div class="author-card">
+                    <h3>3.2 Francis Bacon (1561-1626) y René Descartes (1596-1650)<span class="source-tag source-key">Texto Clave §3</span><span class="source-tag source-class">Clase</span></h3>
+                    
+                    <div class="key-text">
+                        <strong>Bacon - <em>Scientia potentia est</em>:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Conocimiento como instrumento de dominio sobre la naturaleza</li>
+                            <li>Primer instrumentalismo tecnológico: tecnología como medio al servicio de fines humanos</li>
+                            <li><em>Novum Organum</em> (1620): método inductivo para dominar, no contemplar</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Ejemplo del profesor:</strong> "Con Bacon y Descartes pasamos de imitar a los dioses a SER dioses. Los dioses pueden generar una tormenta, pero no pueden controlarla. Nosotros sí: producimos trigo aunque haya mal tiempo porque controlamos los caudales de agua."</p>
+                    </div>
+                    
+                    <div class="key-text">
+                        <strong>Descartes - Dueños y poseedores:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><em>Discurso del método</em> (1637): humanos como "dueños y poseedores de la naturaleza"</li>
+                            <li>Ernst Kapp (1877): herramientas como proyecciones inconscientes de órganos (martillo → puño, lente → ojo)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- CARL MITCHAM -->
+                <div class="author-card">
+                    <h3>3.3 Carl Mitcham (1941-)<span class="source-tag source-key">Texto Clave §4</span><span class="source-tag source-ref">Ref</span></h3>
+                    
+                    <div class="key-text">
+                        <strong>Dos contribuciones fundamentales (<em>Thinking Through Technology</em>, 1994):</strong>
+                        <ol style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Dos tradiciones:</strong>
+                                <ul>
+                                    <li><em>Ingeniería:</em> Filosófía desde dentro (ingenieros reflexionando sobre su práctica)</li>
+                                    <li><em>Humanidades:</em> Examina desde fuera (Heidegger, Ellul, Winner... con actitud crítica)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Cuatro dimensiones de la tecnología:</strong>
+                                <ul>
+                                    <li><strong>Objeto:</strong> Artefactos físicos</li>
+                                    <li><strong>Conocimiento:</strong> Saber técnico (algoritmos, métodos)</li>
+                                    <li><strong>Actividad:</strong> Proceso de hacer (desarrollo de software)</li>
+                                    <li><strong>Volición:</strong> Dimensión motivacional (por qué se hace)</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div class="image-ref">
+                        <strong>🖼️ IMAGEN DE REFERENCIA</strong>
+                        <p>Consultar PDF "[Filo] - 01 - LosPensadoresDeReferencia..." - Taxonomía de Mitcham con las 4 dimensiones (objeto, actividad, conocimiento, volición)</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Implicación profesional:</strong> Evaluar solo la dimensión de objeto produce un análisis incompleto. El ingeniero está en la tradición de ingeniería; la filosofía crítica requiere salir de esa tradición.</p>
+                    </div>
+                </div>
+                
+                <!-- NORBERT WIENER -->
+                <div class="author-card">
+                    <h3>3.4 Norbert Wiener (1894-1964)<span class="source-tag source-key">Texto Clave §5</span><span class="source-tag source-class">Clase</span></h3>
+                    
+                    <div class="key-text">
+                        <strong>Fundador de la cibernética:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><em>Cybernetics</em> (1948): estudio de control y comunicación en animales y máquinas</li>
+                            <li><strong>Retroalimentación (feedback):</strong> Sistema ajusta comportamiento según información sobre efectos</li>
+                            <li>Sin feedback: no hay regulación automática, ni aprendizaje automático moderno</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Etimología:</strong> "Kubernetes" en griego = "el que maneja el timonel", que va cambiando dirección según viento y corrientes.</p>
+                        <p style="margin-top: 10px;"><strong>Posicionamiento ético:</strong> En 1947 publicó "A Scientist Rebels" en <em>The Atlantic</em>, rechazando colaborar con proyectos militares. Fue su manera de contribuir al mundo - perspectiva ética emergente de la práctica técnica misma.</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Anticipación:</strong> Desplazamiento tecnológico del trabajo, peligro de delegar decisiones morales a máquinas, sistemas de retroalimentación social donde humanos son componentes de control automático (describe con precisión sistemas de recomendación algorítmica contemporáneos).</p>
+                    </div>
+                </div>
+                
+                <!-- MARTIN HEIDEGGER -->
+                <div class="author-card">
+                    <h3>3.5 Martin Heidegger (1889-1976)<span class="source-tag source-key">Texto Clave §6</span><span class="source-tag source-ref">Ref</span></h3>
+                    
+                    <div class="key-text">
+                        <strong><em>Die Frage nach der Technik</em> (1954):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Provocación:</strong> "La esencia de la técnica no es nada técnico"</li>
+                            <li>No basta estudiar cómo funcionan máquinas; hay que comprender cómo organizan la relación humana con el mundo</li>
+                            <li><strong>Gestell:</strong> "Encuadre" o "estructura de emplazamiento"</li>
+                            <li><strong>Bestand:</strong> Existencias calculables, almacenables y optimizables</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Ejemplo del profesor:</strong> "Unas gafas. ¿Cuál es el encuadre? Sirve para ver de cerca/lejos, para verme mejor (atractivo), para darme aire intelectual. Esto es el Gestell."</p>
+                        <p style="margin-top: 10px;"><strong>Bestán:</strong> Cómo calculo ese encuadre, qué puedo medir y qué no puedo medir. Es lo que le da concepción a medir.</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Aplicación:</strong> Cuando un sistema hospitalario convierte pacientes en datos procesables, o una plataforma convierte candidatos en puntuaciones, opera bajo el Gestell: todo se convierte en recurso a optimizar. Al digitalizar un proceso, tiende a reorganizarse en torno a lo medible, almacenable y optimizable, independientemente de si captura lo valioso del proceso original.</p>
+                    </div>
+                    
+                    <div class="image-ref">
+                        <strong>🖼️ IMAGEN DE REFERENCIA</strong>
+                        <p>Consultar PDF - Imágenes del Gestell y Bestán en el curso (no compartibles directamente por permisos del Mac del profesor)</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Pregunta del profesor:</strong> "En un proceso que hayáis digitalizado, ¿qué dimensión desapareció porque no podíamos medir?" Respuestas: expectativas del cliente, grupos sociales...</p>
+                    </div>
+                </div>
+                
+                <!-- LEWIS MUMFORD -->
+                <div class="author-card">
+                    <h3>3.6 Lewis Mumford (1895-1990)<span class="source-tag source-key">Texto Clave §7</span><span class="source-tag source-class">Clase</span></h3>
+                    
+                    <div class="key-text">
+                        <strong><em>Technics and Civilization</em> (1934):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Primero en analizar relación tecnología-organización social a escala histórica</li>
+                            <li><strong>Máquinas ≠ productos neutrales:</strong> Cristalizaciones de formas de organizar trabajo, tiempo y vida social</li>
+                            <li><strong>Caso paradigmático:</strong> Reloj mecánico - transformó relación humana con el tiempo (de flujo orgánico a unidades abstractas, mercantiles)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Megamáquina:</strong> Organización de seres humanos como componentes de sistema técnico de gran escala. ERP, plataformas de gestión, sistemas de control son megamáquinas que organizan comportamiento en patrones predefinidos.</p>
+                        <p style="margin-top: 10px;"><strong>Ejemplo Amazon:</strong> "Turco mecánico" - microtareas pagadas (20 céntimos por contar panaderías en una calle). Las personas forman parte del sistema como componentes.</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Implicación:</strong> Reconocer esto no implica rechazar estos sistemas, sino diseñarlos con conciencia de las formas de disciplina y poder que incorporan.</p>
+                    </div>
+                </div>
+                
+                <!-- JACQUES ELLUL -->
+                <div class="author-card">
+                    <h3>3.7 Jacques Ellul (1912-1994)<span class="source-tag source-key">Texto Clave §8</span><span class="source-tag source-class">Clase</span></h3>
+                    
+                    <div class="key-text">
+                        <strong><em>La Technique ou l'Enjeu du siècle</em> (1954):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Autonomía de la técnica:</strong> Sistema con dinámica propia</li>
+                            <li><strong>Cinco características:</strong>
+                                <ol>
+                                    <li>Automaticidad: solución más eficiente se impone sin deliberación</li>
+                                    <li>Autocrecimiento: cada solución genera nuevos problemas → nuevas soluciones</li>
+                                    <li>Monismo: todas las técnicas están interconectadas</li>
+                                    <li>Universalismo: se extiende a todos los dominios</li>
+                                    <li>Autonomía: sistema se adapta a sí mismo</li>
+                                </ol>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Ejemplo ciberseguridad:</strong> Firewall corta intentos de penetración, pero hace que alguien desarrolle algo para saltarlo, haciendo que el firewall tenga nuevo protocolo. Carrera entre seguridad y ataques no está orientada por fin humano preestablecido; sigue lógica interna.</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Lección productiva:</strong> No la resignación, sino identificar qué dinámicas operan en sistemas concretos y en qué puntos son susceptibles de intervención.</p>
+                    </div>
+                </div>
+                
+                <!-- HANS JONAS -->
+                <div class="author-card">
+                    <h3>3.8 Hans Jonas (1903-1993)<span class="source-tag source-key">Texto Clave §9</span><span class="source-tag source-class">Clase</span></h3>
+                    
+                    <div class="key-text">
+                        <strong><em>Das Prinzip Verantwortung</em> (1979):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Éticas tradicionales: relaciones de proximidad (consecuencias en horizonte de una vida)</li>
+                            <li>Tecnología moderna: efectos globales, irreversibles, multigeneracionales</li>
+                            <li><strong>Imperativo reformulado:</strong> "Actúa de modo que los efectos de tu acción sean compatibles con la permanencia de una vida humana auténtica en la Tierra"</li>
+                            <li><strong>Principio de precaución:</strong> Ante incertidumbre sobre consecuencias graves, carga de la prueba recae sobre quien actúa</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Kant:</strong> "Los sistemas tengan voluntad moral de hacer el bien. Cuando un sistema funciona, no es por cumplir tareas, sino que universalmente es bueno y funciona bien."</p>
+                    </div>
+                </div>
+                
+                <!-- ANDREW FEENBERG -->
+                <div class="author-card">
+                    <h3>3.9 Andrew Feenberg (1943-)<span class="source-tag source-key">Texto Clave §10</span><span class="source-tag source-ref">Ref + Texto</span></h3>
+                    
+                    <div class="key-text">
+                        <strong><em>Critical Theory of Technology</em> (1991):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Instrumentalización primaria:</strong> Capacidades y funciones básicas</li>
+                            <li><strong>Instrumentalización secundaria:</strong> Valores, intereses y relaciones de poder inscritos durante diseño</li>
+                            <li><strong>Racionalización alternativa:</strong> Posible racionalizar mismos procesos con diferentes valores</li>
+                            <li>No existe único modo óptimo; existe espacio de posibilidades</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <strong>Detalle del Texto Referencial (Feenberg 2005):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Código técnico:</strong> Realización de un interés o ideología en solución técnicamente coherente. Criterio que selecciona entre diseños alternativos según meta social</li>
+                            <li><strong>Ejemplo:</strong> Imperativo de deshabilitar trabajo durante industrialización (deskilling)</li>
+                            <li><strong>Autonomía operativa:</strong> Libertad del dueño/representante para tomar decisiones independientes, sin considerar intereses de subordinados</li>
+                            <li><strong>Democratización:</strong> Romper ilusión de transcendencia, revelar loops de feedback, ampliar rango de intereses representados</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Ejemplo cinturón seguridad:</strong> Diseñado desde perspectiva masculina porque el conductor era hombre. El diseño se basa en dimensiones masculinas. Esto determina valores voluntarios o no. Feenberg quiere saber cómo determinamos esa carga.</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Argumento convincente:</strong> El constructivismo social explica CÓMO se construyen artefactos pero no POR QUÉ ciertos intereses prevalecen sistemáticamente. Necesita complementarse con marco de análisis del poder.</p>
+                    </div>
+                </div>
+                
+                <!-- LANGDON WINNER -->
+                <div class="author-card">
+                    <h3>3.10 Langdon Winner (1944-)<span class="source-tag source-key">Texto Clave §11</span><span class="source-tag source-class">Clase</span></h3>
+                    
+                    <div class="key-text">
+                        <strong>"Do Artifacts Have Politics?" (1980):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Artefactos pueden diseñarse deliberadamente para producir consecuencias sociales específicas</li>
+                            <li><strong>Caso paradigmático:</strong> Puentes de Robert Moses a playas Long Island - altura insuficiente para autobuses</li>
+                            <li>Resultado: playas inaccesibles para población que dependía de transporte público</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Refutación (Joerges, 1999):</strong> Puentes bajos por reducir coste económico, no por discriminación social. PERO el impacto generado (voluntario o no) permanece: quienes iban en autobús no podían usar esa carretera, otras rutas eran más largas.</p>
+                        <p style="margin-top: 10px;"><strong>Conclusión del profesor:</strong> "Fuera intencionado o no, generó efecto social. El mismo elemento se comprende de diferentes ángulos."</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Auténticamente políticas:</strong> Algunas tecnologías requieren por su naturaleza formas específicas de organización social (votación electrónica centralizada → quién controla infraestructura; mensajería cifrada → posición sobre privacidad).</p>
+                    </div>
+                </div>
+                
+                <!-- DON IHDE -->
+                <div class="author-card">
+                    <h3>3.11 Don Ihde (1934-)<span class="source-tag source-key">Texto Clave §12</span><span class="source-tag source-ref">Ref</span></h3>
+                    
+                    <div class="key-text">
+                        <strong>Postfenomenología:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Taxonomía de relaciones humano-tecnología</li>
+                            <li><strong>Tesis central:</strong> Tecnología no es objeto que usamos; es MEDIADOR que transforma relación del ser humano con el mundo</li>
+                            <li>Cómo percibimos, qué aspectos son visibles/invisibles, qué acciones son posibles/imposibles, depende de sistemas tecnológicos</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Verbeek (2005):</strong> Refina noción de mediación e incluye dimensión moral. Tecnologías mediación moralmente significativa.</p>
+                    </div>
+                </div>
+                
+                <!-- PERSPECTIVAS CRÍTICAS -->
+                <div class="author-card">
+                    <h3>3.12 Perspectivas Críticas Ampliadas<span class="source-tag source-key">Texto Clave §13</span><span class="source-tag source-ref">Ref</span></h3>
+                    
+                    <h4>Judy Wajcman (1951-)<span class="source-tag source-class">Clase</span></h4>
+                    
+                    <div class="key-text">
+                        <strong><em>Feminism Confronts Technology</em> (1991) y <em>TechnoFeminism</em> (2004):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Tecnologías diseñadas en contextos de relaciones de género asimétricas</li>
+                            <li>Asimetrías quedan inscritas en artefactos</li>
+                            <li><strong>Constructivismo:</strong> Género y tecnología se co-construyen mutuamente</li>
+                            <li>tecnología lleva género incorporado, pero puede ser resistido/renegociado/transformatdo</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <strong>Implicación práctica:</strong> Equipos homogéneos incorporan supuestos del grupo dominante. <strong>Evidencia:</strong> reconocimiento facial - rostros mujeres piel oscura tenían tasas de error 34 puntos % más altas (Buolamwini y Gebru, 2018).</p>
+                    </div>
+                    
+                    <h4>Perspectivas Decoloniales<span class="source-tag source-class">Clase</span><span class="source-tag source-ref">Ref</span></h4>
+                    
+                    <div class="key-text">
+                        <strong>Colonialismo de datos (Couldry & Mejias, 2019):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Plataformas digitales reproducen lógicas extractivistas sobre poblaciones Sur Global</li>
+                            <li>Ejemplo: centros de datos movidos a LATAM/África donde legislación es laxa</li>
+                            <li>Ejemplo: operadoras daban teléfonos gratis en África para uso bancario → extraían datos de usos</li>
+                            <li>"Cuando algo es gratis, el producto eres tú"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="class-note">
+                        <p><strong>Yuk Hui (1985-):</strong> Informático y filósofo. No existe trayectoria tecnológica universal sino múltiples tradiciones condicionadas por concepciones del cosmos. Si clase fuera en chino en país asiático, habría perspectiva diferente.</p>
+                    </div>
+                </div>
+                
+                <!-- OTROS AUTORES -->
+                <div class="author-card">
+                    <h3>3.13 Otros Autores Relevantes</h3>
+                    
+                    <h4>Herbert Marcuse (1898-1979)<span class="source-tag source-class">Clase</span></h4>
+                    
+                    <div class="class-note">
+                        <p><strong>Ejemplo del profesor:</strong> "Ir al banco por extracto. Antes: interacción humana con ventanilla. Ahora: máquina. Cambia dinámica de interacción. Ejemplo 2: confesionario con máquina, médico respondiendo con máquina."</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><em>One-Dimensional Man</em> (1964): racionalidad tecnológica (eficiencia, cuantificación, optimización) coloniza dominios con otras lógicas (educación, salud mental).</p>
+                    </div>
+                    
+                    <h4>Evgeny Morozov (1984-)<span class="source-tag source-ref">Ref</span></h4>
+                    
+                    <div class="ref-text">
+                        <strong><em>To Save Everything, Click Here</em> (2013):</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li><strong>Tecnosolucionismo:</strong> Tendecia a replantear problemas sociales complejos como técnicos solucionables mediante apps/algoritmos</li>
+                            <li><strong>3 pasos:</strong> 1) Define problema en términos técnicos, 2) Presenta solución como más eficiente, 3) Declara alternativas no técnicas como anticuadas</li>
+                            <li><strong>Ejemplos:</strong> Cambio climático → otro planeta; crisis económica → imprimir dinero; recursos → reducir población</li>
+                        </ul>
+                    </div>
+                    
+                    <h4>Luciano Floridi (1964-)<span class="source-tag source-class">Clase</span><span class="source-tag source-ref">Ref</span></h4>
+                    
+                    <div class="class-note">
+                        <p><strong>Agentes de información:</strong> Sistemas tecnológicos que nos sirven para comprender mundo de cierta manera.</p>
+                        <p style="margin-top: 10px;"><strong>Ejemplo Twitter/X:</strong> ¿Es mi mundo? Sí en sentido local, no en global. Algoritmos dentro modifican visión del mundo como las gafas modifican visión.</p>
+                    </div>
+                    
+                    <div class="ref-text">
+                        <p><strong>Agente de información:</strong> Sistemas que procesan información y modifican entorno sin necesitar intencionalidad/conciencia. Recomendación, trading automatizado, filtros de contenido son agentes de información: actúan sobre mundo aunque sin propósito pleno.</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- EJEMPLOS PRÁCTICOS -->
+            <section id="ejemplos">
+                <h2>4. Ejemplos Prácticos por Teoría</h2>
+                
+                <div class="example-box">
+                    <h4>Aristóteles: Fisis vs Techne</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Desarrollo de un sistema de IA generativa</div>
+                    <div class="application"><strong>Aplicación:</strong> El sistema "aprende" patrones (¿fisis propia?) o sigue siendo techne humana ejecutada con complejidad? Decidir si el aprendizaje automático produce algo con principio propio de desarrollo o ejecuta techne humana con mayor complejidad.</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Heidegger: Gestell y Bestand</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Hospital implementa sistema algorítmico para priorizar listas de espera quirúrgica</div>
+                    <div class="application"><strong>Aplicación:</strong> Sistema puntúa pacientes por diagnóstico, edad, pruebas. ¿Qué aspectos clínicos quedan fuera porque no son medibles/optimizables? Relación humana médico-paciente, calidad de vida esperada, preferencias del paciente, factores emocionales.</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Mitcham: Cuatro Dimensiones</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Empresa adopta ERP para gestión empresarial</div>
+                    <div class="application"><strong>Aplicación:</strong> Analizar por dimensiones:<br/>
+                        • Objeto: software, servidores<br/>
+                        • Conocimiento: algoritmos de optimización<br/>
+                        • Actividad: proceso de implementación y uso diario<br/>
+                        • Volición: ¿por qué? Reducción costes vs. mejora colaborativa.<br/>
+                        Las decisiones más importantes residen en volición (motivación) pero se expresan en objeto.</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Wiener: Retroalimentación</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Plataforma de recomendación de contenido</div>
+                    <div class="application"><strong>Aplicación:</strong> Sistema reinyecta output (lo que usuarios consumen) para modificar comportamiento futuro. Los humanos son componentes del sistema de control. Problema: dinámicas que nadie diseñó y son imposibles de detener desde dentro (burbujas filtro, polarización).</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Ellul: Autocrecimiento</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Implementación de medidas de ciberseguridad</div>
+                    <div class="application"><strong>Aplicación:</strong> Firewall → nuevos vectores de ataque → mejores firewalls → ataques más sofisticados. Carrera infinita sin fin humano preestablecido. Identificar puntos de intervención donde romper ciclo.</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Feenberg: Código Técnico</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Sistema de scoring crediticio bancario</div>
+                    <div class="application"><strong>Aplicación:</strong> Variables incluidas/excluidas reflejan valores. ¿Por qué barrio es variable pero educación no? Código técnico: "minimizar riesgo" sobre "promover movilidad social". Racionalización alternativa: incluir variables de potencial de crecimiento, no solo historial.</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Winner: Política de Artefactos</h4>
+                    <div class="scenario"><strong>Escenario:</strong> App de transporte compartido</div>
+                    <div class="application"><strong>Aplicación:</strong> Requiere smartphone actualizado, tarjeta crédito, competencia digital. Decisión de diseño incorpora política sobre quién puede usar: excluye mayores, pobres, rurales. Equipo 25-35 años, universitarios → sesgo de diseño.</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Wajcman: Sesgo de Género</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Desarrollo de reconocimiento facial</div>
+                    <div class="application"><strong>Aplicación:</strong> Equipo exclusivamente masculino → no detecta problemas con rostros femeninos. Solución: incluir diversidad en equipo de diseño, pruebas con datasets diversos (34 puntos % diferencia en precisión).</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Morozov: Tecnosolucionismo</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Crisis de vivienda en ciudades</div>
+                    <div class="application"><strong>Aplicación:</strong> Propuesta: app para encontrar alojamientos temporales. Problema: evita tratar causas estructurales (especulación, falta de construcción pública). Tecnosolucionismo estrecha rango de soluciones a lo técnicamente posible.</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Mumford: Megamáquina</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Plataforma de microtareas</div>
+                    <div class="application"><strong>Aplicación:</strong> Trabajadores se convierten en componentes del sistema (como Amazon Mechanical Turk). Medición: número de tareas completadas/hora. Persona organizada por patrones predefinidos del sistema. ¿Cómo rediseñar para preservar agencia humana?</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Jonas: Responsabilidad Multigeneracional</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Lanzamiento de IA autónoma en sistemas críticos</div>
+                    <div class="application"><strong>Aplicación:</strong> Efectos pueden ser irreversibles, globales, multigeneracionales. Principio de precaución: ¿quién asume carga de la prueba? Diseñadores deben demostrar seguridad antes de lanzamiento, no víctimas demostrar daño después.</div>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Decolonial: Extracción de Datos</h4>
+                    <div class="scenario"><strong>Escenario:</strong> Centro de datos en África Occidental</div>
+                    <div class="application"><strong>Aplicación:</strong> Construido donde legislación ambiental/laboral laxa. Energía de combustibles fósiles locales. Datos extraídos de poblaciones sin reinversión local. Reproduce colonialismo histórico: extracción de recursos sin beneficio comunitario.</div>
+                </div>
+            </section>
+            
+            <!-- GLOSARIO TÉRMINOS -->
+            <section id="glosario">
+                <h2>5. Glosario de Términos</h2>
+                
+                <div class="glossary-grid">
+                    <div class="glossary-item">
+                        <strong>Techne (τέχνη)</strong>
+                        Producción orientada a fin mediante conocimiento. Distinguida de fisis (naturaleza) por Aristóteles.
+                        <span class="citation">(Aristóteles)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Fisis</strong>
+                        Lo que existe por naturaleza, contiene en sí mismo principio de desarrollo sin intervención humana.
+                        <span class="citation">(Aristóteles)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Gestell</strong>
+                        "Encuadre" heideggeriano: modo en que técnica moderna organiza realidad como recurso optimizable.
+                        <span class="citation">(Heidegger)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Bestand</strong>
+                        "Existencia disponible": objetos convertidos en recursos calculables, almacenables y optimizables.
+                        <span class="citation">(Heidegger)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Cibernética</strong>
+                        Estudio de control y comunicación en animales y máquinas mediante retroalimentación.
+                        <span class="citation">(Wiener)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Feedback Loop</strong>
+                        Ciclo donde output del sistema se reinyecta para modificar comportamiento futuro.
+                        <span class="citation">(Wiener)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Megamáquina</strong>
+                        Organización de seres humanos como componentes de sistema técnico a gran escala.
+                        <span class="citation">(Mumford)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Instrumentalismo</strong>
+                        Visión de tecnología como medio neutral al servicio de fines humanos externos.
+                        <span class="citation">(Bacon, Descartes)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Autonomía Operativa</strong>
+                        Libertad del gestor para tomar decisiones técnicas sin considerar intereses de subordinados.
+                        <span class="citation">(Feenberg)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Código Técnico</strong>
+                        Realización de interés/ideología en solución técnicamente coherente.
+                        <span class="citation">(Feenberg)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Dual Nature of Artifacts</strong>
+                        Artefactos tienen naturaleza dual: estructura material + función/intención.
+                        <span class="citation">(Kroes & Meijers)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Teorización Alternativa</strong>
+                        Posibilidad de racionalizar mismos procesos con diferentes valores.
+                        <span class="citation">(Feenberg)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Tecnosolucionismo</strong>
+                        Tendencia a replantear problemas sociales complejos como técnicos solucionables por tecnología.
+                        <span class="citation">(Morozov)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Agente de Información</strong>
+                        Sistema que procesa información y modifica entorno sin necesidad de intencionalidad/conciencia.
+                        <span class="citation">(Floridi)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Colonialismo de Datos</strong>
+                        Extracción de datos de poblaciones Sur Global reproduciendo lógica extractivista colonial.
+                        <span class="citation">(Couldry & Mejias)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Actor-Red (TAR)</strong>
+                        Metodología que trata actantes humanos y no-humanos con simetría analítica.
+                        <span class="citation">(Latour, Callon)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Postfenomenología</strong>
+                        Enfoque que estudia tecnología como mediadora entre humanos y mundo.
+                        <span class="citation">(Ihde, Verbeek)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Problem of Many Hands</strong>
+                        Dificultad de asignar responsabilidad individual en contextos colectivos distribuidos.
+                        <span class="citation">(Thompson)</span>
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Dilema de Collingridge</strong>
+                        Control social difícil: temprano hay control pero no predicción; tarde hay predicción pero no control.
+                        <span class="citation">(Collingridge)</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- GLOSARIO AUTORES -->
+            <section id="autores-lista">
+                <h2>6. Glosario de Autores y Teorías</h2>
+                
+                <div class="glossary-grid">
+                    <div class="glossary-item">
+                        <strong>Aristóteles</strong> (384-322 a.C.)
+                        <br/><em>Fisis vs Techne</em>, código ético occidental, animal político
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Francis Bacon</strong> (1561-1626)
+                        <br/><em>Scientia potentia est</em>, instrumentalismo, dominio sobre naturaleza
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>René Descartes</strong> (1596-1650)
+                        <br/><em>Dueños y poseedores</em>, mecanización conceptual del mundo
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Ernst Kapp</strong> (1808-1897)
+                        <br/>Primero en usar "Filosofía de la Tecnología", proyección de órganos en herramientas
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Carl Mitcham</strong> (1941-)
+                        <br/>Taxonomía 4 dimensiones, tradiciones ingeniería/humanidades, cartógrafo del campo
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Norbert Wiener</strong> (1894-1964)
+                        <br/>Fundador cibernética, feedback, responsabilidad ética del científico
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Martin Heidegger</strong> (1889-1976)
+                        <br/>Gestell, Bestand, "esencia técnica no es técnica", la pregunta por la técnica
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Lewis Mumford</strong> (1895-1990)
+                        <br/>Megamáquina, técnica-civilización-historia, reloj como tecnología fundacional
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Jacques Ellul</strong> (1912-1994)
+                        <br/>Autonomía técnica, automaticidad, autocrecimiento, sociedad tecnológica
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Hans Jonas</strong> (1903-1993)
+                        <br/>Principio responsabilidad, imperativo multigeneracional, precaución
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Andrew Feenberg</strong> (1943-)
+                        <br/>Teoría crítica, instrumentalización primaria/secundaria, código técnico, democratización
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Langdon Winner</strong> (1944-)
+                        <br/>"Artefactos tienen política", puentes de Moses, inherente vs contingente
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Don Ihde</strong> (1934-)
+                        <br/>Postfenomenología, mediación tecnológica, taxonomía relaciones humano-tecnología
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Herbert Marcuse</strong> (1898-1979)
+                        <br/><em>Hombre unidimensional</em>, racionalidad tecnológica colonizadora, Escuela de Frankfurt
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Judy Wajcman</strong> (1951-)
+                        <br/>Estudios feministas tecnología, género-co-construcción, equipos de diseño diversos
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Yuk Hui</strong> (1985-)
+                        <br/>Cosmotécnicas, pluralidad trayectorias tecnológicas, filosofía china tecnología
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Couldry & Mejias</strong> (2019)
+                        <br/>Colonialismo de datos, extracción de recursos digitales, costos de conexión
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Evgeny Morozov</strong> (1984-)
+                        <br/>Tecnosolucionismo, crítica soluciones tecnológicas a problemas sociales
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Luciano Floridi</strong> (1964-)
+                        <br/>Agente de información, ética información, cuarta revolución
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Bruno Latour</strong> (1947-2022)
+                        <br/>Teoría Actor-Red, actantes no-humanos, simetría analítica
+                    </div>
+                    
+                    <div class="glossary-item">
+                        <strong>Albert Borgmann</strong> (1937-)
+                        <br/>Paradigma del dispositivo, oculta mecanismo, entrega producto inmediato
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p><strong>Documento de Estudio Integrado - Filosofía de la Tecnología</strong></p>
+            <p>Sesión 1 | 14 de septiembre 2026</p>
+            <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">Basado en transcripción oficial, notas de clase, texto clave y textos referenciales</p>
+            <button class="print-btn" onclick="window.print()">🖨️ Imprimir Documento</button>
+        </footer>
+    </div>
+    
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Highlight current section in navigation
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('nav a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.style.background = '';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.background = '#6d4aff';
+                }
+            });
+        });
+        
+        // Add print styles
+        const printStyle = document.createElement('style');
+        printStyle.textContent = `
+            @media print {
+                body { 
+                    background: white !important; 
+                    padding: 0 !important;
+                }
+                nav { 
+                    display: none !important; 
+                }
+                .print-btn {
+                    display: none !important;
+                }
+                .container {
+                    box-shadow: none !important;
+                    max-width: 100% !important;
+                }
+                header {
+                    background: #6d4aff !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+            }
+        `;
+        document.head.appendChild(printStyle);
+    </script>
+</body>
+</html>
