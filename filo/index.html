@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Filosofía de la Tecnología · Portada</title>
+<style>
+:root{
+  --purple:#6d4aff;
+  --purple-dark:#4a3aff;
+  --purple-deep:#2c2350;
+  --bg:#f5f4fb;
+  --card:#ffffff;
+  --ink:#23202e;
+  --ink-soft:#5c5772;
+  --line:#e4e1f2;
+  --green:#2e9e5b;
+  --amber:#e08a00;
+  --blue:#2276d2;
+  --radius:14px;
+  --shadow:0 4px 18px rgba(45,32,110,.09);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.65;
+}
+
+/* ---------- BARRA SUPERIOR ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+  padding:12px 28px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.topbar .brand{font-weight:700;color:var(--purple);letter-spacing:.2px}
+.topbar .progress-wrap{display:flex;align-items:center;gap:12px;font-size:.85rem;color:var(--ink-soft)}
+.bar{width:180px;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--purple-dark));transition:width .4s ease}
+
+/* ---------- HERO ---------- */
+.hero{
+  background:linear-gradient(135deg,#6d4aff 0%,#4a3aff 55%,#372bb5 100%);
+  color:#fff;padding:64px 28px 72px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::after{
+  content:"";position:absolute;inset:auto -10% -60% -10%;height:220px;
+  background:radial-gradient(closest-side,rgba(255,255,255,.16),transparent);
+}
+.hero h1{font-size:clamp(1.9rem,4vw,2.9rem);font-weight:800;letter-spacing:-.5px;margin-bottom:14px}
+.hero p.lead{max-width:760px;margin:0 auto;font-size:1.05rem;opacity:.93}
+.hero .chips{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.chip{
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
+  padding:6px 14px;border-radius:99px;font-size:.82rem;
+}
+
+/* ---------- CONTENEDOR ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+section.block{padding:52px 0}
+.block-title{
+  font-size:1.5rem;font-weight:750;margin-bottom:8px;color:var(--purple-deep);
+}
+.block-sub{color:var(--ink-soft);margin-bottom:28px;font-size:.95rem}
+
+/* ---------- REJILLA DE UNIDADES ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;box-shadow:var(--shadow);position:relative;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+  display:flex;flex-direction:column;gap:10px;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(45,32,110,.14);border-color:#cfc7f5}
+.card .num{
+  width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--purple),var(--purple-dark));
+  color:#fff;font-weight:700;font-size:.95rem;
+}
+.card h3{font-size:1.06rem;line-height:1.35;font-weight:700}
+.card p{font-size:.87rem;color:var(--ink-soft);flex:1}
+.card .meta{display:flex;gap:8px;flex-wrap:wrap;font-size:.72rem}
+.tag{padding:3px 9px;border-radius:99px;font-weight:600;letter-spacing:.2px}
+.tag.test{background:#efe9ff;color:#5433c9}
+.tag.caso{background:#e6f5ec;color:#1f7a45}
+.tag.done{background:#dff3e6;color:#177a41}
+.tag.pending{background:#f0eef8;color:#6d6885}
+.card a.go{
+  margin-top:6px;align-self:flex-start;font-size:.86rem;font-weight:650;
+  color:var(--purple);text-decoration:none;border-bottom:2px solid transparent;
+}
+.card a.go:hover{border-color:var(--purple)}
+.card.is-done{border-left:4px solid var(--green)}
+
+/* ---------- CAJA METODOLOGÍA ---------- */
+.panel{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px;box-shadow:var(--shadow);
+}
+.panel h3{color:var(--purple);margin-bottom:12px;font-size:1.1rem}
+.panel ul{margin-left:20px;color:var(--ink-soft);font-size:.93rem}
+.panel li{margin:6px 0}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+/* ---------- FOOTER ---------- */
+footer{
+  background:var(--purple-deep);color:#cfc9e8;padding:34px 28px;text-align:center;font-size:.85rem;
+}
+footer strong{color:#fff;display:block;margin-bottom:6px}
+
+@media(max-width:720px){
+  .split{grid-template-columns:1fr}
+  .topbar{flex-direction:column;align-items:flex-start;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Filosofía de la Tecnología · INF26E12</div>
+  <div class="progress-wrap">
+    <span id="progLabel">0 / 13 unidades completadas</span>
+    <div class="bar"><span id="progBar"></span></div>
+  </div>
+</div>
+
+<header class="hero">
+  <h1>Filosofía de la Tecnología</h1>
+  <p class="lead">13 bloques progresivos para pensar críticamente el diseño, la ética y el impacto social de los sistemas informáticos.</p>
+  <div class="chips">
+    <span class="chip">12 unidades + bienvenida</span>
+    <span class="chip">Test de autoevaluación por unidad</span>
+    <span class="chip">2 casos prácticos por unidad</span>
+    <span class="chip">Glosario y mapa comparativo</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- METODOLOGÍA -->
+  <section class="block">
+    <h2 class="block-title">Cómo funciona este curso</h2>
+    <p class="block-sub">Estructura de cada unidad y criterios de estudio.</p>
+    <div class="split">
+      <div class="panel">
+        <h3>Estructura de cada unidad</h3>
+        <ul>
+          <li><strong>Texto clave:</strong> contenido obligatorio del programa.</li>
+          <li><strong>Texto referencial:</strong> lectura complementaria recomendada.</li>
+          <li><strong>Notas de clase:</strong> exposición oral, ejemplos y matices del profesor.</li>
+          <li><strong>Test de autoevaluación:</strong> 20 preguntas, se supera con 16/20 (80 %).</li>
+          <li><strong>2 casos prácticos</strong> con preguntas de análisis y resolución razonada.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Cómo estudiar cada unidad</h3>
+        <ul>
+          <li>Lee primero el texto clave para fijar el marco.</li>
+          <li>Contrasta con el texto referencial para ampliar perspectivas.</li>
+          <li>Repasa las notas de clase: aportan los ejemplos aplicados.</li>
+          <li>Resuelve el test sin mirar y después revisa la justificación.</li>
+          <li>Trabaja los casos prácticos antes de leer la resolución.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- UNIDADES -->
+  <section class="block">
+    <h2 class="block-title">Unidades de estudio</h2>
+    <p class="block-sub">Progresión desde los fundamentos filosóficos hasta los riesgos de la IA.</p>
+    <div class="grid" id="unitsGrid"></div>
+  </section>
+
+</div>
+
+<footer>
+  <strong>Filosofía de la Tecnología</strong>
+  Universitas Europaea · Uso académico personal
+</footer>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN DE UNIDADES
+   Edita este array para añadir o modificar unidades.
+   - id:      número de unidad (0 = bienvenida)
+   - titulo:  título mostrado en la tarjeta
+   - desc:    resumen corto
+   - href:    enlace al archivo de la unidad
+   ============================================================ */
+const UNITS = [
+  { id:0,  titulo:"Bienvenida y metodología",                              desc:"Presentación del curso, objetivos, criterios de evaluación y método de trabajo.", href:"temas/tema0.html" },
+  { id:1,  titulo:"Los pensadores de referencia sobre filosofía de la tecnología", desc:"De Aristóteles a las perspectivas decoloniales: techne, Gestell, megamáquina, teoría crítica y política de los artefactos.", href:"temas/tema1.html" },
+  { id:2,  titulo:"¿Es neutral la tecnología? La cuestión de la autonomía de la técnica", desc:"Neutralidad, determinismo, constructivismo y el margen real de intervención humana.", href:"temas/tema2.html" },
+  { id:3,  titulo:"Principios éticos aplicables en la tecnología",          desc:"Consecuencialismo, deontología, virtud y su traducción al diseño de sistemas.", href:"temas/tema3.html" },
+  { id:4,  titulo:"Ética Profesional",                                      desc:"Códigos deontológicos (ACM, IEEE, NSPE), colegios profesionales y dilemas reales.", href:"temas/tema4.html" },
+  { id:5,  titulo:"Diseño de aplicaciones con reflexión ética",             desc:"Value-sensitive design, ética por diseño, dark patterns y sesgos de interfaz.", href:"temas/tema5.html" },
+  { id:6,  titulo:"Protección de datos",                                    desc:"RGPD, AI Act, minimización, consentimiento y gobernanza del dato.", href:"temas/tema6.html" },
+  { id:7,  titulo:"Principios éticos en los proyectos",                     desc:"Gestión de proyectos, partes interesadas, riesgos y rendición de cuentas.", href:"temas/tema7.html" },
+  { id:8,  titulo:"Los objetivos de desarrollo sostenible",                 desc:"Agenda 2030, tecnología como palanca y como obstáculo, métricas de impacto.", href:"temas/tema8.html" },
+  { id:9,  titulo:"Economía y sostenibilidad",                              desc:"Modelos de negocio, obsolescencia, deuda técnica y coste social del software.", href:"temas/tema9.html" },
+  { id:10, titulo:"Tecnología y medio ambiente",                            desc:"Antropoceno, huella energética del cómputo, minerales críticos y ciclo de vida.", href:"temas/tema10.html" },
+  { id:11, titulo:"Comportamiento, riesgos y ética en las redes sociales",  desc:"Economía de la atención, manipulación online, polarización y salud mental.", href:"temas/tema11.html" },
+  { id:12, titulo:"El futuro de la tecnología. Inteligencia artificial",    desc:"Agencia algorítmica, brecha de responsabilidad, control humano significativo y riesgos existenciales.", href:"temas/tema12.html" }
+];
+
+const STORAGE_KEY = "filo-tec-progress";
+
+function getProgress(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveProgress(p){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); } catch(e){}
+}
+
+function render(){
+  const grid = document.getElementById("unitsGrid");
+  const prog = getProgress();
+  grid.innerHTML = "";
+
+  UNITS.forEach(u => {
+    const done = !!prog[u.id];
+    const card = document.createElement("article");
+    card.className = "card" + (done ? " is-done" : "");
+    card.innerHTML = `
+      <div class="num">${u.id}</div>
+      <h3>${u.titulo}</h3>
+      <p>${u.desc}</p>
+      <div class="meta">
+        <span class="tag test">Test 20 preguntas</span>
+        <span class="tag caso">2 casos prácticos</span>
+        <span class="tag ${done ? "done" : "pending"}">${done ? "Completada" : "Pendiente"}</span>
+      </div>
+      <a class="go" href="${u.href}">Abrir unidad →</a>
+    `;
+    grid.appendChild(card);
+  });
+
+  const total = UNITS.length;
+  const completed = UNITS.filter(u => prog[u.id]).length;
+  document.getElementById("progLabel").textContent = `${completed} / ${total} unidades completadas`;
+  document.getElementById("progBar").style.width = ((completed/total)*100).toFixed(1) + "%";
+}
+
+render();
+</script>
+</body>
+</html>
